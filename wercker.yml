@@ -7,7 +7,7 @@ build:
 
 deploy:
   steps:
-    - uetchy/gh-pages:
+    - lukevivier/gh-pages@0.2.1:
         token: $GITHUB_TOKEN
         repo: jbowes/jbowes.github.io
         path: public
