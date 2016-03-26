@@ -11,4 +11,3 @@ deploy:
         token: $GITHUB_TOKEN
         repo: jbowes/jbowes.github.io
         path: public
-        domain: repl.ca
