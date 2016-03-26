@@ -1,4 +1,4 @@
-box: debian
+box: golang:1.5.1
 
 build:
   steps:
