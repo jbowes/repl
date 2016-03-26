@@ -1,0 +1,5 @@
+box: debian
+build:
+  steps:
+    - arjen/hugo-build@1.8.4:
+        theme: hugo_theme_robust
