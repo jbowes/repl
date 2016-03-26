@@ -7,9 +7,7 @@ build:
 
 deploy:
   steps:
-    - install-packages:
-        packages: git ssh-client
-    - lukevivier/gh-pages@0.2.1:
+    - uetchy/gh-pages@0.3.1:
         token: $GITHUB_TOKEN
         repo: jbowes/jbowes.github.io
         path: public
