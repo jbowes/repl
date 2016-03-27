@@ -3,7 +3,7 @@ box: golang:1.5.1
 build:
   steps:
     - arjen/hugo-build@1.8.4:
-        theme: hugo_theme_robust
+        theme: casper
 
 deploy:
   steps:
