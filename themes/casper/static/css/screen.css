@@ -1446,17 +1446,11 @@ body:not(.post-template) .post-title {
     color: #50585D;
 }
 
-.poweredby {
+.copyright {
     display: block;
     width: 45%;
     float: right;
     text-align: right;
-}
-
-.copyright {
-    display: block;
-    width: 45%;
-    float: left;
 }
 
 
