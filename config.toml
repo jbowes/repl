@@ -1,6 +1,7 @@
 baseurl = "http://jbowes.github.io/"
 languageCode = "en-us"
 title = "My New Hugo Site"
+copyright = "© 2005 - 2016 James Bowes"
 
 [permalinks]
 blog = "/:year/:month/:day/:slug"
