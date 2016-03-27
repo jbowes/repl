@@ -1,6 +1,6 @@
 baseurl = "http://jbowes.github.io/"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "repl.ca"
 copyright = "© 2005 - 2016 James Bowes"
 
 [permalinks]
