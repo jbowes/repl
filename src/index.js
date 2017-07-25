@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
+import Post from './templates/post';
+
 export default (locals, callback) => {
   const html = ReactDOMServer.renderToStaticMarkup(
-    <p>
-    nothing here.
-    </p>
+    <Post />
   );
   callback(null, html);
 };
