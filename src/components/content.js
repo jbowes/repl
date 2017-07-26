@@ -3,7 +3,9 @@ import React from 'react';
 export default (props) => {
   return (
     <body>
-      { props.children }
+      <article>
+        { props.children }
+      </article>
     </body>
   );
 };
