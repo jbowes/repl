@@ -1,4 +1,5 @@
 import React from 'react';
+import Analytics from './analytics';
 
 export default (props) => {
   return (
@@ -11,6 +12,8 @@ export default (props) => {
         name="viewport"
         content="width=device-width, initial-scale=1.0"
       />
+
+      <Analytics />
     </head>
   );
 };

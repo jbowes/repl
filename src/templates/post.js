@@ -9,10 +9,9 @@ export default (props) => {
   return (
     <Page>
       <Head />
-      <Content>
-        <p>nothing here</p>
+      <Content title={props.title}>
+         { props.children }
       </Content>
     </Page>
   );
 };
-
