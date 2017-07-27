@@ -2,7 +2,7 @@ import React from 'react';
 
 function Link(props) {
   return (
-    <section className="flex-auto tc">
+    <section className="flex-auto tc ph1">
       <a className="dim black-50" href={props.to}>
         {props.children}
       </a>
@@ -13,7 +13,7 @@ function Link(props) {
 export default (props) => {
   return (
     <footer className="title bt bw2 mh5-ns mh3 mt5 pt4 ph4 ph5-ns flex flex-column f7">
-      <div className="flex flex-auto mh7-ns">
+      <div className="flex flex-auto flex-wrap mh7-ns">
         <Link to="https://github.com/jbowes">github</Link>
         <Link to="https://github.com/jbowes/repl">source</Link>
         <Link to="https://twitter.com/jrbowes">twitter</Link>

@@ -11,11 +11,11 @@ export default (props) => {
     <Page>
       <Head />
       <body className="near-black bg min-vh-100 flex flex-column helvetica">
-        <header className="title bb bw3 mh5-ns mh3 flex">
-          <div className="br bw3 flex-none ph3 pv2">
-            <h1 className="f2 lh-solid ttu tracked-tight mv0">repl</h1>
+        <header className="title bb bw3 mh5-l mh3 flex flex-column flex-row-ns">
+          <div className="bb bw3 bb-0-ns br-ns bw3-ns flex-none ph3 pv2">
+            <h1 className="f3 f2-l lh-solid ttu tracked-tight mv0">repl</h1>
           </div>
-          <div className="flex-auto pl4 pv3">
+          <div className="flex-auto pl3 pl4-l pv3">
             <h1 className="f6 lh-solid ttu mv0 fw5 tracked-mega">
               1/128 scale realistic detail programming
             </h1>
