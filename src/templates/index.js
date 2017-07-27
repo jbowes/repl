@@ -24,7 +24,7 @@ export default (props) => {
             </h1>
           </div>
         </header>
-        <main className="w-90 w-two-thirds-ns center ph3-ns">
+        <main className="flex-auto w-90 w-two-thirds-ns center ph3-ns">
           <ul>
             { extracts }
           </ul>

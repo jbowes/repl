@@ -22,7 +22,7 @@ export default (props) => {
           </div>
         </header>
 
-        <main className="w-90 w-two-thirds-ns center ph3-ns">
+        <main className="flex-auto w-90 w-two-thirds-ns center ph3-ns">
             <Content title={props.title}>
                { props.children }
             </Content>
