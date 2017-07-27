@@ -1,4 +1,5 @@
 import webpack from 'webpack';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import StaticSiteGeneratorPlugin from 'static-site-generator-webpack-plugin';
 
 const site = require('./src/');
@@ -18,13 +19,6 @@ export default {
         loader: 'babel-loader',
         include: __dirname + '/src'
       },
-      //{
-        //test: /\.css/,
-        //loader: ExtractTextPlugin.extract(
-          //'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss'
-        //),
-        //include: __dirname + '/src'
-      //},
       {
         test: /\.(jpg|png)/,
         loader: 'file-loader?name=assets/img-[hash:6].[ext]',
@@ -38,6 +32,7 @@ export default {
     ],
   },
   plugins: [
+    new CopyWebpackPlugin([{ from: 'src/css/', to: 'css' }]),
     new StaticSiteGeneratorPlugin('main', site.staticRoutes(), site),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } })
   ]

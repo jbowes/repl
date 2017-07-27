@@ -13,6 +13,9 @@ export default (props) => {
         content="width=device-width, initial-scale=1.0"
       />
 
+      <link rel="stylesheet" href="https://unpkg.com/tachyons@4.6.1/css/tachyons.min.css" />
+      <link rel="stylesheet" href="/css/style.css" />
+
       <Analytics />
     </head>
   );

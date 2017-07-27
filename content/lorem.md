@@ -1,7 +1,7 @@
 ---
 title: "Lorem Ipsum"
 date: 2017-07-24T17:10:30-03:00
-draft: true
+#draft: true
 ---
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel condimentum
