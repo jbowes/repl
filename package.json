@@ -8,7 +8,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "webpack-dev-server --hot --port 5000",
-    "build": "webpack --progress"
+    "build": "webpack --progress",
+    "css": "postcss --no-map -o public/css/style.css src/css/style.css",
+    "release": "yarn build && npm run css"
   },
   "dependencies": {
     "babel-core": "^6.25.0",
@@ -16,8 +18,12 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-register": "^6.24.1",
-    "copy-webpack-plugin": "^4.0.1",
+    "cssnano": "^3.10.0",
     "js-yaml": "^3.9.0",
+    "postcss": "^6.0.8",
+    "postcss-cli": "^4.1.0",
+    "postcss-import": "^10.0.0",
+    "postcss-uncss": "^0.15.0",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -26,6 +32,8 @@
     "remark-frontmatter": "^1.0.0",
     "remark-react": "^4.0.0",
     "static-site-generator-webpack-plugin": "^3.4.1",
+    "tachyons": "^4.7.4",
+    "uncss": "^0.15.0",
     "webpack": "^3.3.0",
     "webpack-dev-server": "^2.6.1"
   }

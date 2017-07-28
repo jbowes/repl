@@ -1,5 +1,4 @@
 import webpack from 'webpack';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
 import StaticSiteGeneratorPlugin from 'static-site-generator-webpack-plugin';
 
 const site = require('./src/');
@@ -32,7 +31,6 @@ export default {
     ],
   },
   plugins: [
-    new CopyWebpackPlugin([{ from: 'src/css/', to: 'css' }]),
     new StaticSiteGeneratorPlugin('main', site.staticRoutes(), site),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } })
   ]

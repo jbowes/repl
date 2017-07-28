@@ -1,7 +1,11 @@
-.bg {
+@import 'tachyons/css/tachyons.css';
+
+:root {
+  color: rgb(45, 66, 71);
   background-color: rgb(206, 200, 168);
+  font-family: 'helvetica neue', helvetica, sans-serif;
 }
 
-.title {
-  color: rgb(45, 66, 71);
+body {
+  min-height: 100vh;
 }
