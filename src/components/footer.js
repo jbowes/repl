@@ -12,7 +12,7 @@ function Link(props) {
 
 export default (props) => {
   return (
-    <footer className="title bt bw2 mh5-ns mh3 mt5 pt4 ph4 ph5-ns flex flex-column f7">
+    <footer className="bt bw2 mh5-l mh3 mh4-m mt5 pt4 ph4 ph5-ns flex flex-column f7">
       <div className="flex flex-auto flex-wrap mh7-ns">
         <Link to="https://github.com/jbowes">github</Link>
         <Link to="https://github.com/jbowes/repl">source</Link>
