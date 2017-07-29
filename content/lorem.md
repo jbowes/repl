@@ -1,7 +1,15 @@
 ---
 title: "Lorem Ipsum"
 date: 2017-07-24T17:10:30-03:00
-#draft: true
+draft: true
+summary: |
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel condimentum
+  lacus. Fusce blandit, dolor dictum commodo scelerisque, est metus maximus
+  tortor, sit amet vulputate risus purus at arcu. Nulla pretium mollis facilisis.
+  Nullam at ex accumsan, auctor tortor vitae, elementum orci. Phasellus eget
+  sapien placerat, lobortis justo in, mollis odio. Donec sapien orci, facilisis
+  eget fermentum a, posuere quis quam. Pellentesque volutpat felis vel massa
+  consectetur, ac ornare velit...
 ---
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel condimentum

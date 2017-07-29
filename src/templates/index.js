@@ -28,7 +28,7 @@ export default (props) => {
         </header>
 
         <Main>
-          <ul>
+          <ul className="list pl0">
             { extracts }
           </ul>
         </Main>

@@ -17,7 +17,7 @@ export default (locals, callback) => {
     if (file.slug != locals.path) continue;
 
     const html = ReactDOMServer.renderToStaticMarkup(
-      <Post title={file.header.title}>
+      <Post post={file}>
         { file.ast.contents.props.children }
       </Post>
     );

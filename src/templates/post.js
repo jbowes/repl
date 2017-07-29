@@ -25,7 +25,7 @@ export default (props) => {
         </header>
 
         <Main>
-          <Content title={props.title}>
+          <Content post={props.post}>
             { props.children }
           </Content>
         </Main>

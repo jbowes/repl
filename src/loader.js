@@ -6,6 +6,8 @@ import frontmatter from 'remark-frontmatter';
 import react from 'remark-react';
 import { safeLoad } from 'js-yaml';
 
+import Link from './components/link';
+
 function* genFiles(dir) {
   const contents = readdirSync(dir);
   for (const file of contents) {
@@ -29,7 +31,11 @@ export function listFiles(dir) {
         header = safeLoad(node.children[0].value);
         return node;
       })
-      .use(react)
+      .use(react, {
+        remarkReactComponents: {
+          a: Link
+        }
+      })
       .freeze()
       .processSync(contents);
 
