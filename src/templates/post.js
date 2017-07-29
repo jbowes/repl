@@ -3,6 +3,8 @@ import React from 'react';
 
 import Page from '../components/page';
 import Head from '../components/head';
+import Body from '../components/body';
+import Main from '../components/main';
 import Content from '../components/content';
 import Footer from '../components/footer';
 
@@ -10,7 +12,7 @@ export default (props) => {
   return (
     <Page>
       <Head />
-      <body className="flex flex-column">
+      <Body className="flex flex-column">
         <header className="ttu bb bw3 mh5-l mh3 flex flex-column flex-row-ns">
           <div className="bb bw3 bb-0-ns br-ns bw3-ns flex-none ph3 pv2">
             <h1 className="f3 f2-l lh-solid tracked-tight mv0">repl</h1>
@@ -22,13 +24,13 @@ export default (props) => {
           </div>
         </header>
 
-        <main className="flex-auto w-90 w-two-thirds-ns center ph3-ns">
-            <Content title={props.title}>
-               { props.children }
-            </Content>
-        </main>
+        <Main>
+          <Content title={props.title}>
+            { props.children }
+          </Content>
+        </Main>
         <Footer />
-      </body>
+      </Body>
     </Page>
   );
 };

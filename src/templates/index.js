@@ -3,6 +3,8 @@ import React from 'react';
 
 import Page from '../components/page';
 import Head from '../components/head';
+import Body from '../components/body';
+import Main from '../components/main';
 import Extract from '../components/extract';
 import Footer from '../components/footer';
 
@@ -11,7 +13,7 @@ export default (props) => {
   return (
     <Page>
       <Head />
-      <body className="flex flex-column">
+      <Body>
         <header className="bb bw3 mh5-l mh3 flex flex-column flex-row-l ttu">
           <div className="bb bw3 bb-0-l br-l bw3-l flex-none ph3 ph4-l pv3 flex flex-row flex-column-l flex-wrap">
             <h1 className="mv0 fw4 tracked-mega f6 pl2-l flex-none order-2 self-center self-start-l">James Bowes</h1>
@@ -24,13 +26,14 @@ export default (props) => {
             </h1>
           </div>
         </header>
-        <main className="flex-auto w-90 w-two-thirds-ns center ph3-ns">
+
+        <Main>
           <ul>
             { extracts }
           </ul>
-        </main>
+        </Main>
         <Footer />
-      </body>
+      </Body>
     </Page>
   );
 };
