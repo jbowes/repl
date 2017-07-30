@@ -2,7 +2,7 @@ import React from 'react';
 
 function Link(props) {
   return (
-    <section className="flex-none tc ph3">
+    <section className="flex-none ph2">
       <a className="dim black-50" href={props.to}>
         {props.children}
       </a>
@@ -18,6 +18,7 @@ export default (props) => {
         <Link to="https://github.com/jbowes/repl">source</Link>
         <Link to="https://twitter.com/jrbowes">twitter</Link>
         <Link to="https://www.linkedin.com/in/jbowes/">linkedin</Link>
+        <Link to="https://stackoverflow.com/story/jbowes">stack overflow</Link>
       </div>
       <section className="flex-auto mv3 tc i black-50">Copyright © 2017 James Bowes</section>
     </footer>

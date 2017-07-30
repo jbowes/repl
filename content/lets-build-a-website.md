@@ -11,10 +11,11 @@ draft: true
 - move nameservers to cloudflare. could have used netlify but cloudflare imported
   - use their CNAME for apex domain
   - cname to netlify for www
-  - TODO: blog redirect stub site
+  - cname to netlify for blog
 
 - netlify
   - enable site for repl.ca
   - will autoredirect www
   - enable letsencrypt ssl
   - turn on hsts
+  - stub repo for old blog domain with redirect
