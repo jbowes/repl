@@ -10,7 +10,7 @@
     "dev": "webpack-dev-server --hot --port 5000",
     "build": "webpack --progress",
     "css": "postcss --no-map -o public/css/style.css src/css/style.css",
-    "release": "yarn build && npm run css"
+    "release": "npm run build && npm run css"
   },
   "dependencies": {
     "babel-core": "^6.25.0",
