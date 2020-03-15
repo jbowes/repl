@@ -10,7 +10,9 @@ export default (props) => {
   `;
 
   return (
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-103396477-1"/>
-    <script dangerouslySetInnerHTML={ {__html: code }} />
+    <>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-103396477-1"/>
+      <script dangerouslySetInnerHTML={ {__html: code }} />
+    </>
   );
 };
