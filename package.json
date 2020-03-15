@@ -36,6 +36,6 @@
     "tachyons": "^4.7.4",
     "uncss": "^0.15.0",
     "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.6.1"
+    "webpack-dev-server": "^3.1.11"
   }
 }
