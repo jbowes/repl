@@ -28,7 +28,9 @@ export default (locals, callback) => {
   const html = ReactDOMServer.renderToStaticMarkup(
     <Index posts={getFiles()}/>
   );
-  return callback(null, html);
+
+  // Set our XML doctype, too. We can't do this with JSX
+  return callback(null, '<!DOCTYPE html>'+html);
 };
 
 export function staticRoutes() {
