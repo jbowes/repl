@@ -20,7 +20,7 @@
     "babel-register": "^6.24.1",
     "cssnano": "^3.10.0",
     "js-yaml": "^3.9.0",
-    "moment": "^2.18.1",
+    "moment": "^2.19.3",
     "postcss": "^6.0.8",
     "postcss-cli": "^4.1.0",
     "postcss-import": "^10.0.0",
