@@ -13,7 +13,7 @@ export default (props) => {
   const extracts = props.posts.map(post => <li><Extract post={post} /></li>);
   return (
     <Page>
-      <Head />
+      <Head  canonical="/" />
       <Body>
         <header className="bb bw3 mh5-l mh4-m mh3 flex flex-column flex-row-l ttu">
           <div className="bb bw3 bb-0-l br-l bw3-l flex-none ph3 ph4-l pv3 flex flex-row flex-column-l flex-wrap">

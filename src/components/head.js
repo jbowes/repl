@@ -14,6 +14,8 @@ export default (props) => {
       />
       <meta name="theme-color" content="#2d4247" />
 
+      <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
+
       <link rel="stylesheet" href="/css/style.css" />
 
       <Analytics />
