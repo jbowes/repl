@@ -1,4 +1,5 @@
 import React from 'react';
+import Favicons from './favicons';
 import Analytics from './analytics';
 
 export default (props) => {
@@ -18,6 +19,7 @@ export default (props) => {
 
       <link rel="stylesheet" href="/css/style.css" />
 
+      <Favicons />
       <Analytics />
     </head>
   );
