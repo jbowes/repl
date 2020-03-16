@@ -2,3 +2,13 @@
   # preconnect (DNS/TCP) to external google analytics locations
   Link: <https://www.googletagmanager.com>; rel=preconnect; crossorigin
   Link: <https://www.google-analytics.com>; rel=preconnect; crossorigin
+
+/
+  # preconnect (DNS/TCP) to external google analytics locations
+  Link: <https://www.googletagmanager.com>; rel=preconnect; crossorigin
+  Link: <https://www.google-analytics.com>; rel=preconnect; crossorigin
+
+/*/
+  # preconnect (DNS/TCP) to external google analytics locations
+  Link: <https://www.googletagmanager.com>; rel=preconnect; crossorigin
+  Link: <https://www.google-analytics.com>; rel=preconnect; crossorigin
