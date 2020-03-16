@@ -20,7 +20,7 @@ export default (props) => {
         <Link to="https://www.linkedin.com/in/jbowes/">linkedin</Link>
         <Link to="https://stackoverflow.com/story/jbowes">stack overflow</Link>
       </div>
-      <section className="flex-auto mv3 tc i black-50">Copyright © 2017 James Bowes</section>
+      <section className="flex-auto mv3 tc i black-50">Copyright © 2017 — { new Date().getFullYear() } James Bowes</section>
     </footer>
   );
 };
