@@ -3,7 +3,7 @@ import React from 'react';
 function Link(props) {
   return (
     <section className="flex-none ph2">
-      <a className="dim black-50" href={props.to}>
+      <a className="dim black-60" href={props.to}>
         {props.children}
       </a>
     </section>
@@ -20,7 +20,7 @@ export default (props) => {
         <Link to="https://www.linkedin.com/in/jbowes/">linkedin</Link>
         <Link to="https://stackoverflow.com/story/jbowes">stack overflow</Link>
       </div>
-      <section className="flex-auto mv3 tc i black-50">Copyright © 2017 — { new Date().getFullYear() } James Bowes</section>
+      <section className="flex-auto mv3 tc i black-60">Copyright © 2017 — { new Date().getFullYear() } James Bowes</section>
     </footer>
   );
 };
