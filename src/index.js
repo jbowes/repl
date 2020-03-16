@@ -21,7 +21,9 @@ export default (locals, callback) => {
         { file.ast.contents.props.children }
       </Post>
     );
-    return callback(null, html);
+
+    // Set our XML doctype, too. We can't do this with JSX
+    return callback(null, '<!DOCTYPE html>'+html);
   }
 
   // else its an index page.
