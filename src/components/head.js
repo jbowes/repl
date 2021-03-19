@@ -5,7 +5,7 @@ import Analytics from './analytics';
 export default (props) => {
   return (
     <head>
-      <title>{ props.title ? "repl: " + props.title : "repl" }</title>
+      <title>{ props.title ? props.title + " | repl" : "repl" }</title>
 
       <meta charSet="utf-8" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
