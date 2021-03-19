@@ -16,8 +16,10 @@ export default (props) => {
       <meta name="theme-color" content="#2d4247" />
       <meta name="author" content="James Bowes" />
      { props.description && 
-        <meta name="description" content={props.description} />
-        <meta property="og:description" content={props.description} />
+        <>
+          <meta name="description" content={props.description} />
+          <meta property="og:description" content={props.description} />
+        </>
      }
 
       <meta property="og:title" content={props.title} />
