@@ -17,8 +17,14 @@ export default (props) => {
       <meta name="author" content="James Bowes" />
      { props.description && 
         <meta name="description" content={props.description} />
+        <meta property="og:description" content={props.description} />
      }
 
+      <meta property="og:title" content={props.title} />
+      <meta property="og:site_name" content="repl" />
+      <meta property="og:url" content={"https://repl.ca/" + props.canonical + "/"} />
+      
+    
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
     
       <link rel="stylesheet" href="/css/style.css" />
