@@ -37,8 +37,6 @@ implementation.
 It's too difficult to find the connection between `x-hub-signature` and [WebSub][websub].
 Hopefully this post will help the search rankings of WebSub, even just a tiny bit. Spread the word!
 
----
-
 Now that you know what `x-hub-signature` is, you should never use it for a new webhook implementation in 2021. Find out what to use instead in an exicting new post, coming soon!
 
 [websub]: https://www.w3.org/TR/websub/ "WebSub W3C Recommendation"
