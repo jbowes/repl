@@ -15,6 +15,8 @@ export default (props) => {
       />
       <meta name="theme-color" content="#2d4247" />
       <meta name="author" content="James Bowes" />
+      <meta name="twitter:site" content="@jrbowes" />
+      <meta name="twitter:creator" content="@jrbowes" />
      { props.description && 
         <>
           <meta name="description" content={props.description} />
