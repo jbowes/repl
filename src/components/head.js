@@ -17,6 +17,7 @@ export default (props) => {
       <meta name="author" content="James Bowes" />
       <meta name="twitter:site" content="@jrbowes" />
       <meta name="twitter:creator" content="@jrbowes" />
+      <meta name="twitter:card" content="summary_large_image" />
      { props.description && 
         <>
           <meta name="description" content={props.description} />
