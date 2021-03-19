@@ -2,7 +2,7 @@
 title: "What is x-hub-signature?"
 date: 2021-03-19T10:30:00-03:00
 summary: |
-  *TL;DR* `x-hub-signature` is an HTTP **body only** signing scheme from the [WebSub standard][websub]...
+  TL;DR x-hub-signature is an HTTP body only signing scheme from the WebSub standard...
 ---
 
 *TL;DR* `x-hub-signature` is an HTTP **body only** signing scheme from the [WebSub standard][websub].
