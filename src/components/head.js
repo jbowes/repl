@@ -25,6 +25,8 @@ export default (props) => {
       <meta property="og:title" content={props.title} />
       <meta property="og:site_name" content="repl" />
       <meta property="og:url" content={"https://repl.ca/" + props.canonical + "/"} />
+      <meta property="og:section" content="Programming" />
+      <meta property="og:type" content={props.type || "website"} />
       
     
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
