@@ -4,7 +4,7 @@ import Analytics from './analytics';
 
 export default (props) => {
   return (
-    <head>
+    <head prefix="article: https://ogp.me/ns/article#">
       <title>{ props.title ? props.title + " | repl" : "repl" }</title>
 
       <meta charSet="utf-8" />
