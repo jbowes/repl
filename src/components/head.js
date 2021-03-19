@@ -27,8 +27,12 @@ export default (props) => {
       <meta property="og:title" content={props.title} />
       <meta property="og:site_name" content="repl" />
       <meta property="og:url" content={"https://repl.ca/" + props.canonical + "/"} />
-      <meta property="og:section" content="Programming" />
+      <meta property="article:section" content="Programming" />
       <meta property="og:type" content={props.type || "website"} />
+
+      { props.pubtime &&
+        <meta property="article:published_time" content={props.pubtime} />
+      }
       
     
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
