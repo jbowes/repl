@@ -18,7 +18,7 @@ export default (props) => {
         </header>
         <p>{ props.post.header.summary }</p>
         <footer className="ttu f6">
-          <More>More ▶</More>
+          <More>More &gt;</More>
         </footer>
       </article>
   );
