@@ -4,7 +4,7 @@ import Analytics from './analytics';
 
 export default (props) => {
   return (
-    <head prefix="article: https://ogp.me/ns/article#">
+    <head>
       <title>{ props.title ? props.title + " | repl" : "repl" }</title>
 
       <meta charSet="utf-8" />
@@ -27,13 +27,7 @@ export default (props) => {
       <meta property="og:title" content={props.title} />
       <meta property="og:site_name" content="repl" />
       <meta property="og:url" content={"https://repl.ca/" + props.canonical + "/"} />
-      <meta property="article:section" content="Programming" />
-      <meta property="og:type" content={props.type || "website"} />
-
-      { props.pubtime &&
-        <meta property="article:published_time" content={props.pubtime} />
-      }
-      
+      <meta property="og:type" content={props.type || "website"} />      
     
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
     

@@ -12,7 +12,7 @@ export default (props) => {
   const Link = (props) => <a href="/" className="link blue">{ props.children }</a>
   return (
     <Page>
-      <Head canonical={props.post.slug} title={props.post.header.title} description={props.post.header.description} type="article" pubtime={props.post.header.date} />
+      <Head canonical={props.post.slug} title={props.post.header.title} description={props.post.header.description} type="article" />
       <Body className="flex flex-column">
         <header className="ttu bb bw3 mh5-l mh4-m mh3 flex flex-column flex-row-ns">
           <div className="bb bw3 bb-0-ns br-ns bw3-ns flex-none ph3 pv2">
