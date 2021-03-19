@@ -15,7 +15,7 @@ export default (props) => {
       />
       <meta name="theme-color" content="#2d4247" />
      { props.description && 
-        <meta name="description" content="{props.description}" />
+        <meta name="description" content={props.description} />
      }
 
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
