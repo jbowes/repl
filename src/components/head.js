@@ -28,7 +28,8 @@ export default (props) => {
       <meta property="og:site_name" content="repl" />
       <meta property="og:url" content={"https://repl.ca/" + props.canonical + "/"} />
       <meta property="og:type" content={props.type || "website"} />      
-    
+      <meta property="og:image" content="https://repl.ca/social-mushroom.jpg" />   
+
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
     
       <link rel="stylesheet" href="/css/style.css" />
