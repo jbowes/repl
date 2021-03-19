@@ -14,6 +14,7 @@ export default (props) => {
         content="width=device-width, initial-scale=1.0"
       />
       <meta name="theme-color" content="#2d4247" />
+      <meta name="author" content="James Bowes" />
      { props.description && 
         <meta name="description" content={props.description} />
      }
