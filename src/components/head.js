@@ -5,7 +5,7 @@ import Analytics from './analytics';
 export default (props) => {
   return (
     <head>
-      <title>repl</title>
+      <title>{ props.title ? "repl: " + props.title : "repl" }</title>
 
       <meta charSet="utf-8" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -14,9 +14,12 @@ export default (props) => {
         content="width=device-width, initial-scale=1.0"
       />
       <meta name="theme-color" content="#2d4247" />
+     { props.description && 
+        <meta name="description" content="{props.description}" />
+     }
 
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
-
+    
       <link rel="stylesheet" href="/css/style.css" />
 
       <Favicons />
