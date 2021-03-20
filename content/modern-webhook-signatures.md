@@ -30,7 +30,7 @@ information in headers (for example, event or account identifiers), it should be
 signed, so the receiver can ensure they haven't been tampered with.
 
 **There's a facility for expiration**: Sent requests can have an expiration time,
-mitigating replay attacks. If your events are not [idepmpotent][idemp] (or the
+mitigating replay attacks. If your events are not [idemppotent][idemp] (or the
 receiver doesn't treat them as such) a bad actor could intercept a request, and 
 repeatedly send it to the reciever. This could lead to resource exhaustion, lost
 data, or inconsistent state.
@@ -51,7 +51,8 @@ hopefully a standard library) handle it for you and your receivers?
 At Manifold, we implemented request signing based on an earlier version of the
 spec, but modified to address some shortcomings in the spec at the time (notably that
 while header contents were included in the signature, the header names were not).
-You can read about that implementation, and see code samples, [here][mansig].
+You can read about that implementation, and see code samples, on Manifold's
+[request signing documentation][mansig].
 We deviated from the spec at the time, but now, you don't have to.
 
 [xhub]: https://repl.ca/what-is-x-hub-signature/ "What is x-hub-signature?"
