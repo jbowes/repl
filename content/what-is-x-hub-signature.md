@@ -45,4 +45,4 @@ Read this [follow-up post] to learn about what you should use instead.
 [hmac]: https://en.wikipedia.org/wiki/HMAC "HMAC description on Wikipedia"
 [github]: https://docs.github.com/en/developers/webhooks-and-events/securing-your-webhooks "Github webhooks"
 [facebook]: https://developers.facebook.com/docs/graph-api/webhooks/getting-started/ "Facebook webhooks"
-[follow-up post]: https://repl.ca/modern-webhook-signatures/ "Clickbaity link to Signing HTTP Messages post"
+[follow-up post]: /modern-webhook-signatures/ "Clickbaity link to Signing HTTP Messages post"
