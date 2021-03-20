@@ -1,6 +1,7 @@
 import React from 'react';
 import Favicons from './favicons';
 import Analytics from './analytics';
+import StructuredData from './structured-data';
 
 export default (props) => {
   return (
@@ -34,6 +35,8 @@ export default (props) => {
 
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
     
+      { props.type && <StructuredData /> }
+
       <link rel="stylesheet" href="/css/style.css" />
 
       <Favicons />
