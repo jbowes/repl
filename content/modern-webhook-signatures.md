@@ -1,17 +1,22 @@
 ---
 title: "Modern webhook signatures in 2021"
-date: 2021-03-19T10:30:00-03:00
+date: 2021-03-20T11:23:00-03:00
 summary: |
-  x-hub-signature isn't good enough. Fortunately, there's a standard for that™...
+  It's 2021, and you work for Cat Bonnets Online. The bigwigs up on the top floor
+  just finished telling you over Zoom that the company is modernizing its strategy.
+  While half the company is converting the bonnets to NFTs (Nice Feline Toppings),
+  and the rest is working on a Clubhouse strategy, your team is adding
+  webhooks...
 description: |
-  x-hub-signature isn't good enough. Fortunately, there's a standard for that™
+  x-hub-signature isn't good enough. Fortunately, there's a standard for that™.
+  
 ---
 
 *This post is a follow-up to the previous post on [`x-hub-signature`][xhub]*
 
 It's 2021, and you work for Cat Bonnets Online. The bigwigs up on the top floor
 just finished telling you over Zoom that the company is modernizing its strategy.
-Half the company is converting the bonnets to [NFTs][nft] (Nice Feline Toppings),
+While half the company is converting the bonnets to [NFTs][nft] (Nice Feline Toppings),
 and the rest is working on a [Clubhouse][clubhouse] strategy, your team is adding
 [webhooks][webhook].
 
