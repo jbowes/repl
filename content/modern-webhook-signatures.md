@@ -43,9 +43,16 @@ important data slip into the headers over time, or for a receiver to not impleme
 the extra step of checking the expiration time. Why not let a specification (and
 hopefully a standard library) handle it for you and your receivers?
 
+At Manifold, we implemented request signing based on an earlier version of the
+spec, but modified to address some shortcomings in the spec at the time (notably that
+while header contents were included in the signature, the header names were not).
+You can read about that implementation, and see code samples, [here][mansig].
+We deviated from the spec at the time, but now, you don't have to.
+
 [xhub]: https://repl.ca/what-is-x-hub-signature/ "What is x-hub-signature?"
 [nft]: https://en.wikipedia.org/wiki/Non-fungible_token "Wikipedia's description of non-fungible tokens"
 [clubhouse]: https://www.joinclubhouse.com/ "Some app or something. not the cooking spice brand. I'm disappointed, too"
 [webhook]: https://en.wikipedia.org/wiki/Webhook "Webhook description on Wikipedia"
 [httpsig]: https://datatracker.ietf.org/doc/draft-ietf-httpbis-message-signatures/ "Signing HTTP Messages IETF tracker"
 [idemp]: https://en.wikipedia.org/wiki/Idempotence "Wikipedia's description of idempotence"
+[mansig]: https://docs.manifold.co/enterprise/sell-in-marketplaces/development-guide/request-signing "Archive.org backup of Manifold request signing"
