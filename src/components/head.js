@@ -35,7 +35,7 @@ export default (props) => {
 
       <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
     
-      { props.type && <StructuredData title={props.title} /> }
+      { props.type && <StructuredData title={props.title} pubdate={props.pubdate} /> }
 
       <link rel="stylesheet" href="/css/style.css" />
 
