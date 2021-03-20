@@ -5,7 +5,7 @@ import { JSONLD, Generic, Author } from 'react-structured-data';
 export default (props) => (
   <JSONLD dangerouslyExposeHtml>
       <Generic type="NewsArticle">
-        <Author schema={{ name: 'James Bowes' }} />
+        <Author name="James Bowes" />
       </Generic>
   </JSONLD>
 );
