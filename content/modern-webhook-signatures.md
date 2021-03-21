@@ -30,7 +30,7 @@ information in headers (for example, event or account identifiers), it should be
 signed, so the receiver can ensure they haven't been tampered with.
 
 **There's a facility for expiration**: Sent requests can have an expiration time,
-mitigating replay attacks. If your events are not [idemppotent][idemp] (or the
+mitigating replay attacks. If your events are not [idempotent][idemp] (or the
 receiver doesn't treat them as such) a bad actor could intercept a request, and 
 repeatedly send it to the reciever. This could lead to resource exhaustion, lost
 data, or inconsistent state.
