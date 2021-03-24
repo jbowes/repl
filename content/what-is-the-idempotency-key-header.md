@@ -13,8 +13,7 @@ In Computer Science (and in its cooler older sibling, Mathematics) [idempotence]
 of HTTP, a `GET` request is usually idempotent; making a request to the same URL should return the same response,
 and not change any relevant data in the backing data store. A `DELETE` request is likewise typically idempotent;
 no matter how many times you `DELETE` a given URL, the resource stays deleted after the first call, no other
-resources are deleted, etc. How subsequent `DELETE`s show up in responses is more subtle than `GET`; we'll come
-back to that.
+resources are deleted, etc.
 
 Idempotence is a great property for APIs to have. Idempotence coupled with retries can mitigate many problems
 related to the unreliability of networks, computers, and software. If any request along the chain between the
@@ -50,6 +49,7 @@ A hint lies in companies that implement it:
 - [Stripe][stripe]
 - [Square][square]
 - [Twilio][twilio]
+
 These are companies that provide APIs interacting with the outside world, where each action is expensive
 (sometimes in real money), and the expense componds with duplicates (e.g. charging a user twice for the same good also
 damages reputation).
@@ -63,14 +63,14 @@ for easier reuse between API endpoints, and keeps values out of the schema that 
 space.
 
 Ignoring any imposed expiration on `idempotency-key` values, adding the header to `POST` requests makes them look a lot
-like `PUT`s. 
+like `PUT`s: The unique value a client uses for `idempotency-key` maps to the URL (typically including a unique ID in
+the path) that they would call `PUT` on. There are a few reasons why a `PUT` may not make sense for an API:
+- You may want full control over your resource IDs and their URLS; letting a client provide them in `PUT`s would give that control up.
+- The scheme for your IDs is complex enough that expecting clients to create them is unreasonable; letting them provide arbitrary `idempotency-key` values is easier.
+- You don't want to persist any of the request resources. `PUT`ing wouldn't make sense, as the resource won't exist at the URL after the operation is finished.
 
-- summary of what it is (for ops that need idempotentcy but aren't natively so, plus what the heck idempotency is
-- who uses it
-- the draft spec
-- *why* its used (high value txns, interaction with outside world, prevent dupes)
-- don't let idempotency purity get in the way of utility (let the user know its a dupe)
-- it should be a fallback (teaser to further posts?)
+As a final note, *this* post is not idempotent. Repeated readings may further enhance your understanding of idempotence for
+APIs.
 
 [idemp]: https://en.wikipedia.org/wiki/Idempotence "Wikipedia's description of idempotency"
 [idemspec]: https://tools.ietf.org/id/draft-idempotency-header-01.html "Early draft specification for the idempotency-key header"
