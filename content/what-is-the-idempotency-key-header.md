@@ -1,8 +1,10 @@
 ---
 title: "What is the idempotency-key header?"
-date: 2021-03-22T11:30:00-03:00
+date: 2021-03-24T11:06:00-03:00
 summary: |
-  
+  In Computer Science (and in its cooler older sibling, Mathematics) idempotence is a property of an action
+  (e.g. an API call) such that doing the action again with the same inputs produces the same result. In the context
+  of HTTP, a GET request is usually idempotent...
 description: |
   They say the definition of idempotency is doing the same thing over and over again
   and expecting the same result.  
