@@ -33,7 +33,12 @@ is meant to apply context-aware changes to a resource in its current state. Appl
 the resource's state is updated, will at best result in an error, and at worst result in a new state that the caller
 didn't intend. Strategies like [optimistic concurrency control][optcon] are often best for `PATCH`.
 
-`POST`, on the other hand, can be made idempotent - particularly for uses meant to create a resource.
+`POST`, on the other hand, can be made idempotent - particularly for uses meant to create a resource. If we're
+building an API to sell Cat Bonnets, `POST` requests to create new store listings could include the bonnet `size`
+and `color` as the most important and meaningful fields. A content-aware idempotence scheme would treat any `POST`s
+with the same `size` and `color` as intention to ensure such a listing exists. As long as one already does, the
+`POST` won't create a new one; `N > 1` requests to create a large blue bonnet always result in only 1 large blue
+bonnet existing.
 
 - summary of what it is (for ops that need idempotentcy but aren't natively so, plus what the heck idempotency is
 - who uses it
