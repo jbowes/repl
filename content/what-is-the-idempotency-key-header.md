@@ -40,6 +40,31 @@ with the same `size` and `color` as intention to ensure such a listing exists. A
 `POST` won't create a new one; `N > 1` requests to create a large blue bonnet always result in only 1 large blue
 bonnet existing.
 
+The [`idempotency-key`][idemspec] header is another way to bring idempotence to non-idempotent HTTP methods
+(particularly `POST`). The caller can supply a unique value for the header. If the header is supplied, then the
+server returns the same response for any requests with the same value for `idempotency-key` (usually within a 24
+hour window; we can't expect infinite storage). But if we can make a `POST` idempotent based on the request contents,
+what's the use of this header?
+
+A hint lies in companies that implement it:
+- [Stripe][stripe]
+- [Square][square]
+- [Twilio][twilio]
+These are companies that provide APIs interacting with the outside world, where each action is expensive
+(sometimes in real money), and the expense componds with duplicates (e.g. charging a user twice for the same good also
+damages reputation).
+
+An SMS API wants to let its clients send a message to user X with message body "you have a new notification" more than
+once, maybe within minutes or seconds of each other, or even at the same time. Further, they also want to allow the
+clients to have a means to prevent duplicate sends if from the client's point of view, there is only one message. Doing
+this with content-based idempotence would require additional significant fields in the request body, ultimately boiling
+down to a unique key - essentially identical to the `idempotency-key` header. Putting the field in an HTTP header allows
+for easier reuse between API endpoints, and keeps values out of the schema that aren't directly meaningful for the problem
+space.
+
+Ignoring any imposed expiration on `idempotency-key` values, adding the header to `POST` requests makes them look a lot
+like `PUT`s. 
+
 - summary of what it is (for ops that need idempotentcy but aren't natively so, plus what the heck idempotency is
 - who uses it
 - the draft spec
@@ -50,3 +75,6 @@ bonnet existing.
 [idemp]: https://en.wikipedia.org/wiki/Idempotence "Wikipedia's description of idempotency"
 [idemspec]: https://tools.ietf.org/id/draft-idempotency-header-01.html "Early draft specification for the idempotency-key header"
 [optcon]: https://en.wikipedia.org/wiki/Optimistic_concurrency_control "Wikipedia's description of optimistic concurrency control"
+[stripe]: https://stripe.com "Stripe homepage"
+[square]: https://squareup.com "Square homepage"
+[twilio]: https://twilio.com "Twilio homepage"
