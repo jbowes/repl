@@ -47,10 +47,7 @@ server returns the same response for any requests with the same value for `idemp
 hour window; we can't expect infinite storage). But if we can make a `POST` idempotent based on the request contents,
 what's the use of this header?
 
-A hint lies in companies that implement it:
-- [Stripe][stripe]
-- [Square][square]
-- [Twilio][twilio]
+A hint lies in companies that implement it: [Stripe][stripe], [Square][square], and [Twilio][twilio] (to name a few).
 
 These are companies that provide APIs interacting with the outside world, where each action is expensive
 (sometimes in real money), and the expense componds with duplicates (e.g. charging a user twice for the same good also
