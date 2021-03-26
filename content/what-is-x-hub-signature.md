@@ -21,7 +21,7 @@ endpoint that receives webhook events.
 Chat App now has a public-facing URL that, when called, displays information from the received event to all
 users of a given Chat App instance. That's great when those users want to know if someone bought them the
 latest argyle cat bonnet. It's not so great when a bad actor discovers and calls the endpoint with hateful
-and abuseive content.
+and abusive content.
 
 Webhooks need **SECURITY**! `x-hub-signature` is a header containing an HMAC signature of the body of the
 webhook request. During webhook configuration, Cat Bonnets Online and Chat App share a secret. This secret
