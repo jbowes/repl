@@ -34,8 +34,10 @@ export default {
   plugins: [
     new StaticSiteGeneratorPlugin('main', site.staticRoutes(), site),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } }),
-    new CopyPlugin([
-      { from: 'static' }
-    ])
+    new CopyPlugin({
+      patterns: [
+        { from: 'static' }
+      ],
+    })
   ]
 };

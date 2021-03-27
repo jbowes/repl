@@ -18,7 +18,7 @@
     "@babel/preset-react": "^7.13.13",
     "@babel/register": "^7.8.6",
     "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^5.1.1",
+    "copy-webpack-plugin": "^6.4.1",
     "cssnano": "^4.1.10",
     "js-yaml": "^4.0.0",
     "moment": "^2.19.3",
