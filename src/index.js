@@ -18,7 +18,7 @@ export default (locals, callback) => {
 
     const html = ReactDOMServer.renderToStaticMarkup(
       <Post post={file}>
-        { file.ast.contents.props.children }
+        { file.ast.result.props.children }
       </Post>
     );
 
