@@ -11,6 +11,8 @@ In the last post, we [discussed the idempotency-key header][idemkey], and how th
 idempotence to otherwise non-idempotent HTTP methods (like `POST`) in REST APIs. We also touched on how many
 HTTP methods are inherently idempotent, like `DELETE`. But just how idempotent is it, in practice?
 
+NOTE: this post would be a good candiate for having code samples (in the form of http requests against Stripe APIs)
+
 - cover what makes delete idempotent
   - even on a catastrophic failure on a subsequent delete, the resource remains deleted and so in the desired state.
   - if you've ever seen a bug that caused a resource to be created on a failed delete, let me know on twitter; i'd love to hear about it!
