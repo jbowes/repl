@@ -12,6 +12,8 @@ idempotence to otherwise non-idempotent HTTP methods (like `POST`) in REST APIs.
 HTTP methods are inherently idempotent, like `DELETE`. But just how idempotent is it, in practice?
 
 - cover what makes delete idempotent
+  - even on a catastrophic failure on a subsequent delete, the resource remains deleted and so in the desired state.
+  - if you've ever seen a bug that caused a resource to be created on a failed delete, let me know on twitter; i'd love to hear about it!
 - this is only about the server side, what about the client? the idempotent view is one sided
 - talk abouthow some clients return 200 with deleted content, or 204 with nothing. or 404 / 400 when already deleted
   - what does stripe do?
