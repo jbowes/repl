@@ -4,7 +4,7 @@ import { basename, extname, join } from 'path';
 import remark from 'remark';
 import frontmatter from 'remark-frontmatter';
 import react from 'remark-react';
-import { safeLoad } from 'js-yaml';
+import { load } from 'js-yaml';
 
 import Link from './components/link';
 
@@ -28,7 +28,7 @@ export function listFiles(dir) {
     const ast = remark()
       .use(frontmatter, ['yaml'])
       .use(() => node => {
-        header = safeLoad(node.children[0].value);
+        header = load(node.children[0].value);
         return node;
       })
       .use(react, {
