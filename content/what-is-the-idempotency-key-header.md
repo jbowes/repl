@@ -50,7 +50,7 @@ what's the use of this header?
 A hint lies in companies that implement it: [Stripe][stripe], [Square][square], and [Twilio][twilio] (to name a few).
 
 These are companies that provide APIs interacting with the outside world, where each action is expensive
-(sometimes in real money), and the expense componds with duplicates (e.g. charging a user twice for the same good also
+(sometimes in real money), and the expense compounds with duplicates (e.g. charging a user twice for the same good also
 damages reputation).
 
 An SMS API wants to let its clients send a message to user X with message body "you have a new notification" more than
