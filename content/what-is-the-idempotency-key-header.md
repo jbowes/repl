@@ -22,7 +22,7 @@ related to the unreliability of networks, computers, and software. If any reques
 client and your data store fails, the downstream initiator can safely retry. Even impatient users frantically
 clicking buttons and refreshing pages are no match for idempotence!
 
-Looking at the HTTP methods used in REST APIs, some are inherantly idempotent, and others are not:
+Looking at the HTTP methods used in REST APIs, some are inherently idempotent, and others are not:
 - `GET`: Show me the thing I asked for. **IDEMPOTENT**
 - `DELETE`: Ensure the thing I referenced does not exist. **IDEMPOTENT**
 - `PUT`: Ensure the thing I gave you exists exactly as I gave it to you. **IDEMPOTENT**
