@@ -3,12 +3,16 @@
 :root {
   --blue: rgb(45, 66, 71);
   --red: rgb(169, 15,10);
+  --beige: rgb(206, 200, 168);
   
   color: var(--blue);
-  background-color: rgb(206, 200, 168);
+  background-color: var(--beige);
   font-family: 'helvetica neue', helvetica, sans-serif;
 }
 
 body {
   min-height: 100vh;
 }
+
+.blue { color: var(--blue); }
+.red { color: var(--red); }
