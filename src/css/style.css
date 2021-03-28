@@ -4,11 +4,11 @@
   --blue: rgb(45, 66, 71);
   --red: rgb(169, 15,10);
   
+  color: var(--blue);
   background-color: rgb(206, 200, 168);
   font-family: 'helvetica neue', helvetica, sans-serif;
 }
 
 body {
-  color: var(--blue);
   min-height: 100vh;
 }
