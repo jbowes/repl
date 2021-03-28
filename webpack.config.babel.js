@@ -21,13 +21,19 @@ export default {
       },
       {
         test: /\.(jpg|png)/,
-        loader: 'file-loader?name=assets/img-[hash:6].[ext]',
-        include: __dirname + '/src'
+        loader: 'file-loader',
+        include: __dirname + '/src',
+        options: {
+          name: 'assets/img-[hash:6].[ext]',
+        },
       },
       {
         test: /\.(ico|otf|pdf)/,
-        loader: 'file-loader?name=[name].[ext]',
-        include: __dirname + '/src/'
+        loader: 'file-loader',
+        include: __dirname + '/src/',
+        options: {
+          name: '[name].[ext]',
+        },
       }
     ],
   },
