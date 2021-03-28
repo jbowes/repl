@@ -42,6 +42,7 @@ export function listFiles(dir) {
       })
       .freeze()
       .processSync(contents);
+
     if (header.draft) continue;
 
     let slug = basename(file, extname(file));
