@@ -6,7 +6,13 @@ import frontmatter from 'remark-frontmatter';
 import react from 'remark-react';
 import { load } from 'js-yaml';
 
+import Code from './components/code';
 import Link from './components/link';
+
+const markdownToReactComponents = {
+  a: Link,
+  code: Code,
+};
 
 function* genFiles(dir) {
   const contents = readdirSync(dir);
@@ -32,9 +38,7 @@ export function listFiles(dir) {
         return node;
       })
       .use(react, {
-        remarkReactComponents: {
-          a: Link
-        }
+        remarkReactComponents: markdownToReactComponents,
       })
       .freeze()
       .processSync(contents);
