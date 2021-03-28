@@ -17,6 +17,28 @@ and not change any relevant data in the backing data store. A `DELETE` request i
 no matter how many times you `DELETE` a given URL, the resource stays deleted after the first call, no other
 resources are deleted, etc.
 
+```http
+GET /foo HTTP/1.1
+Host: wherever.com
+
+HTTP/1.1 200 OK
+Response: header
+Content-Type: application/json
+
+{ "ok?": true }
+```
+
+```json
+{
+  "test": "thing",
+  "ok?": true
+}
+```
+
+```typescript
+const res = await someAsyncCall(arg1, arg2, arg3); // This is going to be a very long line for styling stuff. Do you like it? I hope so. I like it well enough, myself.
+```
+
 Idempotence is a great property for APIs to have. Idempotence coupled with retries can mitigate many problems
 related to the unreliability of networks, computers, and software. If any request along the chain between the
 client and your data store fails, the downstream initiator can safely retry. Even impatient users frantically

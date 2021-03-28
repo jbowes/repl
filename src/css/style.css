@@ -21,3 +21,5 @@ body {
 .beige { color: var(--beige); }
 
 .bg-blue { background-color: var(--blue); }
+
+.prism-code .keyword { color: var(--red); }
