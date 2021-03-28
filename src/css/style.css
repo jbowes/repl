@@ -1,7 +1,10 @@
 @import 'tachyons/css/tachyons.css';
 
 :root {
-  color: rgb(45, 66, 71);
+  --blue: rgb(45, 66, 71);
+  --red: rgb(169, 15,10);
+  
+  color: var(--blue);
   background-color: rgb(206, 200, 168);
   font-family: 'helvetica neue', helvetica, sans-serif;
 }
@@ -9,6 +12,3 @@
 body {
   min-height: 100vh;
 }
-
-.blue { color: rgb(45, 66, 71); }
-.red { color: rgb(169, 15, 10); }
