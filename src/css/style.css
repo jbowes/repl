@@ -1,5 +1,3 @@
-@import 'tachyons/css/tachyons.css';
-
 :root {
   --blue: rgb(45, 66, 71);
   --red: rgb(169, 15,10);
@@ -12,3 +10,5 @@
 body {
   min-height: 100vh;
 }
+
+@import 'tachyons/css/tachyons.css';
