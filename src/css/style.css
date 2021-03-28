@@ -16,3 +16,6 @@ body {
 
 .blue { color: var(--blue); }
 .red { color: var(--red); }
+.beige: { color: var(--beige); }
+
+.bg-blue: { background-color: var(--blue); }
