@@ -7,7 +7,7 @@
   "author": "James Bowes <jbowes@repl.ca>",
   "license": "MIT",
   "scripts": {
-    "dev": "webpack-dev-server --hot --port 5000",
+    "dev": "webpack serve --hot --port 5000",
     "build": "webpack --progress",
     "css": "postcss --no-map -o public/css/style.css src/css/style.css",
     "release": "npm run build && npm run css"
@@ -37,7 +37,6 @@
     "tachyons": "^4.7.4",
     "uncss": "^0.17.3",
     "webpack": "^4.42.0",
-    "webpack-cli": "^4.6.0",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-cli": "^4.6.0"
   }
 }
