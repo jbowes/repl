@@ -3,6 +3,7 @@
 :root {
   --blue: rgb(45, 66, 71);
   --red: rgb(169, 15,10);
+  --green: rgb(78, 115, 109);
   --beige: rgb(206, 200, 168);
   
   color: var(--blue);
@@ -16,6 +17,7 @@ body {
 
 .blue { color: var(--blue); }
 .red { color: var(--red); }
+.green { color: var(--green); }
 .beige { color: var(--beige); }
 
 .bg-blue { background-color: var(--blue); }
