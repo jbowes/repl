@@ -21,21 +21,29 @@ export default {
       },
       {
         test: /\.(jpg|png)/,
-        loader: 'file-loader?name=assets/img-[hash:6].[ext]',
-        include: __dirname + '/src'
+        loader: 'file-loader',
+        include: __dirname + '/src',
+        options: {
+          name: 'assets/img-[hash:6].[ext]',
+        },
       },
       {
         test: /\.(ico|otf|pdf)/,
-        loader: 'file-loader?name=[name].[ext]',
-        include: __dirname + '/src/'
+        loader: 'file-loader',
+        include: __dirname + '/src/',
+        options: {
+          name: '[name].[ext]',
+        },
       }
     ],
   },
   plugins: [
     new StaticSiteGeneratorPlugin('main', site.staticRoutes(), site),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } }),
-    new CopyPlugin([
-      { from: 'static' }
-    ])
+    new CopyPlugin({
+      patterns: [
+        { from: 'static' }
+      ],
+    })
   ]
 };
