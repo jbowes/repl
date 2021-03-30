@@ -1,8 +1,17 @@
 @import 'tachyons/css/tachyons.css';
 
 :root {
-  color: rgb(45, 66, 71);
-  background-color: rgb(206, 200, 168);
+  --blue: #2d4247;
+  --red: #a90f0a;
+  --green: #2a5540;
+  --beige: #cec8a8;
+
+  --light-blue: #92b0c2;
+  --light-red: #f88a87;
+  --light-green: #8cc298;
+  
+  color: var(--blue);
+  background-color: var(--beige);
   font-family: 'helvetica neue', helvetica, sans-serif;
 }
 
@@ -10,5 +19,15 @@ body {
   min-height: 100vh;
 }
 
-.blue { color: rgb(45, 66, 71); }
-.red { color: rgb(169, 15, 10); }
+.blue { color: var(--blue); }
+.red { color: var(--red); }
+.green { color: var(--green); }
+.beige { color: var(--beige); }
+
+.bg-blue { background-color: var(--blue); }
+
+.prism-code .keyword { color: var(--light-red); }
+.prism-code .property { color: var(--light-green); }
+.prism-code .punctuation { color: var(--light-blue); }
+.prism-code .operator { color: var(--light-blue); }
+.prism-code .comment { font-style: italic; }
