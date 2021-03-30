@@ -5,6 +5,8 @@
   --red: #a90f0a;
   --green: #3a5550;
   --beige: #cec8a8;
+
+  --light-red: #f88a87;
   
   color: var(--blue);
   background-color: var(--beige);
@@ -22,4 +24,4 @@ body {
 
 .bg-blue { background-color: var(--blue); }
 
-.prism-code .keyword { color: var(--red); }
+.prism-code .keyword { color: var(--light-red); }
