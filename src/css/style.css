@@ -1,10 +1,10 @@
 @import 'tachyons/css/tachyons.css';
 
 :root {
-  --blue: rgb(45, 66, 71);
-  --red: rgb(169, 15,10);
-  --green: rgb(58, 85, 80);
-  --beige: rgb(206, 200, 168);
+  --blue: #2d4247;
+  --red: #a90f0a;
+  --green: #3a5550;
+  --beige: #cec8a8;
   
   color: var(--blue);
   background-color: var(--beige);
