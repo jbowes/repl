@@ -6,7 +6,9 @@
   --green: #3a5550;
   --beige: #cec8a8;
 
+  --light-blue: ##92b3b9;
   --light-red: #f88a87;
+  --light-green: #8cb1a9;
   
   color: var(--blue);
   background-color: var(--beige);
@@ -25,3 +27,6 @@ body {
 .bg-blue { background-color: var(--blue); }
 
 .prism-code .keyword { color: var(--light-red); }
+.prism-code .property { color: var(--light-green); }
+.prism-code .punctuation { color: var(--light-blue); }
+.prism-code .operator { color: var(--light-blue); }
