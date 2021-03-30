@@ -36,7 +36,7 @@ Content-Type: application/json
 ```
 
 ```typescript
-const res = await someAsyncCall(arg1, arg2, arg3); // This is going to be a very long line for styling stuff. Do you like it? I hope so. I like it well enough, myself.
+const res = await someAsyncCall(arg1, arg2, arg3); // This is going to be a very long line for styling stuff. Do you like it? I hope so. I like it well enough.
 ```
 
 Idempotence is a great property for APIs to have. Idempotence coupled with retries can mitigate many problems
