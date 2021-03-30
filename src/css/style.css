@@ -3,8 +3,12 @@
 :root {
   --blue: #2d4247;
   --red: #a90f0a;
-  --green: #3a5550;
+  --green: #2a5540;
   --beige: #cec8a8;
+
+  --light-blue: #92b0c2;
+  --light-red: #f88a87;
+  --light-green: #8cc298;
   
   color: var(--blue);
   background-color: var(--beige);
@@ -21,3 +25,9 @@ body {
 .beige { color: var(--beige); }
 
 .bg-blue { background-color: var(--blue); }
+
+.prism-code .keyword { color: var(--light-red); }
+.prism-code .property { color: var(--light-green); }
+.prism-code .punctuation { color: var(--light-blue); }
+.prism-code .operator { color: var(--light-blue); }
+.prism-code .comment { font-style: italic; }
