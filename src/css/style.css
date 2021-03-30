@@ -3,12 +3,12 @@
 :root {
   --blue: #2d4247;
   --red: #a90f0a;
-  --green: #3a5550;
+  --green: #3a7550;
   --beige: #cec8a8;
 
   --light-blue: #92b3b9;
   --light-red: #f88a87;
-  --light-green: #8cb1a9;
+  --light-green: #8cc298;
   
   color: var(--blue);
   background-color: var(--beige);
