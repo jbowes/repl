@@ -30,3 +30,4 @@ body {
 .prism-code .property { color: var(--light-green); }
 .prism-code .punctuation { color: var(--light-blue); }
 .prism-code .operator { color: var(--light-blue); }
+.prism-code .comment { font-style: italic; }
