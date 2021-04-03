@@ -1,6 +1,6 @@
 ---
 title: One-Sided Idempotence
-date: 2021-03-27T18:06:00-03:00
+date: 2021-04-03T18:06:00-03:00
 summary: |
   In the last post, we discussed the idempotency-key header, and how this header can be used to add
   idempotence to otherwise non-idempotent HTTP methods (like POST) in REST APIs. We also touched on how many
