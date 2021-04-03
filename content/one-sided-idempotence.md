@@ -31,18 +31,26 @@ impacting what an end user sees.
 [Stripe][stripe]'s API makes ample of idempotence, and typical in how it handles `DELETE` requests. 
 
 ```http
-GET /v1/products/prod_JEbKPQJxRVglrR HTTP/2
+ GET /foo HTTP/1.1
+ Host: wherever.com
+
+ HTTP/1.1 200 OK
+ Response: header
+ Content-Type: application/json
+
+ { "ok?": true }
+ ```
+
+```http
+GET /v1/products/prod_JEbKPQJxRVglrR HTTP/1.1
 Host: api.stripe.com
 authorization: Basic XXXX
 user-agent: curl/7.69.1
 accept: */*
-```
-```http
-HTTP/2 200 OK
+
+HTTP/1.1 200 OK
 Server: nginx
 Date: Sat, 03 Apr 2021 12:00:43 GMT
-Content-Type: application/json; charset=utf-8
-Content-Length: 430
 access-control-allow-credentials: true
 access-control-allow-methods: GET, POST, HEAD, OPTIONS, DELETE
 access-control-allow-origin: *
@@ -53,6 +61,8 @@ request-id: req_SSP1cM0MxXXLTl
 stripe-version: 2020-08-27
 x-stripe-c-cost: 0
 strict-transport-security: max-age=31556926; includeSubDomains; preload
+Content-Length: 430
+Content-Type: application/json
 
 {
   "id": "prod_JEbKPQJxRVglrR",
