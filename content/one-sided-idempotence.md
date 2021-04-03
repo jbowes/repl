@@ -28,6 +28,8 @@ eventually times out), then at some point, the client will retry the request. Ho
 second request will impact the complexity of the client's logic for handling replies, and may ultimately end up
 impacting what an end user sees.
 
+[Stripe][stripe]'s API is a strong proponent of idempotence, and typical in how it handles `DELETE` requests. 
+
 TODO: stripe example
 
 explain: extra logic for client
@@ -41,3 +43,4 @@ applies to PUT, too
 
 [idemkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the Idempotency-Key Header?"
 [jamestwitter]: https://twitter.com/jrbowes "James' twitter account"
+[stripe]: https://stripe.com "Stripe homepage"
