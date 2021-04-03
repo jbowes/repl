@@ -33,6 +33,5 @@ body {
 .prism-code .punctuation { color: var(--light-blue); }
 .prism-code .operator { color: var(--light-blue); }
 .prism-code .comment { font-style: italic; }
-.prism-code .null { font-style: italic; }
 .prism-code .boolean { color: var(--light-orange); }
 .prism-code .number { color: var(--light-yellow); }
