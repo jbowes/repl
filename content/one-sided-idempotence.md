@@ -119,9 +119,16 @@ doesn't exist. The end result from Stripe's perspective is still that the produc
 the cat bonnet marketplace backend accounts for a `404` response status, and the difference in the response
 bodies, the end user may see an error message instead of success.
 
-explain: extra logic for client
+In the case of Stripe, the API is *responding to to the requested change* and not *responding to the desired state* (
+this is similar to [edge vs level triggering](edgevlevel)). If the API treats a `DELETE` as "ensure this resource does
+not exist" instead of "delete this existing resource", then so long as the resource does not exist at the end of a `DELETE`
+request, the server can respond with a `200 OK`, the client will know that the resource doesn't exist (as it desired),
+and the client doesn't require any additional logic for treating `404` responses as successes.
 
-explain: are you responding to the event, or the desired state?
+Back to Stripe's original `200` response: It's documented as returning the deleted object, but only returns the object type
+and id (both of which are included in the `DELETE` request). Many APIs do return the full deleted object. Be careful with
+this when designing APIs; you'd make extra work for yourself trying to return the deleted object for multiple delete requests.
+
 
 explain: why not both? respond to desired state, make sure return values work for this, additional header to indicate
 if change occurred.
@@ -132,3 +139,4 @@ applies to PUT, too
 [jamestwitter]: https://twitter.com/jrbowes "James' twitter account"
 [stripe]: https://stripe.com "Stripe homepage"
 [stripeprod]: https://stripe.com/docs/api/products/delete "Stripe API docs on product deletion"
+[edgevlevel]: https://link.medium.com/zWGns5U69eb "Level Triggering and Reconciliation in Kubernetes"
