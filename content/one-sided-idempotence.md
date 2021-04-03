@@ -2,9 +2,11 @@
 title: One-Sided Idempotence
 date: 2021-03-27T18:06:00-03:00
 summary: |
-
+  In the last post, we discussed the idempotency-key header, and how this header can be used to add
+  idempotence to otherwise non-idempotent HTTP methods (like POST) in REST APIs. We also touched on how many
+  HTTP methods are inherently idempotent, like DELETE. But just how idempotent is it, in practice?
 description: |
-
+  Many HTTP methods are inherently idempotent, like DELETE. But just how idempotent is DELETE, in practice?
 ---
 
 In the last post, we [discussed the idempotency-key header][idemkey], and how this header can be used to add
