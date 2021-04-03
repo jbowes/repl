@@ -11,18 +11,33 @@ In the last post, we [discussed the idempotency-key header][idemkey], and how th
 idempotence to otherwise non-idempotent HTTP methods (like `POST`) in REST APIs. We also touched on how many
 HTTP methods are inherently idempotent, like `DELETE`. But just how idempotent is it, in practice?
 
-NOTE: this post would be a good candiate for having code samples (in the form of http requests against Stripe APIs)
+To recap, `DELETE` is an idempotent HTTP method because after the first request to delete a resource, a client
+can make any number of subsequent duplicate `DELETE` requests, and the resource will stay deleted. The end state
+on the server side stays the same, no matter how many `DELETE` requests it sees. Idempotent requests like `DELETE`
+have another interesting property: After that first request, failures, errors, and malformed or misinterpreted
+requests maintain the same state on the server side. *Side note: If you've ever seen a bug that caused a resource
+to be re-created on a failed delete, [let me know on twitter][jamestwitter]. I'd love to hear about it.*
 
-- cover what makes delete idempotent
-  - even on a catastrophic failure on a subsequent delete, the resource remains deleted and so in the desired state.
-  - if you've ever seen a bug that caused a resource to be created on a failed delete, let me know on twitter; i'd love to hear about it!
-- this is only about the server side, what about the client? the idempotent view is one sided
-- talk abouthow some clients return 200 with deleted content, or 204 with nothing. or 404 / 400 when already deleted
-  - what does stripe do?
-- cover ways the client could adapt, either to 2XX or 4XX responses.
-- include additional headers?
-  - best solution: 204 with optional header indicating prior deletion. why best?
-  - be nice to clients, incremental adoption
-- Applies to PUT, too.
+"server side" is important here. Discussion of idempotence usually focuses on the server (or whoever holds the
+canonical state), glossing over its impact on the client; it's a one-sided view. The client is important too,
+particularly in distributed systems, where "the client" might be one of many hops between the server and a user. 
+
+Idempotence, when paired with retries, provides resilience against failures in the network, etc. If a wire is tripped
+over when the server is responding `2XX` to a `DELETE`, but before the client reads that response (and the client
+eventually times out), then at some point, the client will retry the request. How the server responds to that
+second request will impact the complexity of the client's logic for handling replies, and may ultimately end up
+impacting what an end user sees.
+
+TODO: stripe example
+
+explain: extra logic for client
+
+explain: are you responding to the event, or the desired state?
+
+explain: why not both? respond to desired state, make sure return values work for this, additional header to indicate
+if change occurred.
+
+applies to PUT, too
 
 [idemkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the Idempotency-Key Header?"
+[jamestwitter]: https://twitter.com/jrbowes "James' twitter account"
