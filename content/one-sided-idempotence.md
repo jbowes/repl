@@ -67,7 +67,7 @@ Content-Type: application/json
 }
 ```
 
-This product is a hobby-grade cat bonnet for sale in our online cat bonnet marketplace, listed by an independant
+This product is a hobby-grade cat bonnet for sale in our online cat bonnet marketplace, listed by an independent
 cat bonnet artisan. Imagine the artisan decides to stop selling this particular cat bonnet. Their pressing of a
 delete button in the UI triggers the following call in the cat bonnet marketplace:
 
@@ -129,11 +129,13 @@ Back to Stripe's original `200` response: It's documented as returning the delet
 and id (both of which are included in the `DELETE` request). Many APIs do return the full deleted object. Be careful with
 this when designing APIs; you'd make extra work for yourself trying to return the deleted object for multiple delete requests.
 
+Sometimes, it matters to the client if the resource being deleted actually was deleted by them or not. In those cases, 
+you could either encourage the client to `GET` the resource first, and see if it exists (ignoring a possible race condition),
+or include an additional response header or field on the body indicating if that request caused a delete.
 
-explain: why not both? respond to desired state, make sure return values work for this, additional header to indicate
-if change occurred.
-
-applies to PUT, too
+Designing APIs requires balancing tradeoffs, predicting common usage patterns, and aiming for simplicity. Next time you
+implement `DELETE`, consider if always returning `200` may be best. But be careful to not introduce inconsistencies with other
+`DELETE` endpoints in an existing API.
 
 [idemkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the Idempotency-Key Header?"
 [jamestwitter]: https://twitter.com/jrbowes "James' twitter account"
