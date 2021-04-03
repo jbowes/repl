@@ -14,7 +14,7 @@ export const CodeBlock = ({ children, className }) => {
   return (
     <Highlight {...props} code={children[0].replace(/\n$/, '')} language={language} theme={undefined}>
       {({ className, tokens, getLineProps, getTokenProps }) => (
-        <pre className="br2 pv3 ph3 bg-blue beige">
+        <pre className="pre br2 pv3 ph3 bg-blue beige">
           <code className={className}>
             {tokens.map((line, i) => (
               <div key={i} {...getLineProps({ line, key: i })}>
