@@ -122,7 +122,7 @@ the cat bonnet marketplace backend accounts for a `404` response status, and the
 bodies, the end user may see an error message instead of success.
 
 In the case of Stripe, the API is *responding to to the requested change* and not *responding to the desired state* (
-this is similar to [edge vs level triggering](edgevlevel)). If the API treats a `DELETE` as "ensure this resource does
+this is similar to [edge vs level triggering][edgevlevel]). If the API treats a `DELETE` as "ensure this resource does
 not exist" instead of "delete this existing resource", then so long as the resource does not exist at the end of a `DELETE`
 request, the server can respond with a `200 OK`, the client will know that the resource doesn't exist (as it desired),
 and the client doesn't require any additional logic for treating `404` responses as successes.
