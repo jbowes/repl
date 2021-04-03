@@ -28,7 +28,9 @@ eventually times out), then at some point, the client will retry the request. Ho
 second request will impact the complexity of the client's logic for handling replies, and may ultimately end up
 impacting what an end user sees.
 
-[Stripe][stripe]'s API makes ample of idempotence, and typical in how it handles `DELETE` requests. 
+For a real-world example of how responses from idempotent requests can impact clients, let's look at an example using
+[Stripe][stripe]. Stripe's API makes ample use of idempotence, and is typical in how it handles `DELETE` requests. First,
+assume we have the following product defined:
 
 ```http
 GET /v1/products/prod_JEbKPQJxRVglrR HTTP/1.1
@@ -65,6 +67,10 @@ Content-Type: application/json
 }
 ```
 
+This product is a hobby-grade cat bonnet for sale in our online cat bonnet marketplace, listed by an independant
+cat bonnet artisan. Imagine the artisan decides to stop selling this particular cat bonnet. Their pressing of a
+delete button in the UI triggers the following call in the cat bonnet marketplace:
+
 ```http
 DELETE /v1/products/prod_JEbKPQJxRVglrR HTTP/1.1
 Host: api.stripe.com
@@ -80,6 +86,13 @@ Content-Type: application/json
   "deleted": true
 }
 ```
+
+The `200` response indicates success, and the response is a sparse representation of the deleted product.
+Note that while the [Stripe docs on products][stripeprod] say the product is returned, the only data we
+get is values we could infer from the request itself.
+
+Now, imagine if the backend server never saw that `200` response, and retried its request to delete. This
+is the response it would get:
 
 ```http
 DELETE /v1/products/prod_JEbKPQJxRVglrR HTTP/1.1
@@ -101,7 +114,10 @@ Content-Type: application/json
 }
 ```
 
-TODO: stripe example
+A `404`, indicating (since it's a `4XX` series response) that the client made a mistake, and this resource
+doesn't exist. The end result from Stripe's perspective is still that the product is deleted, but now, unless
+the cat bonnet marketplace backend accounts for a `404` response status, and the difference in the response
+bodies, the end user may see an error message instead of success.
 
 explain: extra logic for client
 
@@ -115,3 +131,4 @@ applies to PUT, too
 [idemkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the Idempotency-Key Header?"
 [jamestwitter]: https://twitter.com/jrbowes "James' twitter account"
 [stripe]: https://stripe.com "Stripe homepage"
+[stripeprod]: https://stripe.com/docs/api/products/delete "Stripe API docs on product deletion"
