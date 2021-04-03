@@ -37,7 +37,7 @@ authorization: Basic XXXX
 user-agent: curl/7.69.1
 accept: */*
 
-HTTP/2 200 
+HTTP/2 200 OK
 server: nginx
 date: Sat, 03 Apr 2021 12:00:43 GMT
 content-type: application/json
@@ -86,7 +86,7 @@ authorization: Basic XXXX
 user-agent: curl/7.69.1
 accept: */*
 
-HTTP/2 200 
+HTTP/2 200 OK
 server: nginx
 date: Sat, 03 Apr 2021 12:02:31 GMT
 content-type: application/json
@@ -116,7 +116,7 @@ authorization: Basic XXX
 user-agent: curl/7.69.1
 accept: */*
 
-HTTP/2 404 
+HTTP/2 404 Not Found
 server: nginx
 date: Sat, 03 Apr 2021 12:03:28 GMT
 content-type: application/json
