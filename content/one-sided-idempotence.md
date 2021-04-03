@@ -28,32 +28,31 @@ eventually times out), then at some point, the client will retry the request. Ho
 second request will impact the complexity of the client's logic for handling replies, and may ultimately end up
 impacting what an end user sees.
 
-[Stripe][stripe]'s API is a strong proponent of idempotence, and typical in how it handles `DELETE` requests. 
+[Stripe][stripe]'s API makes ample of idempotence, and typical in how it handles `DELETE` requests. 
 
 ```http
-> GET /v1/products/prod_JEbKPQJxRVglrR HTTP/2
-> Host: api.stripe.com
-> authorization: Basic XXXX
-> user-agent: curl/7.69.1
-> accept: */*
-> 
-* Connection state changed (MAX_CONCURRENT_STREAMS == 128)!
-< HTTP/2 200 
-< server: nginx
-< date: Sat, 03 Apr 2021 12:00:43 GMT
-< content-type: application/json
-< content-length: 430
-< access-control-allow-credentials: true
-< access-control-allow-methods: GET, POST, HEAD, OPTIONS, DELETE
-< access-control-allow-origin: *
-< access-control-expose-headers: Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-< access-control-max-age: 300
-< cache-control: no-cache, no-store
-< request-id: req_SSP1cM0MxXXLTl
-< stripe-version: 2020-08-27
-< x-stripe-c-cost: 0
-< strict-transport-security: max-age=31556926; includeSubDomains; preload
-< 
+GET /v1/products/prod_JEbKPQJxRVglrR HTTP/2
+Host: api.stripe.com
+authorization: Basic XXXX
+user-agent: curl/7.69.1
+accept: */*
+
+HTTP/2 200 
+server: nginx
+date: Sat, 03 Apr 2021 12:00:43 GMT
+content-type: application/json
+content-length: 430
+access-control-allow-credentials: true
+access-control-allow-methods: GET, POST, HEAD, OPTIONS, DELETE
+access-control-allow-origin: *
+access-control-expose-headers: Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+access-control-max-age: 300
+cache-control: no-cache, no-store
+request-id: req_SSP1cM0MxXXLTl
+stripe-version: 2020-08-27
+x-stripe-c-cost: 0
+strict-transport-security: max-age=31556926; includeSubDomains; preload
+
 {
   "id": "prod_JEbKPQJxRVglrR",
   "object": "product",
@@ -78,65 +77,61 @@ impacting what an end user sees.
   "updated": 1617451217,
   "url": null
 }
-* Connection #0 to host api.stripe.com left intact
 ```
 
 ```http
-> DELETE /v1/products/prod_JEbKPQJxRVglrR HTTP/2
-> Host: api.stripe.com
-> authorization: Basic XXXX
-> user-agent: curl/7.69.1
-> accept: */*
-> 
-* Connection state changed (MAX_CONCURRENT_STREAMS == 128)!
-< HTTP/2 200 
-< server: nginx
-< date: Sat, 03 Apr 2021 12:02:31 GMT
-< content-type: application/json
-< content-length: 76
-< access-control-allow-credentials: true
-< access-control-allow-methods: GET, POST, HEAD, OPTIONS, DELETE
-< access-control-allow-origin: *
-< access-control-expose-headers: Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-< access-control-max-age: 300
-< cache-control: no-cache, no-store
-< request-id: req_7mhqwYAYZIJ5bZ
-< stripe-version: 2020-08-27
-< x-stripe-c-cost: 0
-< strict-transport-security: max-age=31556926; includeSubDomains; preload
-< 
+DELETE /v1/products/prod_JEbKPQJxRVglrR HTTP/2
+Host: api.stripe.com
+authorization: Basic XXXX
+user-agent: curl/7.69.1
+accept: */*
+
+HTTP/2 200 
+server: nginx
+date: Sat, 03 Apr 2021 12:02:31 GMT
+content-type: application/json
+content-length: 76
+access-control-allow-credentials: true
+access-control-allow-methods: GET, POST, HEAD, OPTIONS, DELETE
+access-control-allow-origin: *
+access-control-expose-headers: Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+access-control-max-age: 300
+cache-control: no-cache, no-store
+request-id: req_7mhqwYAYZIJ5bZ
+stripe-version: 2020-08-27
+x-stripe-c-cost: 0
+strict-transport-security: max-age=31556926; includeSubDomains; preload
+
 {
   "id": "prod_JEbKPQJxRVglrR",
   "object": "product",
   "deleted": true
 }
-* Connection #0 to host api.stripe.com left intact
 ```
 
 ```http
-> DELETE /v1/products/prod_JEbKPQJxRVglrR HTTP/2
-> Host: api.stripe.com
-> authorization: Basic c2tfdGVzdF81MUljNnFLRXdJMGN4MGQ5NlBPUFNvUEh0ejRXWGVJWWwwV1hWa01rQjFaYWVnTGhDTmlxMk1BVTdHdWVFc2J4SXlGUDRvcWdscUYzanQ3NW11RG5jNlJyUDAwckNhMWpIWnE6
-> user-agent: curl/7.69.1
-> accept: */*
-> 
-* Connection state changed (MAX_CONCURRENT_STREAMS == 128)!
-< HTTP/2 404 
-< server: nginx
-< date: Sat, 03 Apr 2021 12:03:28 GMT
-< content-type: application/json
-< content-length: 236
-< access-control-allow-credentials: true
-< access-control-allow-methods: GET, POST, HEAD, OPTIONS, DELETE
-< access-control-allow-origin: *
-< access-control-expose-headers: Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-< access-control-max-age: 300
-< cache-control: no-cache, no-store
-< request-id: req_ap9uieu4tpCnPk
-< stripe-version: 2020-08-27
-< x-stripe-c-cost: 0
-< strict-transport-security: max-age=31556926; includeSubDomains; preload
-< 
+DELETE /v1/products/prod_JEbKPQJxRVglrR HTTP/2
+Host: api.stripe.com
+authorization: Basic XXX
+user-agent: curl/7.69.1
+accept: */*
+
+HTTP/2 404 
+server: nginx
+date: Sat, 03 Apr 2021 12:03:28 GMT
+content-type: application/json
+content-length: 236
+access-control-allow-credentials: true
+access-control-allow-methods: GET, POST, HEAD, OPTIONS, DELETE
+access-control-allow-origin: *
+access-control-expose-headers: Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+access-control-max-age: 300
+cache-control: no-cache, no-store
+request-id: req_ap9uieu4tpCnPk
+stripe-version: 2020-08-27
+x-stripe-c-cost: 0
+strict-transport-security: max-age=31556926; includeSubDomains; preload
+
 {
   "error": {
     "code": "resource_missing",
