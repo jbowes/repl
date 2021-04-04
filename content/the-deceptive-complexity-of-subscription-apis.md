@@ -1,6 +1,6 @@
 ---
 title: The Deceptive Complexity of Subscription APIs
-date: 2021-03-24T11:06:00-03:00
+date: 2021-04-05T11:06:00-03:00
 summary: |
 
 description: |
