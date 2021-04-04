@@ -25,3 +25,13 @@ Ask yourself:
 
 the subtleties of using a subscription api could be mitigated by you, the author, when writing a client. As soon as another developer is involved,
 you are fighting against the style of the API itself to ensure it's usable and not bug prone for someone else's consumption.
+
+Example API goes here.
+
+Example application.
+
+send event stream.
+reconnects! add event numbers.
+how much state to store? 
+fetch the whole thing again on reconnect? miss some events.
+ordering of fetch vs event sub.
