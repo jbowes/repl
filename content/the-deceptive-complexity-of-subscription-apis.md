@@ -11,8 +11,8 @@ setup: you want to provide a near-realtime feed of things happening via an api, 
 delivery, etc.
 
 solution: subscription APIS! websockets, graphql subscriptions, server sent events, gRPC streaming, etc.
-instead of periodically requesting status from the API (polling), the client opens a long-lived connection, and has the server push new changes
-to it as they happen.
+instead of periodically requesting status from the API (polling), the client opens a long-lived connection, and has the server push
+new changes to it as they happen.
 
 problem: subscription style APIs are deceptively complex.
 
@@ -24,8 +24,8 @@ Ask yourself:
 - will anyone else besides you use this API?
 - no, really. someone else could use this API, right?
 
-the subtleties of using a subscription api could be mitigated by you, the author, when writing a client. As soon as another developer is involved,
-you are fighting against the style of the API itself to ensure it's usable and not bug prone for someone else's consumption.
+the subtleties of using a subscription api could be mitigated by you, the author, when writing a client. As soon as another developer
+is involved, you are fighting against the style of the API itself to ensure it's usable and not bug prone for someone else's consumption.
 
 Example API goes here.
 
