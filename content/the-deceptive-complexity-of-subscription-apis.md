@@ -7,11 +7,12 @@ description: |
 
 ---
 
-setup: you want to provide a near-realtime feed of things happening via an api, users get updates on the status of their same day cat bonnet delivery,
-etc.
+setup: you want to provide a near-realtime feed of things happening via an api, users get updates on the status of their same day cat bonnet
+delivery, etc.
 
-solution: subscription APIS! websockets, graphql subscriptions, server sent events, etc.
-instead of periodically requestiong status from the API (polling), the client opens a connection, and has the server push new changes to it.
+solution: subscription APIS! websockets, graphql subscriptions, server sent events, gRPC streaming, etc.
+instead of periodically requestiong status from the API (polling), the client opens a long-lived connection, and has the server push new changes
+to it as they happen.
 
 problem: subscription style APIs are deceptively complex.
 
@@ -35,3 +36,9 @@ reconnects! add event numbers.
 how much state to store? 
 fetch the whole thing again on reconnect? miss some events.
 ordering of fetch vs event sub.
+
+sub apis lean toward event based messages: send the change, as this delta is typically more useful for display as a live update, seems more
+efficient, etc. the client side then may have to reconstruct, leading to the complexity.
+
+alternative: send full state. expensive for large resources, maybe prohibitively so. you might not even store it all. client may still want
+to show the change, and need logic to diff/deconstruct.
