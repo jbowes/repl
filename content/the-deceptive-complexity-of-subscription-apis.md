@@ -14,6 +14,9 @@ solution: subscription APIS! websockets, graphql subscriptions, server sent even
 instead of periodically requesting status from the API (polling), the client opens a long-lived connection, and has the server push
 new changes to it as they happen.
 
+Typical use: sustained high frequency low amplitude data, eg chat messages
+OR low frequency high amplitude data, eg shipment notifications.
+
 problem: subscription style APIs are deceptively complex.
 
 caveat: subscription apis are usually event (diff) style. they may capture full state as well.
@@ -42,3 +45,6 @@ efficient, etc. the client side then may have to reconstruct, leading to the com
 
 alternative: send full state. expensive for large resources, maybe prohibitively so. you might not even store it all. client may still want
 to show the change, and need logic to diff/deconstruct.
+
+
+none of this touches on bidi APIs, where the client may be reacting and attempting to change its imperfect view. that's a whole other topic!
