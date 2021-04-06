@@ -16,6 +16,9 @@ characteristics will require changing an API from blocking or non-blocking.
 
 ## Option 1: Pretend and defer
 
+Pretending that the API is still synchronous, and defering expensive work, is often the best option for retrofitting
+existing APIS, as you can keep the same interface.
+
 ## Option 2: Resources with status
 
 ref: kubernetes and watson api guidelines
