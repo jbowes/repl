@@ -41,7 +41,8 @@ Content-Type: application/json
 {
   "name": "red bonnet"
 }
-
+```
+```http
 HTTP/1.1 201 Created
 Location: /v1/cat-bonnets/3f566245-754a-44af-82fd-b754d4b03fb6
 Content-Language: en-CA
