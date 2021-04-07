@@ -19,14 +19,20 @@ characteristics will require changing an API from blocking or non-blocking.
 Pretending that the API is still synchronous, and defering expensive work, is often the best option for retrofitting
 existing APIS, as you can keep the same interface.
 
-## Option 2: Resources with status
+## Option 2: Block and de-duplicate
+
+Use idempotence to de-duplicate (link to other post)
+
+good for retrofitting.
+
+## Option 3: Resources with status
 
 ref: kubernetes and watson api guidelines
 
 resources first: import resource
 *or* status field on thing in question.
 
-## Option 3: Job specific resources
+## Option 4: Job specific resources
 
 The dangerous allure of 202 and Location
 
