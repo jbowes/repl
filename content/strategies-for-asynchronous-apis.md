@@ -14,18 +14,20 @@ the report) and may like to know about progress (for example, so they can show i
 you'll catch most of these at the start, though inevitably some change in requirements, features, or performance
 characteristics will require changing an API from blocking or non-blocking.
 
-## Option 1: Pretend and defer
+## Strategies
+
+### Pretend and defer
 
 Pretending that the API is still synchronous, and deferring expensive work, is often the best option for retrofitting
 existing APIS, as you can keep the same interface.
 
-## Option 2: Block and de-duplicate
+### Block and de-duplicate
 
 Use idempotence to de-duplicate (link to other post)
 
 good for retrofitting.
 
-## Option 3: Resources with status
+### Resources with status
 
 ref: kubernetes and watson api guidelines
 
@@ -58,14 +60,16 @@ Content-Type: application/json
 }
 ```
 
-## Option 4: Job specific resources
+### Job specific resources
 
 The dangerous allure of 202 and Location
 
 benefits and drawbacks to each
 
-## Variant: Callback URLs
+## Variants
 
-## Variant: Push on state change
+### Callback URLs
+
+### Push on state change
 
 SSE, websockets
