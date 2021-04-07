@@ -1,6 +1,6 @@
 ---
 title: Strategies for Asynchronous APIs
-date: 2021-03-24T11:06:00-03:00
+date: 2021-04-07T11:06:00-03:00
 summary: |
 
 description: |
@@ -31,6 +31,22 @@ ref: kubernetes and watson api guidelines
 
 resources first: import resource
 *or* status field on thing in question.
+
+```http
+POST /v1/cat-bonnets HTTP/1.1
+Accept: application/yaml
+
+HTTP/1.1 201 Created
+Content-Type: application/yaml
+
+id: 3f566245-754a-44af-82fd-b754d4b03fb6
+name: red bonnet
+status:
+  - state: creating
+    time: xxxx
+  - state: accepted
+    time: xxxx
+```
 
 ## Option 4: Job specific resources
 
