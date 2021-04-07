@@ -34,18 +34,24 @@ resources first: import resource
 
 ```http
 POST /v1/cat-bonnets HTTP/1.1
-Accept: application/yaml
 
 HTTP/1.1 201 Created
-Content-Type: application/yaml
+Content-Type: application/json
 
-id: 3f566245-754a-44af-82fd-b754d4b03fb6
-name: red bonnet
-status:
-  - state: creating
-    time: xxxx
-  - state: accepted
-    time: xxxx
+{
+  "id": "3f566245-754a-44af-82fd-b754d4b03fb6",
+  "name": "red bonnet",
+  "status": [
+    {
+      "state": "creating",
+      "time": "xxxx"
+    },
+    {
+      "state": "accepted",
+      "time": "xxxx"
+    }
+  ]
+}
 ```
 
 ## Option 4: Job specific resources
