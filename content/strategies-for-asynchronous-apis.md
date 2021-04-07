@@ -36,6 +36,8 @@ resources first: import resource
 POST /v1/cat-bonnets HTTP/1.1
 
 HTTP/1.1 201 Created
+Location: /v1/cat-bonnets/3f566245-754a-44af-82fd-b754d4b03fb6
+Content-Language: en-CA
 Content-Type: application/json
 
 {
@@ -43,12 +45,14 @@ Content-Type: application/json
   "name": "red bonnet",
   "status": [
     {
-      "state": "creating",
-      "time": "xxxx"
+      "state": "sewing",
+      "time": "xxxx",
+      "description": "Expert craftspersons are sewing your new bonnet."
     },
     {
       "state": "accepted",
-      "time": "xxxx"
+      "time": "xxxx",
+      "description": "Your bonnet has been accepted for processing."
     }
   ]
 }
@@ -61,3 +65,7 @@ The dangerous allure of 202 and Location
 benefits and drawbacks to each
 
 ## Variant: Callback URLs
+
+## Variant: Push on state change
+
+SSE, websockets
