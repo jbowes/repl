@@ -7,6 +7,7 @@ import Body from '../components/body';
 import Main from '../components/main';
 import Content from '../components/content';
 import Footer from '../components/footer';
+import Link from '../components/link';
 
 export default (props) => {
   const Link = (props) => <a href="/" className="link blue">{ props.children }</a>
@@ -26,6 +27,9 @@ export default (props) => {
         </header>
 
         <Main>
+          <nav>
+            <Link href="/">HOME</Link>&nbsp;&gt;&nbsp;<span>{props.post.header.title}</span>
+          </nav>
           <Content post={props.post}>
             { props.children }
           </Content>
