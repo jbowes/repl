@@ -116,7 +116,7 @@ Content-Type: application/json
 }
 ```
 
-# Indirect response
+### Indirect response
 
 If, on the other hand, there is no stock, the server can respond with a `202 Accepted` and
 point the client at an endpoint for polling status:
