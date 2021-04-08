@@ -1,6 +1,6 @@
 ---
 title: Strategies for Asynchronous APIs
-date: 2021-04-07T11:06:00-03:00
+date: 2021-04-08T11:06:00-03:00
 summary: |
 
 description: |
@@ -13,6 +13,10 @@ is asking for can't be done immediately, but the caller would like to know when 
 the report) and may like to know about progress (for example, so they can show import task status in a UI). If you're lucky,
 you'll catch most of these at the start, though inevitably some change in requirements, features, or performance
 characteristics will require changing an API from blocking or non-blocking.
+
+## Machinery for asynchronous APIs
+
+Brief description of whats needed. worker, etc.
 
 ## Strategies
 
@@ -54,12 +58,12 @@ Content-Type: application/json
   "status": [
     {
       "state": "sewing",
-      "time": "xxxx",
+      "time": "2021-04-08T09:15:49Z",
       "description": "Expert craftspersons are sewing your new bonnet."
     },
     {
       "state": "accepted",
-      "time": "xxxx",
+      "time": "2021-04-08T07:22:03Z",
       "description": "Your bonnet has been accepted for processing."
     }
   ]
@@ -128,9 +132,35 @@ Note that [`202 Accepted`][202] is intentionally non-commital and vaguely define
 [`Location`][loc] has no defined meaning when used with it. However, convention in APIs has landed
 on using the two together for non-blocking APIs.
 
-XXX: job endpoint example goes here
+The client can then make requests to the `/v1/jobs` endpoint returned in the `Location` header
+to get the status of the Cat Bonnet creation.
 
-XXX: when done, either 200 or even 201 with location
+```http
+GET /v1/jobs/27440252-c84a-40aa-8a17-8c3532eb8aca HTTP/1.1
+```
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "id": "27440252-c84a-40aa-8a17-8c3532eb8aca",
+  "status": [
+    {
+      "state": "sewing",
+      "time": "2021-04-08T09:15:49Z",
+      "description": "Expert craftspersons are sewing your new bonnet."
+    },
+    {
+      "state": "accepted",
+      "time": "2021-04-08T07:22:03Z",
+      "description": "Your bonnet has been accepted for processing."
+    }
+  ]
+}
+```
+
+XXX: when done, either 200 or even 201 with location. Note that on error / failure to create the Cat Bonnet,
+a 4xx response wouldn't be appropriate (semantic differences between 4xx and 201)
 
 **Flexibility is complexity** every client will have to know how to handle a direct response and
 an indirect non-blocking response. Take this into account; it may be better to always return a
@@ -139,6 +169,10 @@ an indirect non-blocking response. Take this into account; it may be better to a
 ## Inline versus dedicated status
 
 benefits and drawbacks to each
+
+## What goes in `status`?
+
+array of events, limited size.
 
 ## Variants
 
