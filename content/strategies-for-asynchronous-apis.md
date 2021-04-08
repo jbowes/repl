@@ -92,7 +92,7 @@ Content-Type: application/json
 
 {
   "name": "red bonnet",
-  "fabic": "purest unicorn mane"
+  "fabric": "purest unicorn mane"
 }
 ```
 
@@ -100,7 +100,7 @@ The server could reference warehouse stock for `purest unicorn mane` to determin
 Cat Bonnet could be fabricated in a reasonable amount of time, or if there is no stock,
 and fabricating the bonnet may require an asynchrous response.
 
-### Direct response
+#### Direct response
 
 If there is stock, the server can create the bonnet and respond immediately:
 
@@ -116,7 +116,7 @@ Content-Type: application/json
 }
 ```
 
-### Indirect response
+#### Indirect response
 
 If, on the other hand, there is no stock, the server can respond with a `202 Accepted` and
 point the client at an endpoint for polling status:
@@ -133,7 +133,7 @@ Content-Type: application/json
 }
 ```
 
-Note that [`202 Accepted`][202] is intentionally non-commital and vaguely defined. Further,
+Note that [`202 Accepted`][202] is intentionally non-committal and vaguely defined. Further,
 [`Location`][loc] has no defined meaning when used with it. However, convention in APIs has landed
 on using the two together for non-blocking APIs.
 
@@ -208,11 +208,13 @@ Every client will have to know how to handle a direct response and
 an indirect non-blocking response. Take this into account; it may be better to always return a
 `202 Accepted` response, even for fast replies.
 
-## Inline versus dedicated status
+## Picking a style
+
+inline vs dedicated
 
 benefits and drawbacks to each
 
-## What goes in `status`?
+### What goes in `status`?
 
 array of events, limited size.
 
