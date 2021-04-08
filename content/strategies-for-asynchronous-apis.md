@@ -100,6 +100,8 @@ The server could reference warehouse stock for `purest unicorn mane` to determin
 Cat Bonnet could be fabricated in a reasonable amount of time, or if there is no stock,
 and fabricating the bonnet may require an asynchrous response.
 
+### Direct response
+
 If there is stock, the server can create the bonnet and respond immediately:
 
 ```http
@@ -114,12 +116,15 @@ Content-Type: application/json
 }
 ```
 
+# Indirect response
+
 If, on the other hand, there is no stock, the server can respond with a `202 Accepted` and
 point the client at an endpoint for polling status:
 
 ```http
 HTTP/1.1 202 Accepted
 Location: /v1/jobs/27440252-c84a-40aa-8a17-8c3532eb8aca
+Content-Language: en-CA
 Content-Type: application/json
 
 {
@@ -132,7 +137,7 @@ Note that [`202 Accepted`][202] is intentionally non-commital and vaguely define
 [`Location`][loc] has no defined meaning when used with it. However, convention in APIs has landed
 on using the two together for non-blocking APIs.
 
-The client can then make requests to the `/v1/jobs` endpoint returned in the `Location` header
+The client can then make repeated requests to the `/v1/jobs` endpoint returned in the `Location` header
 to get the status of the Cat Bonnet creation.
 
 ```http
@@ -140,6 +145,7 @@ GET /v1/jobs/27440252-c84a-40aa-8a17-8c3532eb8aca HTTP/1.1
 ```
 ```http
 HTTP/1.1 200 OK
+Content-Language: en-CA
 Content-Type: application/json
 
 {
@@ -159,10 +165,46 @@ Content-Type: application/json
 }
 ```
 
-XXX: when done, either 200 or even 201 with location. Note that on error / failure to create the Cat Bonnet,
-a 4xx response wouldn't be appropriate (semantic differences between 4xx and 201)
+Once done creating the Cat Bonnet, the server can reply with an updated `status` including information
+on where to find the created Cat Bonnet. It's also acceptable and common to return a `201 Created` response
+with a `Location` header:
 
-**Flexibility is complexity** every client will have to know how to handle a direct response and
+```http
+HTTP/1.1 201 Created
+Location: /v1/cat-bonnets/3f566245-754a-44af-82fd-b754d4b03fb6
+Content-Language: en-CA
+Content-Type: application/json
+
+{
+  "id": "27440252-c84a-40aa-8a17-8c3532eb8aca",
+  "status": [
+    {
+      "state": "created",
+      "time": "2021-04-08T09:15:49Z",
+      "description": "Your new bonnet is ready.",
+      "bonnet_id": "3f566245-754a-44af-82fd-b754d4b03fb6"
+    },
+    {
+      "state": "sewing",
+      "time": "2021-04-08T09:15:49Z",
+      "description": "Expert craftspersons are sewing your new bonnet."
+    },
+    {
+      "state": "accepted",
+      "time": "2021-04-08T07:22:03Z",
+      "description": "Your bonnet has been accepted for processing."
+    }
+  ]
+}
+```
+
+It's OK to reply with a `201 Created` after the Cat Bonnet is created, but it isn't OK to respond with a
+`4XX` series status code on error. A `4XX` series code should be served in response to the direct request
+for the job status only (for example, if the client asked for a job ID that didnt' exist).
+
+### Flexibility is complexity
+
+Every client will have to know how to handle a direct response and
 an indirect non-blocking response. Take this into account; it may be better to always return a
 `202 Accepted` response, even for fast replies.
 
