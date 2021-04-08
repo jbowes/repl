@@ -14,9 +14,15 @@ the report) and may like to know about progress (for example, so they can show i
 you'll catch most of these at the start, though inevitably some change in requirements, features, or performance
 characteristics will require changing an API from blocking or non-blocking.
 
-## Machinery for asynchronous APIs
+## Required machinery
 
-Brief description of whats needed. worker, etc.
+If a given API endpoint must be asynchronous, you can assume the work it has to do will take longer than a single HTTP request.
+Further, if the work will take longer than a single HTTP request, you can assume it will take longer than the lifetime of 
+your server process.
+
+You'll need to decouple the work from HTTP requests (say, with a background worker process or thread), and make the work durable
+and resiliant to process crashes / restarts (with task queues, etc). With care, you can make these changes before modifying existing
+public APIs or introducing new ones.
 
 ## Strategies
 
