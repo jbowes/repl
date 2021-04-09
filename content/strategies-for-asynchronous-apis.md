@@ -21,7 +21,7 @@ Further, if the work will take longer than a single HTTP request, you can assume
 your server process.
 
 You'll need to decouple the work from HTTP requests (say, with a background worker process or thread), and make the work durable
-and resiliant to process crashes / restarts (with task queues, etc). With care, you can make these changes before modifying existing
+and resilient to process crashes / restarts (with task queues, etc). With care, you can make these changes before modifying existing
 public APIs or introducing new ones.
 
 ## Strategies
