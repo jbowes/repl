@@ -44,9 +44,16 @@ either via direct work scheduling from the API, or through bulk cleanup processe
 
 ### Block and de-duplicate
 
-Use idempotence to de-duplicate (link to other post)
+For cases where an existing API endpoint's work can't be deferred, you can maintain the existing API (until it's been
+removed via a deprecation policy), run the work in a background task, and de-duplicate requests via [idempotency][idempkey].
 
-good for retrofitting.
+Treat each HTTP request as a request to enqueue background work, keeping the request open. Have the server poll the background
+worker on behalf of the client, returning a response when the background work is done. Use idempotency (likely based on the
+contents of the request) to de-duplicate in-flight requests, pointing them all at the same in-process background work.
+
+If the long-running work completes before the client times out (or the server crashes, etc), then from the client's perspective,
+the API has not changed. If the client times out, and retries, then idempotency assures that the client resumes tracking the same
+original work. If the client does not retry, then the work will complete, regardless.
 
 ### Resources with status
 
@@ -244,5 +251,6 @@ array of events, limited size.
 SSE, websockets
 
 [evencon]: https://en.wikipedia.org/wiki/Eventual_consistency "Wikipedia's description of eventual consistency"
+[idempkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the idempotency-key header?"
 [202]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202 "Mozilla's definition of 202"
 [loc]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location "Mozilla's definition of the Location header"
