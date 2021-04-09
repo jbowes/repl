@@ -57,10 +57,14 @@ original work. If the client does not retry, then the work will complete, regard
 
 ### Resources with status
 
-ref: kubernetes and watson api guidelines
+While the first two strategies are half-steps meant to support backwards compatibility, adding a `status` field to a resource
+is a cleaner, more complete solution, that may also break backwards compatibility.
 
-resources first: import resource
-*or* status field on thing in question.
+In this strategy, any API request to create a resource creates it right away, filling in as many details as possible,
+with the addition of a status field, which records state transitions as the resource progresses from an accepted request, to
+a completed and created resource.
+
+For example, consider creating a new Cat Bonnet that is hand sewn on demand:
 
 ```http
 POST /v1/cat-bonnets HTTP/1.1
@@ -81,8 +85,32 @@ Content-Type: application/json
   "name": "red bonnet",
   "status": [
     {
+      "state": "accepted",
+      "time": "2021-04-08T07:22:03Z",
+      "description": "Your bonnet has been accepted for processing."
+    }
+  ]
+}
+```
+
+The `POST` response returns the pending Cat Bonnet resource. The client can then poll the server, watching
+the state of the Cat Bonnet:
+
+```http
+GET /v1/cat-bonnets/3f566245-754a-44af-82fd-b754d4b03fb6 HTTP/1.1
+```
+```http
+HTTP/1.1 200 OK
+Content-Language: en-CA
+Content-Type: application/json
+
+{
+  "id": "3f566245-754a-44af-82fd-b754d4b03fb6",
+  "name": "red bonnet",
+  "status": [
+    {
       "state": "sewing",
-      "time": "2021-04-08T09:15:49Z",
+      "time": "2021-04-08T07:23:49Z",
       "description": "Expert craftspersons are sewing your new bonnet."
     },
     {
@@ -94,9 +122,20 @@ Content-Type: application/json
 }
 ```
 
-Status may exist directly on a resource that has meaning for end users (ref watson spec here).
+Eventually, the Cat Bonnet will be fully sewn and complete. Hooray!
+
+As in the above example, status may exist directly on a resource that has meaning for end users.
 It may also exist on a resource that is mostly meaningful for the long-running task itself, but
-also has use as a record or log, eg an `Import` type.
+also has use as a record or log, like an `Import` type.
+
+For resource modification or `DELETE`s, the resource proper can stay in its old state, until the status progresses to the point where
+the modification is complete.
+
+Note that this is similar to, but not the same as, [Kubernetes' status field][kubestatus], which fully describes the current state
+of a resource *and optionally* may include fields describing the resource's state transition history.
+
+For additional context, the [IBM Watson REST API Guidelines][watasync] have additional details on a similar style of asynchronous
+API.
 
 ### Job specific indirect resources
 
@@ -252,5 +291,7 @@ SSE, websockets
 
 [evencon]: https://en.wikipedia.org/wiki/Eventual_consistency "Wikipedia's description of eventual consistency"
 [idempkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the idempotency-key header?"
+[watasync]: http://watson-developer-cloud.github.io/api-guidelines/#asynchronous-operations "IBM Watson REST API Guidelines"
+[kubestatus]: https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/ "Kubernetes spec and status"
 [202]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202 "Mozilla's definition of 202"
 [loc]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location "Mozilla's definition of the Location header"
