@@ -29,7 +29,18 @@ public APIs or introducing new ones.
 ### Pretend and defer
 
 Pretending that the API is still synchronous, and deferring expensive work, is often the best option for retrofitting
-existing APIS, as you can keep the same interface.
+existing APIs. If your API continues to pretend the action is synchronous, you can keep the same interface.
+
+This strategy works best for actions that can tolerate [eventual consistency][evencon] in some of their data, or for actions
+that can mitigate inconsistency via other means.
+
+Pretend and defer is often applied to user / account deletion. An account deletion may require cascading deletes to all
+owned data in the same service, calls to other services to delete owned data, calls to third party services to remove
+records of the account, and possibly some time-delayed actions to perform accounting at the end of a billing period.
+
+Instead of blocking and waiting for all this work to complete, an account deletion API can mark the account as disabled
+and revoke any authentication tokens, effectively making the account inaccessible. Any expensive work is then done later on,
+either via direct work scheduling from the API, or through bulk cleanup processes.
 
 ### Block and de-duplicate
 
@@ -232,5 +243,6 @@ array of events, limited size.
 
 SSE, websockets
 
+[evencon]: https://en.wikipedia.org/wiki/Eventual_consistency "Wikipedia's description of eventual consistency"
 [202]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202 "Mozilla's definition of 202"
 [loc]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location "Mozilla's definition of the Location header"
