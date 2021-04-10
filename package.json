@@ -40,7 +40,7 @@
     "tachyons": "^4.7.4",
     "uncss": "^0.17.3",
     "unist-builder": "^2.0.3",
-    "webpack": "^5.31.0",
+    "webpack": "^5.31.2",
     "webpack-cli": "^4.6.0"
   }
 }
