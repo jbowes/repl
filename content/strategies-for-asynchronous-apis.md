@@ -273,13 +273,56 @@ an indirect non-blocking response. Take this into account; it may be better to a
 
 ## Picking a style
 
-inline vs dedicated
+Most often the style of asynchronous API you choose is influenced by existing APIs, data, schema, etc.
+If you're mostly free from those constraints, your choices are likely between:
+- `status` on end-user meaningful resources (for example directly on Cat Bonnets)
+- `status` on job-specific indirect resources (for example creating a `Job` to track sewing a new Cat Bonnet)
 
-benefits and drawbacks to each
+Both of these styles can handle asynchronous resource creation, modification, or deletion, whereas direct creation
+of a job-speicic resource like an `Import` may complicate your API for modification or deletion. An import resource
+can be useful to track when a single entity was imported into a system, but pairing it with a `Deletion` resource, or
+placing long-running delete status directly on the imported entity makes less sense.
+
+Given the two options then, your choice should be influenced by how useful the `status` data is, and how badly a client
+can break their application by ignoring the data.
+
+At Manifold, our API had both styles of API for creating (buying) a resource (SaaS DB) over the years.
+
+We began with job-specific resources. These were problematic for display in the frontend UI; the client was responsible
+for merging the list of *real* resources with the ones that were in the middle of creation, plus modifying the real ones
+for any in-flight change or delete jobs. Performing this merge was extra work for the frontend client, and error prone.
+We would end up with out of order lists, or missing in-creation resources, or duplicate entries for the real resource plus
+its modification job.
+
+Changing the API to have `status` directly on resources made the client simpler. Even if the client ignored the `status`
+field, the list of resources would always be correct, only misidentifying in-creation resources as live ones. If that bug
+ever occurred, further user interaction might fail, but it was far better to show the resource than miss displaying it.
+
+So again, the best style for your API will depend on how you expect clients to consume it.
 
 ### What goes in `status`?
 
-array of events, limited size.
+The most useful `status` fields are arrays of objects like those shown in the examples above, sorted in newest to oldest:
+
+```json
+[
+  {
+    "state": "accepted",
+    "time": "2021-04-08T07:22:03Z",
+    "description": "Your bonnet has been accepted for processing."
+  }
+]
+```
+
+A machine readable state field (which could terminate on `completed` or `errored`), coupled with a human-readable
+description field should give enough data for meaningful progress feedback. If you have it, you could add estimated time to
+completion, as well.
+
+Be careful of too many possible state transitions; you don't want this array to grow to hundreds (or even tens) of entries.
+If that's possible, you may wish to truncate to the last `N` entries, instead of resorting to pagination.
+
+If your data doesn't have meaningful state progressions, a `percent_complete` field can work just as well. Add it in addition
+to the `state` field, so `state` can indicate `running`, `completed`, or `errored`.
 
 ## Variants
 
