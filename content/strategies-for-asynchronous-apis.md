@@ -326,6 +326,12 @@ to the `state` field, so `state` can indicate `running`, `completed`, or `errore
 
 ## Variants
 
+The above strategies require the client to make repeated requests to the server (polling) to get the latest state of a
+request. Polling is excellent for client simplicity and compatibility; if a client can make an HTTP request to start an
+asynchronous action, they can make further requests to get the status.
+
+TODO: fill a little more in here.
+
 ### Callback URLs
 
 ### Push on state change
