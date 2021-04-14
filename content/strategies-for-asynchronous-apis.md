@@ -161,7 +161,7 @@ Content-Type: application/json
 
 The server could reference warehouse stock for `purest unicorn mane` to determine if the
 Cat Bonnet could be fabricated in a reasonable amount of time, or if there is no stock,
-and fabricating the bonnet may require an asynchrous response.
+and fabricating the bonnet may require an asynchronous response.
 
 #### Direct response
 
@@ -263,7 +263,7 @@ Content-Type: application/json
 
 It's OK to reply with a `201 Created` after the Cat Bonnet is created, but it isn't OK to respond with a
 `4XX` series status code on error. A `4XX` series code should be served in response to the direct request
-for the job status only (for example, if the client asked for a job ID that didnt' exist).
+for the job status only (for example, if the client asked for a job ID that didn't exist).
 
 ### Flexibility is complexity
 
@@ -279,7 +279,7 @@ If you're mostly free from those constraints, your choices are likely between:
 - `status` on job-specific indirect resources (for example creating a `Job` to track sewing a new Cat Bonnet)
 
 Both of these styles can handle asynchronous resource creation, modification, or deletion, whereas direct creation
-of a job-speicic resource like an `Import` may complicate your API for modification or deletion. An import resource
+of a job-specific resource like an `Import` may complicate your API for modification or deletion. An import resource
 can be useful to track when a single entity was imported into a system, but pairing it with a `Deletion` resource, or
 placing long-running delete status directly on the imported entity makes less sense.
 
