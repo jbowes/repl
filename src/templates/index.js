@@ -10,6 +10,7 @@ import Footer from '../components/footer';
 
 export default (props) => {
   const Link = (props) => <a href="/" className="link blue">{ props.children }</a>
+  props.posts.map(p => console.log(p.header.date));
   const extracts = props.posts.map(post => <li><Extract post={post} /></li>);
   return (
     <Page>
