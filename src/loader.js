@@ -82,8 +82,8 @@ export function listFiles(dir) {
   }
   // Sort posts from oldest to newest.
   // XXX: To be strictly correct this should parse as date times first.
-  console.log(files[0].header.date)
   console.log(files[1].header.date)
-  console.log(files[0].header.date < files[1].header.date)
+  console.log(files[2].header.date)
+  console.log(files[1].header.date < files[2].header.date)
   return files.sort((a, b) => new Date(a.header.date).getTime() > new Date(b.header.date).getTime());
 };
