@@ -345,7 +345,7 @@ its own timeout if required).
 As the caller is providing an arbitrary URL, care should be taken to ensure the caller has some proof of ownership of that URL, and
 you may wish to [sign][websig] the callback payloads to help protect the client from arbitrary callers or replay attacks.
 
-As the calback needs a server to call back to, this option is best suited for APIs that will be called by other server-side processes.
+As the callback needs a server to call back to, this option is best suited for APIs that will be called by other server-side processes.
 Not only will the calling server not have to maintain a long-running session to poll for status (tricky when we expect systems to crash
 and go away all the time), but the calling server may not have to maintain much additional state, provided the callback response contains
 enough context.
