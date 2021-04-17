@@ -328,9 +328,9 @@ to the `state` field, so `state` can indicate `running`, `completed`, or `errore
 
 The above strategies require the client to make repeated requests to the server (polling) to get the latest state of a
 request. Polling is excellent for client simplicity and compatibility; if a client can make an HTTP request to start an
-asynchronous action, they can make further requests to get the status.
-
-TODO: fill a little more in here.
+asynchronous action, they can make further requests to get the status. However, polling adds additional work for your
+server to do, and will add some latency from when work is finished to when the client knows (depending on the polling interval).
+You may wish to support additional features to reduce latency for the client or load on your server.
 
 ### Callback URLs
 
