@@ -2,9 +2,11 @@
 title: Strategies for Asynchronous APIs
 date: 2021-04-08T11:06:00-03:00
 summary: |
-
+  Most APIs will require some form of non-blocking or asynchronous mechanisms for specific endpoints. It could be an
+  import task that takes minutes or hours, report generation, or even deleting a resource. In any case, whatever the caller
+  is asking for can't be done immediately...
 description: |
-
+  How to make your APIs procrastinate more than you do.
 ---
 
 Most APIs will require some form of non-blocking or asynchronous mechanisms for specific endpoints. It could be an
