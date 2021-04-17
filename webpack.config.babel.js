@@ -40,7 +40,7 @@ export default {
   },
   plugins: [
     new StaticSiteGeneratorPlugin('main', site.staticRoutes(), site),
-    new SitemapPlugin({ base: 'https://repl.ca' })
+    new SitemapPlugin({ base: 'https://repl.ca' }),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } }),
     new CopyPlugin({
       patterns: [
