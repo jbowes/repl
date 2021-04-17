@@ -336,7 +336,12 @@ You may wish to support additional features to reduce latency for the client or 
 
 ### Push on state change
 
-SSE, websockets
+Instead of requiring the client to make new requests for status periodically, they can instead open a long-lived connection with
+[WebSockets][websock] or [Server-Sent Events][sse], allowing the server to push state changes to them, as they happen. Push-based APIs
+such as these require your infrastructure to take on an additional level of state, tracking who has subscriptions to what, across your
+fleet of servers. It can be deceptively difficult to set up, and support may vary across different infrastructure providers and technologies.
+
+Pushing on state change is most applicable to clients that maintain sessions and state, like web browsers or mobile apps.
 
 [evencon]: https://en.wikipedia.org/wiki/Eventual_consistency "Wikipedia's description of eventual consistency"
 [idempkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the idempotency-key header?"
@@ -344,3 +349,5 @@ SSE, websockets
 [kubestatus]: https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/ "Kubernetes spec and status"
 [202]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202 "Mozilla's definition of 202"
 [loc]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location "Mozilla's definition of the Location header"
+[websock]: https://en.wikipedia.org/wiki/WebSocket "Wikipedia's description of WebSockets"
+[sse]: https://en.wikipedia.org/wiki/Server-sent_events "Wikipedia's description of Server-Sent Events"
