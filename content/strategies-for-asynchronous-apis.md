@@ -337,6 +337,19 @@ You may wish to support additional features to reduce latency for the client or 
 
 ### Callback URLs
 
+Callbacks are like targetted one-off [webhooks][webhook]. When a caller creates an asynchronous operation, they supply a callback
+url parameter that the server will call on completion. The caller then has less state to track, and no polling to do; it can wait for
+the callback to arrive on completion or error (though practically speaking it should not trust the server to callback, and implement
+its own timeout if required).
+
+As the caller is providing an arbitrary URL, care should be taken to ensure the caller has some proof of ownership of that URL, and
+you may wish to [sign][websig] the callback payloads to help protect the client from arbitrary callers or replay attacks.
+
+As the calback needs a server to call back to, this option is best suited for APIs that will be called by other server-side processes.
+Not only will the calling server not have to maintain a long-running session to poll for status (tricky when we expect systems to crash
+and go away all the time), but the calling server may not have to maintain much additional state, provided the callback response contains
+enough context.
+
 ### Push on state change
 
 Instead of requiring the client to make new requests for status periodically, they can instead open a long-lived connection with
@@ -354,3 +367,5 @@ Pushing on state change is most applicable to clients that maintain sessions and
 [loc]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location "Mozilla's definition of the Location header"
 [websock]: https://en.wikipedia.org/wiki/WebSocket "Wikipedia's description of WebSockets"
 [sse]: https://en.wikipedia.org/wiki/Server-sent_events "Wikipedia's description of Server-Sent Events"
+[webhook]: https://en.wikipedia.org/wiki/Webhook "Wikipedia's description of webhooks"
+[websig]: https://repl.ca/modern-webhook-signatures/ "Modern Webhook Signatures in 2021"
