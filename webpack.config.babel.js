@@ -5,8 +5,6 @@ import CopyPlugin from 'copy-webpack-plugin';
 
 const site = require('./src/');
 
-console.log(site.staticRoutes());
-
 export default {
   target: 'node', // everything only runs during build
   entry: './src',
@@ -48,7 +46,7 @@ export default {
         changefreq: 'weekly',
         priority: 0.8,
       }, 
-      paths: site.staticRoutes().filter(x => x !== '/').map(x => `/${x}/`).concat([ { path: '/', priority: 0.5 } ] }),
+      paths: site.staticRoutes().filter(x => x !== '/').map(x => `/${x}/`).concat([ { path: '/', priority: 0.5 } ] ),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } }),
     new CopyPlugin({
       patterns: [
