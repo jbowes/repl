@@ -40,7 +40,12 @@ export default {
   },
   plugins: [
     new StaticSiteGeneratorPlugin('main', site.staticRoutes(), site),
-    new SitemapPlugin({ base: 'https://repl.ca', paths: [ { path: '/', changefreq: 'weekly', priority: 0.5 } ] }),
+    new SitemapPlugin({ base: 'https://repl.ca', options: {
+        skipgzip: true,
+        lastmod: true, // default to "now",
+        changefreq: 'weekly',
+        priority: 0.8,
+      }, paths: [ { path: '/', priority: 0.5 } ] }),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } }),
     new CopyPlugin({
       patterns: [
