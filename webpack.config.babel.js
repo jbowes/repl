@@ -47,7 +47,8 @@ export default {
         lastmod: true, // default to "now",
         changefreq: 'weekly',
         priority: 0.8,
-      }, paths: [ { path: '/', priority: 0.5 } ] }),
+      }, 
+      paths: site.staticRoutes().filter(x => x !== '/').map(x => `/${x}/`).concat([ { path: '/', priority: 0.5 } ] }),
     new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } }),
     new CopyPlugin({
       patterns: [
