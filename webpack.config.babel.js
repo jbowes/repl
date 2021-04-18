@@ -5,6 +5,8 @@ import CopyPlugin from 'copy-webpack-plugin';
 
 const site = require('./src/');
 
+console.log(site.staticRoutes());
+
 export default {
   target: 'node', // everything only runs during build
   entry: './src',
