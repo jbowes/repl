@@ -9,4 +9,4 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 0 # no limit
+    open-pull-requests-limit: 10 # default is 5
