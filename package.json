@@ -30,7 +30,7 @@
     "prismjs": "^1.24.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-router-dom": "^5.1.2",
+    "react-router-dom": "^5.2.1",
     "react-structured-data": "0.0.14",
     "rehype-react": "^6.2.1",
     "remark": "^13.0.0",
