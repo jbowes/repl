@@ -23,7 +23,7 @@
     "js-yaml": "^4.1.0",
     "moment": "^2.19.3",
     "postcss": "^8.3.8",
-    "postcss-cli": "^9.0.0",
+    "postcss-cli": "^9.0.1",
     "postcss-import": "^14.0.2",
     "postcss-uncss": "^0.17.0",
     "prism-react-renderer": "^1.2.1",
