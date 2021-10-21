@@ -22,7 +22,7 @@
     "cssnano": "^5.0.8",
     "js-yaml": "^4.1.0",
     "moment": "^2.19.3",
-    "postcss": "^8.3.9",
+    "postcss": "^8.3.10",
     "postcss-cli": "^9.0.1",
     "postcss-import": "^14.0.2",
     "postcss-uncss": "^0.17.0",
