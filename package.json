@@ -33,7 +33,7 @@
     "react-router-dom": "^6.0.2",
     "react-structured-data": "0.0.14",
     "rehype-react": "^6.2.1",
-    "remark": "^13.0.0",
+    "remark": "^14.0.2",
     "remark-frontmatter": "^3.0.0",
     "remark-rehype": "^8.1.0",
     "sitemap-webpack-plugin": "^1.1.1",
