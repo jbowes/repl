@@ -21,7 +21,7 @@
     "copy-webpack-plugin": "^10.2.4",
     "cssnano": "^5.1.5",
     "js-yaml": "^4.1.0",
-    "moment": "^2.19.3",
+    "moment": "^2.29.3",
     "postcss": "^8.4.12",
     "postcss-cli": "^9.1.0",
     "postcss-import": "^14.1.0",
