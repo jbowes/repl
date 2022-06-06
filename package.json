@@ -19,7 +19,7 @@
     "@babel/register": "^7.17.7",
     "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^10.2.4",
-    "cssnano": "^5.1.7",
+    "cssnano": "^5.1.11",
     "js-yaml": "^4.1.0",
     "moment": "^2.29.3",
     "postcss": "^8.4.12",
