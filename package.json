@@ -20,7 +20,7 @@
     "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^10.2.4",
     "cssnano": "^5.1.7",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "moment": "^2.29.3",
     "postcss": "^8.4.12",
     "postcss-cli": "^9.1.0",
