@@ -16,9 +16,8 @@ export default (props) => {
       <div className="flex flex-auto flex-wrap justify-center">
         <Link to="https://github.com/jbowes">github</Link>
         <Link to="https://github.com/jbowes/repl">source</Link>
-        <Link to="https://twitter.com/jrbowes">twitter</Link>
+        <Link to="https://bsky.app/profile/repl.ca">bluesky</Link>
         <Link to="https://www.linkedin.com/in/jbowes/">linkedin</Link>
-        <Link to="https://stackoverflow.com/story/jbowes">stack overflow</Link>
       </div>
       <section className="flex-auto mv3 tc i muted">Copyright © 2017 — { new Date().getFullYear() } James Bowes</section>
     </footer>
