@@ -12,6 +12,7 @@ export default {
   entry: './src',
   output: {
     path: path.resolve(__dirname, '../public'),
+    clean: true, // don't carry stale files over between builds
     filename: 'bundle.js',
     libraryTarget: 'umd'
   },
