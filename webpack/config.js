@@ -1,16 +1,17 @@
+import path from 'path';
 import webpack from 'webpack';
-import StaticSitePlugin from './webpack/static-site-plugin';
+import StaticSitePlugin from './static-site-plugin';
 import SitemapPlugin from 'sitemap-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 
-const site = require('./src/');
+const site = require('../src/');
 
 export default {
   mode: 'production',
   target: 'node', // everything only runs during build
   entry: './src',
   output: {
-    path: __dirname + '/public',
+    path: path.resolve(__dirname, '../public'),
     filename: 'bundle.js',
     libraryTarget: 'umd'
   },
@@ -19,12 +20,12 @@ export default {
       {
         test: /\.js/,
         loader: 'babel-loader',
-        include: __dirname + '/src'
+        include: path.resolve(__dirname, '../src')
       },
       {
         test: /\.(jpg|png)/,
         loader: 'file-loader',
-        include: __dirname + '/src',
+        include: path.resolve(__dirname, '../src'),
         options: {
           name: 'assets/img-[hash:6].[ext]',
         },
@@ -32,7 +33,7 @@ export default {
       {
         test: /\.(ico|otf|pdf)/,
         loader: 'file-loader',
-        include: __dirname + '/src/',
+        include: path.resolve(__dirname, '../src'),
         options: {
           name: '[name].[ext]',
         },
