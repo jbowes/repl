@@ -59,3 +59,15 @@ body {
   text-decoration-thickness: .08em;
   text-underline-offset: .15em;
 }
+
+/* Keyboard focus: a solid 2px ring in the text colour (tachyons only draws a
+   1px dotted one, and .dim fades the focused link to 50% opacity). */
+a.link:focus-visible,
+a:focus-visible,
+.pre:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+a.dim:focus-visible {
+  opacity: 1;
+}
