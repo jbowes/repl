@@ -6,7 +6,6 @@ import Head from '../components/head';
 import Body from '../components/body';
 import Main from '../components/main';
 import Extract from '../components/extract';
-import { ThemeToggle } from '../components/theme';
 import Footer from '../components/footer';
 
 export default (props) => {
@@ -16,7 +15,6 @@ export default (props) => {
     <Page>
       <Head  canonical="/" title="index" description="Articles about web programming, distributed systems, and security, by James Bowes" />
       <Body>
-        <ThemeToggle />
         <header className="bb bw3 mh5-l mh4-m mh3 flex flex-column flex-row-l ttu">
           <div className="bb bw3 bb-0-l br-l bw3-l flex-none ph3 ph4-l pv3 flex flex-row flex-column-l flex-wrap">
             <h1 className="mv0 fw4 tracked-mega f6 pl2-l flex-none order-2 self-center self-start-l"><Link>James Bowes</Link></h1>
