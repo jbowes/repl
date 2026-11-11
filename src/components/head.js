@@ -3,7 +3,13 @@ import Favicons from './favicons';
 import Analytics from './analytics';
 import StructuredData from './structured-data';
 
+const SITE = "https://repl.ca/";
+
 export default (props) => {
+  // The home page passes canonical "/"; posts pass their slug.
+  const slug = (props.canonical || "").replace(/^\/+|\/+$/g, "");
+  const url = slug ? SITE + slug + "/" : SITE;
+
   return (
     <head>
       <title>{ props.title ? props.title + " | repl" : "repl" }</title>
@@ -17,8 +23,6 @@ export default (props) => {
       <meta name="theme-color" content="#2d4247" media="(prefers-color-scheme: light)" />
       <meta name="theme-color" content="#0d1315" media="(prefers-color-scheme: dark)" />
       <meta name="author" content="James Bowes" />
-      <meta name="twitter:site" content="@jrbowes" />
-      <meta name="twitter:creator" content="@jrbowes" />
       <meta name="twitter:card" content="summary_large_image" />
      { props.description && 
         <>
@@ -27,14 +31,16 @@ export default (props) => {
         </>
      }
 
-      <meta property="og:title" content={props.title} />
+      <meta property="og:title" content={props.title || "repl"} />
       <meta property="og:site_name" content="repl" />
-      <meta property="og:url" content={"https://repl.ca/" + props.canonical + "/"} />
+      <meta property="og:url" content={url} />
       <meta property="og:type" content={props.type || "website"} />      
-      <meta property="og:image" content="https://repl.ca/social-mushroom.jpg" />   
-      <meta name="twitter:image" content="https://repl.ca/social-mushroom.jpg" />   
+      <meta property="og:image" content="https://repl.ca/social-mushroom.jpg" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="627" />
+      <meta property="og:image:alt" content="A yellow mushroom with white flecks on its cap, growing from the forest floor" />
 
-      <link rel="canonical" href={ "https://repl.ca/" + props.canonical + "/"} />
+      <link rel="canonical" href={url} />
     
       { props.type && <StructuredData title={props.title} pubdate={props.pubdate} /> }
 
