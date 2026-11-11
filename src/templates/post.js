@@ -6,6 +6,7 @@ import Head from '../components/head';
 import Body from '../components/body';
 import Main from '../components/main';
 import Content from '../components/content';
+import { ThemeToggle } from '../components/theme';
 import Footer from '../components/footer';
 
 export default (props) => {
@@ -14,6 +15,7 @@ export default (props) => {
     <Page>
       <Head canonical={props.post.slug} title={props.post.header.title} description={props.post.header.description} type="article" pubdate={props.post.header.date} />
       <Body className="flex flex-column">
+        <ThemeToggle />
         <header className="ttu bb bw3 mh5-l mh4-m mh3 flex flex-column flex-row-ns">
           <div className="bb bw3 bb-0-ns br-ns bw3-ns flex-none ph3 pv2">
             <h1 className="f3 f2-l lh-solid tracked-tight mv0"><Link>repl</Link></h1>
