@@ -2,7 +2,8 @@ const path = require('path');
 const evaluate = require('eval');
 
 // Renders each route with the entry bundle's default export `(locals, callback)`
-// and emits the result as `<route>/index.html`. Minimal replacement for
+// and emits the result as `<route>/index.html`, then drops the bundle so the
+// build-time renderer isn't deployed. Minimal replacement for
 // static-site-generator-webpack-plugin, which pulls in a vulnerable cheerio.
 class StaticSitePlugin {
   constructor({ entry = 'main', paths, locals }) {
@@ -33,6 +34,10 @@ class StaticSitePlugin {
               );
               compilation.emitAsset(toAssetName(route), new webpack.sources.RawSource(html));
             }
+
+            // Only needed to render; nothing in the pages loads it. Deleting it
+            // before the minify stage also means no bundle.js.LICENSE.txt.
+            compilation.deleteAsset(bundle.name);
           } catch (err) {
             compilation.errors.push(err);
           }
