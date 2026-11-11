@@ -4,7 +4,7 @@ import moment from 'moment';
 
 export default (props) => {
   return (
-    <article className={props.className}>
+    <article className={['post-content', props.className].filter(Boolean).join(' ')}>
       <header>
         <h1 className="mb0 lh-solid f2-ns f3">{ props.post.header.title }</h1>
         <date className="f6 fw3 lh-solid ttu">
