@@ -86,6 +86,12 @@ export function listFiles(dir) {
 
     if (header.draft) continue;
 
+    // YAML `|` block scalars keep their line breaks, which would end up as
+    // newlines (`&#10;`) in the description meta tags.
+    if (typeof header.description === 'string') {
+      header.description = header.description.replace(/\s+/g, ' ').trim();
+    }
+
     let slug = basename(file, extname(file));
     files.push({fs: file, ast: ast, header: header, slug: slug});
   }
