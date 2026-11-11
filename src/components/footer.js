@@ -17,7 +17,7 @@ export default (props) => {
         <Link to="https://github.com/jbowes">github</Link>
         <Link to="https://github.com/jbowes/repl">source</Link>
         <Link to="https://bsky.app/profile/repl.ca">bluesky</Link>
-        <Link to="https://stackoverflow.com/story/jbowes">stack overflow</Link>
+        <Link to="https://www.linkedin.com/in/jbowes/">linkedin</Link>
       </div>
       <section className="flex-auto mv3 tc i black-60">Copyright © 2017 — { new Date().getFullYear() } James Bowes</section>
     </footer>
