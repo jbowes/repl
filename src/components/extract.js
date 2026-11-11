@@ -1,24 +1,23 @@
 import React from 'react';
 
-import Link from './link';
-
 import moment from 'moment';
 
 export default (props) => {
   const slug = props.post.slug + '/';
-  const More = (props) => <Link href={ slug }>{ props.children }</Link>
   const Title = (props) => <a className="link dim blue" href={ slug }>{ props.children }</a>
   return (
       <article className="pv3">
         <header>
-          <h1 className="mv0 lh-solid f2-ns f3"><Title>{ props.post.header.title }</Title></h1>
-          <date className="f6 fw3 lh-solid ttu">
+          <h2 className="mv0 lh-solid f2-ns f3"><Title>{ props.post.header.title }</Title></h2>
+          <time className="f6 fw3 lh-solid ttu" dateTime={ moment(props.post.header.date).format('YYYY-MM-DD') }>
             { moment(props.post.header.date).format('DD MMM YYYY') }
-          </date>
+          </time>
         </header>
         <p>{ props.post.header.summary }</p>
         <footer className="ttu f6">
-          <More>More &gt;</More>
+          <a className="red link dim" href={ slug }>
+            More<span className="clip"> about { props.post.header.title }</span> <span aria-hidden="true">&gt;</span>
+          </a>
         </footer>
       </article>
   );
