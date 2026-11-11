@@ -18,7 +18,7 @@ can make any number of subsequent duplicate `DELETE` requests, and the resource 
 on the server side stays the same, no matter how many `DELETE` requests it sees. Idempotent requests like `DELETE`
 have another interesting property: After that first request, failures, errors, and malformed or misinterpreted
 requests maintain the same state on the server side. *Side note: If you've ever seen a bug that caused a resource
-to be re-created on a failed delete, [let me know on twitter][jamestwitter]. I'd love to hear about it.*
+to be re-created on a failed delete, [let me know on bluesky][jamesbluesky]. I'd love to hear about it.*
 
 "server side" is important here. Discussion of idempotence usually focuses on the server (or whoever holds the
 canonical state), glossing over its impact on the client; it's a one-sided view. The client is important too,
@@ -140,7 +140,7 @@ implement `DELETE`, consider if always returning `200` may be best. But be caref
 `DELETE` endpoints in an existing API.
 
 [idemkey]: https://repl.ca/what-is-the-idempotency-key-header/ "What is the Idempotency-Key Header?"
-[jamestwitter]: https://twitter.com/jrbowes "James' twitter account"
+[jamesbluesky]: https://bsky.app/profile/repl.ca "James' Bluesky account"
 [stripe]: https://stripe.com "Stripe homepage"
 [stripeprod]: https://stripe.com/docs/api/products/delete "Stripe API docs on product deletion"
 [edgevlevel]: https://link.medium.com/zWGns5U69eb "Level Triggering and Reconciliation in Kubernetes"
