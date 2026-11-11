@@ -1,11 +1,19 @@
 import React from 'react';
 
-import { JSONLD, Generic, Author } from 'react-structured-data';
+// Emits schema.org BlogPosting JSON-LD for a post.
+export default (props) => {
+  const data = {
+    '@context': 'https://schema.org/',
+    '@type': 'BlogPosting',
+    headline: props.title,
+    datePublished: props.pubdate,
+    author: { '@type': 'Person', name: 'James Bowes' },
+  };
 
-export default (props) => (
-  <JSONLD dangerouslyExposeHtml>
-      <Generic jsonldtype="BlogPosting" schema={{ headline: props.title, datePublished: props.pubdate }}>
-        <Author name="James Bowes" />
-      </Generic>
-  </JSONLD>
-);
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+};
