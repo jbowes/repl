@@ -1,12 +1,9 @@
 import React from 'react';
 
-import Link from './link';
-
 import moment from 'moment';
 
 export default (props) => {
   const slug = props.post.slug + '/';
-  const More = (props) => <Link href={ slug }>{ props.children }</Link>
   const Title = (props) => <a className="link dim blue" href={ slug }>{ props.children }</a>
   return (
       <article className="pv3">
@@ -18,7 +15,9 @@ export default (props) => {
         </header>
         <p>{ props.post.header.summary }</p>
         <footer className="ttu f6">
-          <More>More &gt;</More>
+          <a className="red link dim" href={ slug }>
+            More<span className="clip"> about { props.post.header.title }</span> <span aria-hidden="true">&gt;</span>
+          </a>
         </footer>
       </article>
   );
