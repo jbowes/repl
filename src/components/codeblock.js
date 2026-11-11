@@ -1,18 +1,17 @@
 import React from 'react';
-import Highlight, { defaultProps } from 'prism-react-renderer';
+import { Highlight, Prism } from 'prism-react-renderer';
 
 // Add additional language parsers
-import Prism from "prism-react-renderer/prism";
 (typeof global !== "undefined" ? global : window).Prism = Prism;
 require("prismjs/components/prism-http");
 
 
 export const CodeBlock = ({ children, className }) => {
   const language = className.replace(/language-/, "");
-  const props = {...defaultProps};
-  // theme={undefined} turns off the default inline styling
+  const code = String(Array.isArray(children) ? children.join('') : children).replace(/\n$/, '');
+  // theme={{ plain: {}, styles: [] }} turns off the default inline styling
   return (
-    <Highlight {...props} code={children[0].replace(/\n$/, '')} language={language} theme={undefined}>
+    <Highlight prism={Prism} code={code} language={language} theme={{ plain: {}, styles: [] }}>
       {({ className, tokens, getLineProps, getTokenProps }) => (
         <pre className="pre br2 pv3 ph3 bg-blue beige">
           <code className={className}>

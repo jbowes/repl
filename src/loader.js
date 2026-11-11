@@ -1,14 +1,15 @@
-import { createElement } from 'react';
+import { Fragment } from 'react';
+import { jsx, jsxs } from 'react/jsx-runtime';
 
 import { readdirSync, statSync, readFileSync } from 'fs';
 import { basename, extname, join } from 'path';
 
-import remark from 'remark';
+import { remark } from 'remark';
 import frontmatter from 'remark-frontmatter';
 import remark2rehype from 'remark-rehype';
 import rehype2react from 'rehype-react';
-import { load } from 'js-yaml';
-import u from 'unist-builder';
+import { load, YAML11_SCHEMA } from 'js-yaml';
+import { u } from 'unist-builder';
 
 import Code from './components/code';
 import CodeBlock from './components/codeblock';
@@ -33,22 +34,27 @@ function* genFiles(dir) {
 }
 
 
-function codeblock(h, node) {
-  var value = node.value ? node.value + '\n' : '';
-  var props = {}
-  var code
+function codeblock(state, node) {
+  const value = node.value ? node.value + '\n' : '';
+  const props = {};
 
   if (node.lang) {
-    props.className = ['language-' + node.lang]
+    props.className = ['language-' + node.lang];
   }
 
-  code = h(node, 'codeblock', props, [u('text', value)])
+  const result = {
+    type: 'element',
+    tagName: 'codeblock',
+    properties: props,
+    children: [u('text', value)],
+  };
 
   if (node.meta) {
-    code.data = {meta: node.meta}
+    result.data = { meta: node.meta };
   }
 
-  return code;
+  state.patch(node, result);
+  return state.applyData(node, result);
 }
 
 export function listFiles(dir) {
@@ -60,7 +66,8 @@ export function listFiles(dir) {
       .use({ settings: { fences: true } })
       .use(frontmatter, ['yaml'])
       .use(() => node => {
-        header = load(node.children[0].value);
+        // js-yaml 5 no longer parses timestamps by default; YAML 1.1 does.
+        header = load(node.children[0].value, { schema: YAML11_SCHEMA });
         return node;
       })
       .use(remark2rehype, {
@@ -69,8 +76,10 @@ export function listFiles(dir) {
         },
       })
       .use(rehype2react, {
-        createElement: createElement,
-        components: markdownToReactComponents,        
+        Fragment,
+        jsx,
+        jsxs,
+        components: markdownToReactComponents,
       })
       .freeze()
       .processSync(contents);
