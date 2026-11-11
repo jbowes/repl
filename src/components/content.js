@@ -7,9 +7,9 @@ export default (props) => {
     <article className={['post-content', props.className].filter(Boolean).join(' ')}>
       <header>
         <h1 className="mb0 lh-solid f2-ns f3">{ props.post.header.title }</h1>
-        <date className="f6 fw3 lh-solid ttu">
+        <time className="f6 fw3 lh-solid ttu" dateTime={ moment(props.post.header.date).format('YYYY-MM-DD') }>
           { moment(props.post.header.date).format('DD MMM YYYY') }
-        </date>
+        </time>
       </header>
 
       { props.children }

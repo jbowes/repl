@@ -12,9 +12,9 @@ export default (props) => {
       <article className="pv3">
         <header>
           <h2 className="mv0 lh-solid f2-ns f3"><Title>{ props.post.header.title }</Title></h2>
-          <date className="f6 fw3 lh-solid ttu">
+          <time className="f6 fw3 lh-solid ttu" dateTime={ moment(props.post.header.date).format('YYYY-MM-DD') }>
             { moment(props.post.header.date).format('DD MMM YYYY') }
-          </date>
+          </time>
         </header>
         <p>{ props.post.header.summary }</p>
         <footer className="ttu f6">
