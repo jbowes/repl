@@ -4,6 +4,18 @@ import StructuredData from './structured-data';
 
 const SITE = "https://repl.ca/";
 
+// Prefetch same-site pages on hover/press; skip files (/sitemap.xml, images).
+const SPECULATION_RULES = JSON.stringify({
+  prefetch: [{
+    where: { and: [
+      { href_matches: "/*" },
+      { not: { href_matches: "/*.*" } },
+      { not: { selector_matches: "[rel~=nofollow]" } },
+    ] },
+    eagerness: "moderate",
+  }],
+});
+
 export default (props) => {
   // The home page passes canonical "/"; posts pass their slug.
   const slug = (props.canonical || "").replace(/^\/+|\/+$/g, "");
@@ -43,6 +55,8 @@ export default (props) => {
       { props.type && <StructuredData title={props.title} pubdate={props.pubdate} /> }
 
       <link rel="stylesheet" href="/css/style.css" />
+
+      <script type="speculationrules" dangerouslySetInnerHTML={{ __html: SPECULATION_RULES }} />
 
       <Favicons />
     </head>
