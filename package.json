@@ -13,7 +13,7 @@
     "dev": "webpack serve --hot --port 5000",
     "build": "webpack --progress",
     "css": "postcss --no-map -o public/css/style.css src/css/style.css",
-    "release": "npm run build && npm run css && node scripts/inline-favicon.js"
+    "release": "npm run build && npm run css"
   },
   "dependencies": {
     "@babel/core": "^8.1.0",
