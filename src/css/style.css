@@ -1,32 +1,49 @@
 @import 'tachyons/css/tachyons.css';
 
+/* Theme tokens. Light is the default; dark follows the OS setting. */
 :root {
-  --blue: #2d4247;
+  color-scheme: light dark;
+  --fg: #2d4247;
+  --bg: #cec8a8;
   --red: #a90f0a;
   --green: #2a5540;
-  --beige: #cec8a8;
+  --muted: rgba(0, 0, 0, .6);
+  --code-bg: #2d4247;
+  --code-fg: #cec8a8;
 
   --light-blue: #92b0c2;
   --light-red: #f88a87;
   --light-green: #8cc298;
   --light-orange: #f88f00;
   --light-yellow: #bab215;
-  
-  color: var(--blue);
-  background-color: var(--beige);
+
+  color: var(--fg);
+  background-color: var(--bg);
   font-family: 'helvetica neue', helvetica, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #d8d4bd;
+    --bg: #172023;
+    --red: #f88a87;
+    --green: #8cc298;
+    --muted: rgba(216, 212, 189, .65);
+    --code-bg: #0d1315;
+    --code-fg: #d8d4bd;
+  }
 }
 
 body {
   min-height: 100vh;
 }
 
-.blue { color: var(--blue); }
+.blue { color: var(--fg); }
 .red { color: var(--red); }
 .green { color: var(--green); }
-.beige { color: var(--beige); }
+.muted { color: var(--muted); }
 
-.bg-blue { background-color: var(--blue); }
+.code-block { background-color: var(--code-bg); color: var(--code-fg); }
 
 .prism-code .keyword { color: var(--light-red); }
 .prism-code .property { color: var(--light-green); }

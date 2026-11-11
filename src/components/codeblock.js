@@ -13,7 +13,7 @@ export const CodeBlock = ({ children, className }) => {
   return (
     <Highlight prism={Prism} code={code} language={language} theme={{ plain: {}, styles: [] }}>
       {({ className, tokens, getLineProps, getTokenProps }) => (
-        <pre className="pre br2 pv3 ph3 bg-blue beige">
+        <pre className="pre br2 pv3 ph3 code-block">
           <code className={className}>
             {tokens.map((line, i) => (
               <div key={i} {...getLineProps({ line, key: i })}>
