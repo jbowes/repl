@@ -1,6 +1,5 @@
 import React from 'react';
 import Favicons from './favicons';
-import Analytics from './analytics';
 import StructuredData from './structured-data';
 
 const SITE = "https://repl.ca/";
@@ -47,7 +46,6 @@ export default (props) => {
       <link rel="stylesheet" href="/css/style.css" />
 
       <Favicons />
-      <Analytics />
     </head>
   );
 };
