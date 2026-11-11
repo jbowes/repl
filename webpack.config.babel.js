@@ -1,11 +1,12 @@
 import webpack from 'webpack';
-import StaticSiteGeneratorPlugin from 'static-site-generator-webpack-plugin';
+import StaticSitePlugin from './webpack/static-site-plugin';
 import SitemapPlugin from 'sitemap-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 
 const site = require('./src/');
 
 export default {
+  mode: 'production',
   target: 'node', // everything only runs during build
   entry: './src',
   output: {
@@ -39,7 +40,7 @@ export default {
     ],
   },
   plugins: [
-    new StaticSiteGeneratorPlugin('main', site.staticRoutes(), site),
+    new StaticSitePlugin({ entry: 'main', paths: site.staticRoutes() }),
     new SitemapPlugin({ base: 'https://repl.ca', options: {
         skipgzip: true,
         lastmod: true, // default to "now",
