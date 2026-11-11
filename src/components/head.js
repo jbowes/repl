@@ -14,7 +14,8 @@ export default (props) => {
         name="viewport"
         content="width=device-width, initial-scale=1.0"
       />
-      <meta name="theme-color" content="#2d4247" />
+      <meta name="theme-color" content="#2d4247" media="(prefers-color-scheme: light)" />
+      <meta name="theme-color" content="#0d1315" media="(prefers-color-scheme: dark)" />
       <meta name="author" content="James Bowes" />
       <meta name="twitter:site" content="@jrbowes" />
       <meta name="twitter:creator" content="@jrbowes" />
