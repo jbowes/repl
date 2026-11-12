@@ -1,0 +1,6 @@
+sequenceDiagram
+  participant P as Provider
+  participant R as Receiver
+  P->>R: POST /webhook (signed)
+  R->>R: verify signature
+  R-->>P: 200 OK

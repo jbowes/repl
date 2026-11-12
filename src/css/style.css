@@ -272,6 +272,37 @@ pre:focus-visible {
 .code-block .boolean { color: var(--light-orange); }
 .code-block .number { color: var(--light-yellow); }
 
+/* Diagrams are inline SVGs drawn at build time (see src/diagram), in the same
+   panel and palette as code blocks. Strokes default to the code foreground,
+   edges take the operator blue, and a node's :::colour tints its outline and
+   fill. */
+.diagram {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: .25rem;
+  background-color: var(--code-bg);
+  /* A faint drafting grid behind the drawing. */
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--code-fg) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--code-fg) 7%, transparent) 1px, transparent 1px);
+  background-size: 16px 16px;
+  color: var(--code-fg);
+}
+.diagram-svg { flex: none; }
+.dg-edge .ln { stroke: var(--light-blue); }
+.dg-edge .ah { fill: var(--light-blue); }
+.dg-life .ln { stroke-opacity: .45; }
+.dg-blue { --dg: var(--light-blue); }
+.dg-red { --dg: var(--light-red); }
+.dg-green { --dg: var(--light-green); }
+.dg-orange { --dg: var(--light-orange); }
+.dg-yellow { --dg: var(--light-yellow); }
+.dg-node .ln, .dg-node .fl, .dg-node .pl, .dg-node .tk { stroke: var(--dg, currentColor); }
+.dg-node .fs, .dg-node circle.tk { fill: var(--dg); }
+
 @media screen and (min-width: 30em) {
   main {
     width: 66.66667%;
