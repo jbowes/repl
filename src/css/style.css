@@ -251,7 +251,7 @@ pre:focus-visible {
   display: block;
   max-width: 100%;
   height: auto;
-  margin: 1rem 0;
+  margin: 1rem auto;
 }
 
 /* Code */
