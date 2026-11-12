@@ -2,7 +2,7 @@ import React from 'react';
 
 export default (props) => {
   return (
-    <body className="flex flex-column">
+    <body>
       { props.children }
     </body>
   );

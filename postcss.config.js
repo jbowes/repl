@@ -1,5 +1,6 @@
-// `npm run css` only resolves @imports. Purging and minifying happen per page
-// in scripts/inline-css.js, which needs the full, unpurged stylesheet.
+// src/css/style.css is hand-written and self-contained, so `npm run css` only
+// minifies it. cssnano's default preset keeps the `/*!` licence banners (for
+// tachyons and normalize.css, whose idioms some rules follow) on purpose.
 module.exports = {
-  plugins: [require('postcss-import')()]
+  plugins: [require('cssnano')()]
 };

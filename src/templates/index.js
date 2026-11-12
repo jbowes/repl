@@ -9,27 +9,27 @@ import Extract from '../components/extract';
 import Footer from '../components/footer';
 
 export default (props) => {
-  const Link = (props) => <a href="/" className="link blue">{ props.children }</a>
+  const Link = (props) => <a href="/" className="brand-link">{ props.children }</a>
   const extracts = props.posts.map(post => <li><Extract post={post} /></li>);
   return (
     <Page>
       <Head canonical="/" description="Articles about web programming, distributed systems, and security, by James Bowes" />
       <Body>
-        <header className="bb bw3 mh5-l mh4-m mh3 flex flex-column flex-row-l ttu">
-          <div className="bb bw3 bb-0-l br-l bw3-l flex-none ph3 ph4-l pv3 flex flex-row flex-column-l flex-wrap">
-            <p className="mv0 fw4 tracked-mega f6 pl2-l flex-none order-2 self-center self-start-l"><Link>James Bowes</Link></p>
-            <h1 className="f3 f-subheadline-l lh-solid tracked-tight mv0 flex-auto order-1 order-last-l"><Link>repl</Link></h1>
+        <header className="masthead home-masthead">
+          <div className="home-brand">
+            <p className="home-byline"><Link>James Bowes</Link></p>
+            <h1 className="home-title"><Link>repl</Link></h1>
           </div>
-          <div className="flex-auto pl3 pl5-l pv3 tc-m">
-            <div className="f1 f-headline-ns lh-solid tracked mv0 b">website</div>
-            <p className="f6 lh-solid mv0 fw5 tracked-mega pl1 pl3-ns nowrap-ns">
+          <div className="home-hero">
+            <div className="hero-name">website</div>
+            <p className="tagline">
               1/128 scale realistic detail programming
             </p>
           </div>
         </header>
 
         <Main>
-          <ul className="list pl0">
+          <ul className="post-list">
             { extracts }
           </ul>
         </Main>

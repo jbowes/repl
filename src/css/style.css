@@ -1,4 +1,10 @@
-@import 'tachyons/css/tachyons.css';
+/*! TACHYONS v4.12.0 | http://tachyons.io */
+/*! normalize.css v8.0.0 | MIT License | github.com/necolas/normalize.css */
+/* The two banners above are kept because a few idioms below follow those
+   projects: normalize.css for the html line-height and text-size-adjust and
+   the code/pre font-size and monospace font stack; Tachyons for the spacing
+   and type scale, the dim-on-hover timings and the visually-hidden clip.
+   Everything else is written for this site. */
 
 /* Theme tokens. Light is the default; dark follows the OS setting. */
 :root {
@@ -20,6 +26,8 @@
   color: var(--fg);
   background-color: var(--bg);
   font-family: 'helvetica neue', helvetica, sans-serif;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,40 +42,273 @@
   }
 }
 
+* { box-sizing: border-box; }
+
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  margin: 0;
 }
 
-.blue { color: var(--fg); }
-.red { color: var(--red); }
-.green { color: var(--green); }
-.muted { color: var(--muted); }
+main {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-.code-block { background-color: var(--code-bg); color: var(--code-fg); }
+code, pre { font-size: 1em; }
+code { font-family: Consolas, monaco, monospace; }
+pre { font-family: monospace, monospace; }
 
-.prism-code .keyword { color: var(--light-red); }
-.prism-code .property { color: var(--light-green); }
-.prism-code .punctuation { color: var(--light-blue); }
-.prism-code .operator { color: var(--light-blue); }
-.prism-code .comment { font-style: italic; }
-.prism-code .boolean { color: var(--light-orange); }
-.prism-code .number { color: var(--light-yellow); }
+/* Masthead (the band across the top of every page) */
+.masthead {
+  display: flex;
+  flex-direction: column;
+  margin: 0 1rem;
+  border-width: .5rem;
+  border-style: none none solid;
+  text-transform: uppercase;
+}
+.home-brand,
+.post-brand {
+  flex: none;
+  border-width: .5rem;
+  border-style: none none solid;
+}
+.home-brand {
+  display: flex;
+  flex-flow: row wrap;
+  padding: 1rem;
+}
+.post-brand { padding: .5rem 1rem; }
+
+.home-title,
+.brand-name {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+.home-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  order: 1;
+}
+.brand-name { font-weight: 700; }
+.home-byline {
+  flex: none;
+  order: 2;
+  align-self: center;
+  margin: 0;
+  font-size: .875rem;
+  font-weight: 400;
+  letter-spacing: .25em;
+}
+
+.home-hero,
+.post-tagline {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 1rem 0 1rem 1rem;
+}
+.hero-name {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .1em;
+}
+.tagline {
+  margin: 0;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: .25em;
+}
+.home-hero .tagline { padding-left: .25rem; }
+
+/* Posts and the post index */
+.post-list {
+  padding-left: 0;
+  list-style-type: none;
+}
+.extract { padding: 1rem 0; }
+.extract-title,
+.post-title {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.extract-title { margin: 0; }
+.post-title { margin: .67em 0 0; }
+.post-date {
+  font-size: .875rem;
+  font-weight: 300;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.extract-more {
+  font-size: .875rem;
+  text-transform: uppercase;
+}
+
+/* Text for screen readers only */
+.visually-hidden {
+  position: fixed;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+/* Footer */
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  margin: 4rem 1rem 0;
+  padding-top: 2rem;
+  border-width: .25rem;
+  border-style: solid none none;
+  font-size: .75rem;
+}
+.footer-links {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+}
+.footer-item {
+  flex: none;
+  padding: 0 .5rem;
+}
+.copyright {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 1rem 0;
+  font-style: italic;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* Links. brand-link: no fade, no underline; the others dim on hover. The
+   colour transition on the base state means the dim eases in but snaps back,
+   exactly as it did before; changing that would be a visible tweak. */
+.brand-link,
+.title-link,
+.text-link {
+  text-decoration: none;
+  transition: color .15s ease-in;
+}
+.brand-link,
+.title-link { color: var(--fg); }
+.text-link { color: var(--red); }
+.footer-link {
+  color: var(--muted);
+  transition: opacity .15s ease-in;
+}
+.brand-link:focus,
+.title-link:focus,
+.text-link:focus { outline: 1px dotted currentColor; }
+.title-link:hover,
+.title-link:focus,
+.text-link:hover,
+.text-link:focus,
+.footer-link:hover,
+.footer-link:focus {
+  opacity: .5;
+  transition: opacity .15s ease-in;
+}
+.title-link:active,
+.text-link:active,
+.footer-link:active {
+  opacity: .8;
+  transition: opacity .15s ease-out;
+}
 
 /* Links inside post bodies must not rely on colour alone (WCAG 1.4.1). */
-.post-content a.red {
+.post-content .text-link {
   text-decoration: underline;
   text-decoration-thickness: .08em;
   text-underline-offset: .15em;
 }
 
-/* Keyboard focus: a solid 2px ring in the text colour (tachyons only draws a
-   1px dotted one, and .dim fades the focused link to 50% opacity). */
-a.link:focus-visible,
-a:focus-visible,
-.pre:focus-visible {
+/* Keyboard focus: a solid 2px ring in the text colour, and no fade. The
+   [href] makes this outrank the :focus rules above. */
+a[href]:focus-visible,
+pre:focus-visible {
   outline: 2px solid var(--fg);
   outline-offset: 2px;
-}
-a.dim:focus-visible {
   opacity: 1;
+}
+
+/* Code */
+.inline-code { color: var(--green); }
+.code-block {
+  overflow: scroll;
+  padding: 1rem;
+  border-radius: .25rem;
+  white-space: pre;
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+}
+.code-block .keyword { color: var(--light-red); }
+.code-block .property { color: var(--light-green); }
+.code-block .punctuation,
+.code-block .operator { color: var(--light-blue); }
+.code-block .comment { font-style: italic; }
+.code-block .boolean { color: var(--light-orange); }
+.code-block .number { color: var(--light-yellow); }
+
+@media screen and (min-width: 30em) {
+  main {
+    width: 66.66667%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .post-brand {
+    border-right-style: solid;
+    border-bottom-width: 0;
+  }
+  .post-masthead { flex-direction: row; }
+  .hero-name { font-size: 6rem; }
+  .home-hero .tagline {
+    padding-left: 1rem;
+    white-space: nowrap;
+  }
+  .extract-title,
+  .post-title { font-size: 2.25rem; }
+}
+
+@media screen and (min-width: 30em) and (max-width: 60em) {
+  .masthead { margin: 0 2rem; }
+  .site-footer { margin-left: 2rem; margin-right: 2rem; }
+  .home-hero { text-align: center; }
+}
+
+@media screen and (min-width: 60em) {
+  .masthead { margin: 0 4rem; }
+  .site-footer { margin-left: 4rem; margin-right: 4rem; }
+  .home-masthead { flex-direction: row; }
+  .home-brand {
+    flex-direction: column;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    border-right-style: solid;
+    border-bottom-width: 0;
+  }
+  .home-title {
+    order: 99999;
+    font-size: 5rem;
+  }
+  .home-byline {
+    align-self: flex-start;
+    padding-left: .5rem;
+  }
+  .home-hero { padding-left: 4rem; }
+  .post-tagline { padding-left: 2rem; }
+  .brand-name { font-size: 2.25rem; }
 }
