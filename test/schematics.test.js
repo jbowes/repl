@@ -74,14 +74,14 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   assert.deepEqual(view('iso'), ['iso']);
   assert.deepEqual(view('plan, side'), ['plan', 'side']);
 
-  // plan has the hollow body and the tray (rim pieces: five each, as a scoop
-  // splits one wall) and the card case; the lid is off. iso has the body and
-  // the tray (3 inside faces, 2 outer faces, a cut band, 5 rim pieces each),
+  // plan has the hollow body (five rim pieces, as its scoop splits one wall),
+  // the tray (six: it has a scoop in two walls) and the card case; the lid is off. iso has the body and
+  // the tray (3 inside faces, 2 outer faces, a cut band per scoop, the rim pieces),
   // the card case and the lifted lid (three faces each). The drawer tier under
   // the body is a plain block from outside: one rectangle, or three faces.
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('plan'), 5 + 5 + 1 + 1);
-  assert.equal(polys('iso'), 2 * (3 + 2 + 1 + 5) + 3 + 3 + 3);
+  assert.equal(polys('plan'), 5 + 6 + 1 + 1);
+  assert.equal(polys('iso'), (3 + 2 + 1 + 5) + (3 + 2 + 2 + 6) + 3 + 3 + 3);
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
