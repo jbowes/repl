@@ -8,114 +8,144 @@ description: |
 ---
 
 A Gamegenic Sidekick Pro XL, the Commander-sized deck box, drawn from one
-YAML source as a plan, a front elevation and an isometric view.
+YAML source. The box is a hollow shell: a plan with the lid off, a front
+elevation with the lid on, a section cut through the middle, and an
+isometric view with the lid lifted clear so the empty compartment shows.
 
 The three outer dimensions, 110 x 104 x 102 mm (W x D x H), come from retailer
 listings and are unverified: one retailer lists 85 x 100 x 102 mm, so the
 width in particular is disputed, and the manufacturer does not publish
-dimensions. The split of the box into lid, slide-in card case and token drawer
-is approximate and for illustration only. Gamegenic does not publish sizes for
-those parts, so they carry no dimension lines and should not be read as a
-spec.
+dimensions. Everything inside that, namely the wall thickness, the drawer
+tier, the card case, the lid and how far it is lifted, is approximate and for
+illustration only. Gamegenic does not publish sizes for those parts, so they
+carry no dimension lines and should not be read as a spec.
 
-```schematic alt="Plan, front elevation and isometric views of a Sidekick Pro XL deck box, 110 by 104 by 102 millimetres"
+```schematic alt="Plan, front, section and isometric views of a hollow Sidekick Pro XL deck box, 110 by 104 by 102 millimetres"
 # Gamegenic Sidekick Pro XL, a Magic: The Gathering Commander deck box.
 #
 # SOURCES AND HONESTY
 # - The three OUTER dimensions, 110 x 104 x 102 mm (W x D x H), come from
 #   retailer listings and are unverified. The manufacturer does not publish
 #   dimensions. One retailer lists 85 x 100 x 102 mm, so the width is disputed.
-# - The split of the body into drawer, card case and lid below is APPROXIMATE
-#   and illustrative only. No internal or sub-dimensions of the drawer, slide
-#   case or lid are published; the proportions are guesses, not a spec, and
-#   carry no dimension lines.
+# - Everything below the outer size is APPROXIMATE and illustrative only: the
+#   wall thickness (3 mm), the 26 mm drawer tier under the compartment, the
+#   10 mm card case, the 26 mm lid and the 36 mm lift in the exploded view are
+#   guesses, not a spec, and carry no dimension lines.
 # - Features per the manufacturer: a removable cover that clips onto the
 #   bottom, a front slide-in card case (UV protective, shows the commander
 #   card), an integrated drawer for tokens and dice, magnets closing the lid,
 #   capacity 100 double-sleeved cards.
 #
+# The box is hollow: the body is an open-top shell with a deck compartment in
+# the middle. The plan shows it with the lid off; the section cuts it through
+# the middle (the card case is on the removed near half); the isometric view
+# lifts the lid clear (exploded) so the inside shows; the front elevation is
+# closed up.
+#
 # Axes: x is width (left to right), y is depth (the front, with the slide-in
 # card case, faces +y), z is height.
 units: mm
 scale: 2.2
-views: [plan, front, iso]
+views: [plan, front, section, iso]
 columns: 1
 shapes:
-  # Approximate: token and dice drawer, the lower tier.
-  - { type: box, id: drawer, at: [0, 0, 0], size: [110, 104, 26], style: orange }
-  # Approximate: the main deck compartment behind the card case.
-  - { type: box, id: compartment, at: [0, 0, 26], size: [110, 94, 50] }
+  # Approximate: the body, a hollow open-top shell. The 26 mm floor stands for
+  # the token drawer tier under the deck compartment.
+  - { type: box, id: body, at: [0, 0, 0], size: [110, 94, 76], wall: 3, floor: 26, style: blue }
   # Approximate: the front slide-in card case, a thin slab on the front face.
   - { type: box, id: card-case, at: [0, 94, 26], size: [110, 10, 50], style: green }
-  # Approximate: the magnetic lid.
-  - { type: box, id: lid, at: [0, 0, 76], size: [110, 104, 26], style: blue }
+  # Approximate: the magnetic lid. Closed in the elevation...
+  - { type: box, id: lid, views: [front, section], at: [0, 0, 76], size: [110, 104, 26], style: orange }
+  # ...and lifted off in the isometric view, with guide lines to where it seats.
+  - { type: box, id: lid-lifted, views: [iso], at: [0, 0, 201], size: [110, 104, 26], style: orange }
+  - { type: line, views: [iso], dashed: true, points: [[0, 104, 76], [0, 104, 201]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 104, 76], [110, 104, 201]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 0, 76], [110, 0, 201]] }
 
-  # The only dimensions: the three outer measurements (retailer listings).
+  # The only dimensions: the outer width and depth, and the closed height.
   - { type: dim, views: [plan, iso], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 24, 0] }
   - { type: dim, views: [plan, iso], from: [110, 0, 0], to: [110, 104, 0], offset: [24, 0, 0] }
   - { type: dim, views: [front], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [110, 104, 0], to: [110, 104, 102], offset: [24, 0, 0] }
-  - { type: dim, views: [iso], from: [110, 0, 0], to: [110, 0, 102], offset: [24, 0, 0] }
 
   # Callouts name the approximate parts.
-  - { type: label, views: [plan], at: [20, 20, 102], to: [-30, 12, 102], text: lid (approx.) }
+  - { type: label, views: [plan], at: [55, 47, 76], to: [-35, 20, 76], text: deck compartment (hollow) }
+  - { type: label, views: [plan], at: [20, 99, 76], to: [-35, 112, 76], text: card case (approx.) }
+  - { type: label, views: [section], at: [1.5, 52, 60], to: [-45, 52, 70], text: wall (approx.) }
+  - { type: label, views: [section], at: [55, 52, 13], to: [-45, 52, 13], text: floor / drawer tier (approx.) }
+  - { type: label, views: [section], at: [55, 52, 52], to: [118, 52, 52], text: hollow deck compartment }
+  - { type: label, views: [section], at: [55, 52, 89], to: [118, 52, 100], text: lid (approx.) }
   - { type: label, views: [front], at: [0, 104, 90], to: [-30, 104, 110], text: lid (approx.) }
   - { type: label, views: [front], at: [0, 104, 51], to: [-30, 104, 60], text: slide-in card case (approx.) }
   - { type: label, views: [front], at: [0, 104, 13], to: [-30, 104, 22], text: token drawer (approx.) }
-  - { type: label, views: [iso], at: [0, 104, 90], to: [-40, 150, 120], text: lid (approx.) }
+  - { type: label, views: [iso], at: [0, 104, 214], to: [-40, 150, 230], text: "lid, lifted (approx.)" }
   - { type: label, views: [iso], at: [30, 104, 51], to: [-40, 150, 70], text: card case (approx.) }
-  - { type: label, views: [iso], at: [20, 104, 13], to: [-40, 150, 20], text: drawer (approx.) }
+  - { type: label, views: [iso], at: [55, 47, 40], to: [-40, 40, 90], text: hollow deck compartment }
 ```
 
 The same source as a single isometric view, using `view="iso"` on the fence:
 
-```schematic alt="Isometric view of a Sidekick Pro XL deck box" view="iso"
+```schematic alt="Isometric view of a hollow Sidekick Pro XL deck box with its lid lifted off" view="iso"
 # Gamegenic Sidekick Pro XL, a Magic: The Gathering Commander deck box.
 #
 # SOURCES AND HONESTY
 # - The three OUTER dimensions, 110 x 104 x 102 mm (W x D x H), come from
 #   retailer listings and are unverified. The manufacturer does not publish
 #   dimensions. One retailer lists 85 x 100 x 102 mm, so the width is disputed.
-# - The split of the body into drawer, card case and lid below is APPROXIMATE
-#   and illustrative only. No internal or sub-dimensions of the drawer, slide
-#   case or lid are published; the proportions are guesses, not a spec, and
-#   carry no dimension lines.
+# - Everything below the outer size is APPROXIMATE and illustrative only: the
+#   wall thickness (3 mm), the 26 mm drawer tier under the compartment, the
+#   10 mm card case, the 26 mm lid and the 36 mm lift in the exploded view are
+#   guesses, not a spec, and carry no dimension lines.
 # - Features per the manufacturer: a removable cover that clips onto the
 #   bottom, a front slide-in card case (UV protective, shows the commander
 #   card), an integrated drawer for tokens and dice, magnets closing the lid,
 #   capacity 100 double-sleeved cards.
 #
+# The box is hollow: the body is an open-top shell with a deck compartment in
+# the middle. The plan shows it with the lid off; the section cuts it through
+# the middle (the card case is on the removed near half); the isometric view
+# lifts the lid clear (exploded) so the inside shows; the front elevation is
+# closed up.
+#
 # Axes: x is width (left to right), y is depth (the front, with the slide-in
 # card case, faces +y), z is height.
 units: mm
 scale: 2.2
-views: [plan, front, iso]
+views: [plan, front, section, iso]
 columns: 1
 shapes:
-  # Approximate: token and dice drawer, the lower tier.
-  - { type: box, id: drawer, at: [0, 0, 0], size: [110, 104, 26], style: orange }
-  # Approximate: the main deck compartment behind the card case.
-  - { type: box, id: compartment, at: [0, 0, 26], size: [110, 94, 50] }
+  # Approximate: the body, a hollow open-top shell. The 26 mm floor stands for
+  # the token drawer tier under the deck compartment.
+  - { type: box, id: body, at: [0, 0, 0], size: [110, 94, 76], wall: 3, floor: 26, style: blue }
   # Approximate: the front slide-in card case, a thin slab on the front face.
   - { type: box, id: card-case, at: [0, 94, 26], size: [110, 10, 50], style: green }
-  # Approximate: the magnetic lid.
-  - { type: box, id: lid, at: [0, 0, 76], size: [110, 104, 26], style: blue }
+  # Approximate: the magnetic lid. Closed in the elevation...
+  - { type: box, id: lid, views: [front, section], at: [0, 0, 76], size: [110, 104, 26], style: orange }
+  # ...and lifted off in the isometric view, with guide lines to where it seats.
+  - { type: box, id: lid-lifted, views: [iso], at: [0, 0, 201], size: [110, 104, 26], style: orange }
+  - { type: line, views: [iso], dashed: true, points: [[0, 104, 76], [0, 104, 201]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 104, 76], [110, 104, 201]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 0, 76], [110, 0, 201]] }
 
-  # The only dimensions: the three outer measurements (retailer listings).
+  # The only dimensions: the outer width and depth, and the closed height.
   - { type: dim, views: [plan, iso], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 24, 0] }
   - { type: dim, views: [plan, iso], from: [110, 0, 0], to: [110, 104, 0], offset: [24, 0, 0] }
   - { type: dim, views: [front], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [110, 104, 0], to: [110, 104, 102], offset: [24, 0, 0] }
-  - { type: dim, views: [iso], from: [110, 0, 0], to: [110, 0, 102], offset: [24, 0, 0] }
 
   # Callouts name the approximate parts.
-  - { type: label, views: [plan], at: [20, 20, 102], to: [-30, 12, 102], text: lid (approx.) }
+  - { type: label, views: [plan], at: [55, 47, 76], to: [-35, 20, 76], text: deck compartment (hollow) }
+  - { type: label, views: [plan], at: [20, 99, 76], to: [-35, 112, 76], text: card case (approx.) }
+  - { type: label, views: [section], at: [1.5, 52, 60], to: [-45, 52, 70], text: wall (approx.) }
+  - { type: label, views: [section], at: [55, 52, 13], to: [-45, 52, 13], text: floor / drawer tier (approx.) }
+  - { type: label, views: [section], at: [55, 52, 52], to: [118, 52, 52], text: hollow deck compartment }
+  - { type: label, views: [section], at: [55, 52, 89], to: [118, 52, 100], text: lid (approx.) }
   - { type: label, views: [front], at: [0, 104, 90], to: [-30, 104, 110], text: lid (approx.) }
   - { type: label, views: [front], at: [0, 104, 51], to: [-30, 104, 60], text: slide-in card case (approx.) }
   - { type: label, views: [front], at: [0, 104, 13], to: [-30, 104, 22], text: token drawer (approx.) }
-  - { type: label, views: [iso], at: [0, 104, 90], to: [-40, 150, 120], text: lid (approx.) }
+  - { type: label, views: [iso], at: [0, 104, 214], to: [-40, 150, 230], text: "lid, lifted (approx.)" }
   - { type: label, views: [iso], at: [30, 104, 51], to: [-40, 150, 70], text: card case (approx.) }
-  - { type: label, views: [iso], at: [20, 104, 13], to: [-40, 150, 20], text: drawer (approx.) }
+  - { type: label, views: [iso], at: [55, 47, 40], to: [-40, 40, 90], text: hollow deck compartment }
 ```
 
 A second example exercising a cylinder, a group, a footprint, wires and a
