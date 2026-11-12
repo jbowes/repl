@@ -7,7 +7,7 @@ description: |
   Demo of hand-drawn rough.js diagrams built from Mermaid-style text.
 ---
 
-Diagrams use the code block panel and palette. A sequence diagram, with coloured participants:
+Diagrams are drawn as technical line art in the code block panel and palette. A sequence diagram, with coloured participants, index tags, dash-dot lines for replies and solid arrowheads:
 
 ```diagram alt="A provider sends a signed webhook and the receiver verifies it before replying 200"
 sequenceDiagram
@@ -46,4 +46,15 @@ flowchart LR
   A[blue]:::blue --> B[red]:::red --> C[green]:::green --> D[orange]:::orange --> E[yellow]:::yellow
   F[blue]:::blue-solid --> G[red]:::red-solid --> H[green]:::green-solid --> I[orange]:::orange-solid --> J[yellow]:::yellow-solid
   K[blue]:::blue-cross --> L[red]:::red-cross --> M[green]:::green-cross --> N[orange]:::orange-cross --> O[yellow]:::yellow-cross
+```
+
+The previous hand-drawn look is still available with `style="sketch"`:
+
+```diagram alt="The idempotency key flow, drawn by hand" style="sketch"
+flowchart LR
+  A[Client]:::blue --> B(API):::green-solid
+  B --> C{Seen before?}:::orange-cross
+  C -->|yes| D[Replay response]:::yellow
+  C -->|no| E[Process request]:::red
+  E -.-> F[Store result]:::green
 ```
