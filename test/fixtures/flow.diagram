@@ -1,0 +1,6 @@
+flowchart LR
+  A[Client] -->|Idempotency-Key| B(API)
+  B --> C{Seen before?}
+  C -->|yes| D[Replay response]
+  C -->|no| E[Process request]
+  E -.-> F[Store result]

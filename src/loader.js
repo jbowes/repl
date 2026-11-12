@@ -13,12 +13,15 @@ import { u } from 'unist-builder';
 
 import Code from './components/code';
 import CodeBlock from './components/codeblock';
+import Diagram from './components/diagram';
 import Link from './components/link';
+import { renderDiagram } from './diagram/render';
 
 const markdownToReactComponents = {
   a: Link,
   code: Code,
   codeblock: CodeBlock,
+  diagram: Diagram,
 };
 
 function* genFiles(dir) {
@@ -35,6 +38,20 @@ function* genFiles(dir) {
 
 
 function codeblock(state, node) {
+  // ```diagram alt="..." blocks become an SVG drawn at build time.
+  if (node.lang === 'diagram') {
+    const alt = /\balt="([^"]*)"/.exec(node.meta || '');
+    const svg = renderDiagram(node.value, { alt: alt && alt[1] });
+    const result = {
+      type: 'element',
+      tagName: 'diagram',
+      properties: {},
+      children: [u('text', svg)],
+    };
+    state.patch(node, result);
+    return state.applyData(node, result);
+  }
+
   const value = node.value ? node.value + '\n' : '';
   const props = {};
 
