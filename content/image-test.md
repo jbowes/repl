@@ -23,4 +23,4 @@ A large PNG (7010 bytes), emitted as a hashed file with `loading="lazy"`:
 
 A remote image passes through untouched:
 
-![Remote favicon](https://repl.ca/favicon-32x32.png)
+![Remote mushroom](https://repl.ca/social-mushroom.jpg)
