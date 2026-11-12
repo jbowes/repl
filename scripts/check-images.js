@@ -1,12 +1,12 @@
-// Checks that images under content/images/ are fit to commit: WebP (or SVG
-// and GIF, which sharp cannot improve on) with no embedded metadata, so no
+// Checks that images under content/images/ are fit to commit: WebP (animated
+// where the source was a GIF, or SVG) with no embedded metadata, so no
 // EXIF geotags, camera details or XMP leak onto the site. Run by the
 // pre-commit hook (.githooks/pre-commit) and CI; the build itself trusts
 // whatever is committed.
 //
 //   node scripts/check-images.js            check every image
 //   node scripts/check-images.js --staged   check only staged images
-//   node scripts/check-images.js --fix      convert PNG/JPEG to WebP, strip
+//   node scripts/check-images.js --fix      convert PNG/JPEG/GIF to WebP, strip
 //                                           metadata, and update posts
 const { execFileSync } = require('child_process');
 const fs = require('fs');
@@ -17,8 +17,8 @@ const root = path.join(__dirname, '..');
 const dir = path.join('content', 'images');
 const QUALITY = 80;
 
-const OK = new Set(['.webp', '.svg', '.gif']);
-const CONVERT = new Set(['.png', '.jpg', '.jpeg']);
+const OK = new Set(['.webp', '.svg']);
+const CONVERT = new Set(['.png', '.jpg', '.jpeg', '.gif']);
 
 function listAll() {
   if (!fs.existsSync(path.join(root, dir))) return [];
@@ -52,7 +52,8 @@ async function toWebp(file) {
   const out = abs.slice(0, -ext.length) + '.webp';
   // rotate() applies the EXIF orientation before the tags are dropped, so the
   // image does not come out sideways. sharp keeps no metadata unless asked.
-  const buf = await sharp(abs)
+  // `animated` keeps every frame of a GIF; without it only the first survives.
+  const buf = await sharp(abs, { animated: true })
     .rotate()
     .webp(ext === '.png' ? { lossless: true, effort: 6 } : { quality: QUALITY, effort: 6 })
     .toBuffer();
@@ -81,7 +82,7 @@ async function fix(files) {
     } else if (ext === '.webp' && (await problems(file)).length) {
       // Re-encoding lossy WebP is lossy again, hence the higher quality.
       const abs = path.join(root, file);
-      const buf = await sharp(abs).rotate().webp({ quality: 90, effort: 6 }).toBuffer();
+      const buf = await sharp(abs, { animated: true }).rotate().webp({ quality: 90, effort: 6 }).toBuffer();
       fs.writeFileSync(abs, buf);
       console.log(`${file}: metadata stripped`);
     }
@@ -105,7 +106,7 @@ async function main() {
   console.log(`check-images: ${files.length} images ok`);
 }
 
-module.exports = { problems };
+module.exports = { problems, toWebp };
 
 if (require.main === module) {
   main().catch((e) => {

@@ -47,3 +47,20 @@ test('a clean WebP, an SVG and a GIF pass', async () => {
   } finally { f.done(); }
   assert.deepEqual(await problems('test/fixtures/small.svg'), []);
 });
+
+test('GIF is rejected, and --fix converts it to an animated WebP', async () => {
+  const frames = Buffer.concat([0, 255].map((v) => Buffer.alloc(8 * 8 * 3, v)));
+  const gif = await sharp(frames, { raw: { width: 8, height: 8 * 2, channels: 3, pageHeight: 8 } })
+    .gif()
+    .toBuffer();
+  assert.equal((await sharp(gif, { animated: true }).metadata()).pages, 2);
+
+  const f = scratch('a.gif', gif);
+  try {
+    assert.match((await problems(f.rel))[0], /must be WebP, not \.gif/);
+    const { toWebp } = require('../scripts/check-images');
+    const out = await toWebp(f.rel);
+    assert.equal((await sharp(path.join(root, out), { animated: true }).metadata()).pages, 2);
+    assert.deepEqual(await problems(out), []);
+  } finally { f.done(); }
+});
