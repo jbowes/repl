@@ -75,13 +75,13 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   assert.deepEqual(view('plan, side'), ['plan', 'side']);
 
   // plan has the hollow body and the tray (their rims are stroked as edges,
-  // not polygons, so only the lowered wall under each scoop counts: 1 and 2) and the card case. iso has the body and
-  // the tray (3 inside faces, 2 outer faces, a cut band per scoop) and
-  // the card case (three faces). The cover is not drawn. The drawer tier under
-  // the body is a plain block from outside: one rectangle, or three faces.
+  // not polygons, so only the lowered wall under each scoop counts: 2 each)
+  // and the drawer tier under the body, a plain block from outside. iso has
+  // the body and the tray (3 inside faces, 2 outer faces, a cut band per
+  // scoop) and the tier's three faces. The cover and card case are not drawn.
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('plan'), 1 + 2 + 1 + 1);
-  assert.equal(polys('iso'), (3 + 2 + 1) + (3 + 2 + 2) + 3 + 3);
+  assert.equal(polys('plan'), 2 + 2 + 1);
+  assert.equal(polys('iso'), 2 * (3 + 2 + 2) + 3);
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
@@ -361,6 +361,11 @@ test('the deck box fixture has a tray pulled out to the left, with scoops', () =
   assert.equal(tray.scoops[0].side, '+x'); // the wall facing the box
   assert.equal(body.scoops[0].side, '-x');
   assert.equal(body.scoops[0].shape, 'round');
+  // a thumb scoop in the top of both side walls
+  assert.deepEqual(body.scoops.map((sc) => sc.side), ['-x', '+x']);
+  assert.deepEqual(tray.scoops.map((sc) => sc.side), ['+x', '-x']);
+  // one plain box: no lid or card case
+  assert.deepEqual(m.shapes.filter((s) => s.type === 'box').map((s) => s.id), ['tier', 'tier-base', 'tier-side', 'body', 'tray']);
 });
 
 test('iso clips each scoop cut surface to its notch, and fills the rim as one shape', () => {
