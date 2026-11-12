@@ -245,6 +245,15 @@ pre:focus-visible {
   opacity: 1;
 }
 
+/* Images in posts. The width/height attributes reserve the space before the
+   file loads; height:auto keeps the ratio when max-width shrinks it. */
+.post-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+}
+
 /* Code */
 .inline-code { color: var(--green); }
 .code-block {
