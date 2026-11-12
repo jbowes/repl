@@ -72,42 +72,105 @@ function drawView(model, view, scale, c) {
     c.halo(x, y, str, opts);
   };
 
-  const shapes = model.shapes.filter((s) => !s.views || s.views.includes(view));
+  let shapes = model.shapes.filter((s) => !s.views || s.views.includes(view));
+  // A section cuts the model at y = cut (default: the middle) and removes the
+  // near half, so solids wholly on the viewer's side of the cut are not drawn.
+  const ys = model.shapes.flatMap(shapePoints).map((p) => p[1]);
+  const cut = model.cut ?? (Math.min(...ys) + Math.max(...ys)) / 2;
+  if (view === 'section') shapes = shapes.filter((s) => !extent(s) || extent(s).min[1] < cut);
   const solids = paintOrder(shapes.filter((s) => extent(s)), view);
 
   const drawLabel = (s, [cx, cy]) => {
     if (s.label) text(cx, cy + 4, s.label);
   };
 
+  // Hidden cavity edges are annotations, drawn over everything (see below).
+  const overlay = [];
+  const ringShape = (outer, inner) => (a) =>
+    `<path d="M${outer.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}ZM${inner.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}Z" fill-rule="evenodd" clip-rule="evenodd" ${a}/>`;
+
   const drawBox = (s) => {
     const e = extent(s);
     const [x0, y0, z0] = e.min;
     const [x1, y1, z1] = e.max;
+    const hollow = s.wall !== undefined;
+    // Inner cavity: open at the top, `wall` in from the sides, `floor` up.
+    const [ix0, ix1, iy0, iy1, fz] = hollow ? [x0 + s.wall, x1 - s.wall, y0 + s.wall, y1 - s.wall, z0 + s.floor] : [];
     if (view !== 'iso') {
       const rect = boxOf([x0, x1].flatMap((x) => [y0, y1].flatMap((y) => [z0, z1].map((z) => P([x, y, z])))));
       const poly = [[rect.x, rect.y], [rect.x + rect.w, rect.y], [rect.x + rect.w, rect.y + rect.h], [rect.x, rect.y + rect.h]];
       growAll(poly);
       c.backing(polyShape(poly));
+      if (hollow && view === 'plan') {
+        // The rim is hatched; the cavity is left empty.
+        const inner = [[ix0, iy0], [ix1, iy0], [ix1, iy1], [ix0, iy1]].map(([x, y]) => P([x, y, z1]));
+        c.shade(ringShape(poly, inner), rect, s.style, 'flat');
+        c.polygon2(poly);
+        c.polygon2(inner);
+        drawLabel(s, centroid(poly));
+        return;
+      }
+      if (hollow && view === 'section') {
+        // Cut through the middle: only the walls and floor are cut material,
+        // the cavity is empty.
+        const u = [[x0, z1], [x0, z0], [x1, z0], [x1, z1], [ix1, z1], [ix1, fz], [ix0, fz], [ix0, z1]].map(([x, z]) => P([x, y0, z]));
+        c.shade(polyShape(u), rect, s.style, 'flat');
+        c.polygon2(u);
+        drawLabel(s, centroid(poly));
+        return;
+      }
       c.shade(polyShape(poly), rect, s.style, 'flat');
       c.polygon2(poly);
+      if (hollow) {
+        // Seen from the side the cavity is hidden: dash-dot, open at the top.
+        const [a0, a1] = view === 'front' ? [ix0, ix1] : [iy0, iy1];
+        const at = (a, z) => P(view === 'front' ? [a, y0, z] : [x0, a, z]);
+        overlay.push([at(a0, z1), at(a0, fz), at(a1, fz), at(a1, z1)]);
+      }
       drawLabel(s, centroid(poly));
       return;
     }
+    if (hollow) {
+      // The inside, seen through the open top: the floor and the two inner
+      // walls that face the viewer. The outer faces are drawn after and hide
+      // what is below the front rim.
+      const inside = [
+        ['top', [[ix0, iy0, fz], [ix1, iy0, fz], [ix1, iy1, fz], [ix0, iy1, fz]]],
+        ['right', [[ix0, iy0, fz], [ix0, iy1, fz], [ix0, iy1, z1], [ix0, iy0, z1]]],
+        ['left', [[ix0, iy0, fz], [ix1, iy0, fz], [ix1, iy0, z1], [ix0, iy0, z1]]],
+      ];
+      for (const [face, corners] of inside) {
+        const poly = corners.map(P);
+        growAll(poly);
+        c.backing(polyShape(poly));
+        c.shade(polyShape(poly), boxOf(poly), s.style, face);
+        c.polygon2(poly);
+      }
+    }
     const faces = [
-      ['top', [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]]],
       ['left', [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]]],
       ['right', [[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]]],
+      ['top', [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]]],
     ];
     let topCentre;
     for (const [face, corners] of faces) {
       const poly = corners.map(P);
       growAll(poly);
+      if (face === 'top') topCentre = centroid(poly);
+      if (face === 'top' && hollow) {
+        // The rim: the top face with the opening cut out.
+        const inner = [[ix0, iy0, z1], [ix1, iy0, z1], [ix1, iy1, z1], [ix0, iy1, z1]].map(P);
+        c.backing(ringShape(poly, inner));
+        c.shade(ringShape(poly, inner), boxOf(poly), s.style, 'top');
+        c.polygon2(poly);
+        c.polygon2(inner);
+        continue;
+      }
       c.backing(polyShape(poly));
       c.shade(polyShape(poly), boxOf(poly), s.style, face);
       c.polygon2(poly);
-      if (face === 'top') topCentre = centroid(poly);
     }
-    if (s.hidden) {
+    if (s.hidden && !hollow) {
       // The three edges meeting at the far, bottom corner.
       for (const end of [[x1, y0, z0], [x0, y1, z0], [x0, y0, z1]]) {
         c.polyline([P([x0, y0, z0]), P(end)], { dashed: true, opacity: 0.4, width: 1 });
@@ -132,7 +195,7 @@ function drawView(model, view, scale, c) {
       c.polyline([[bx - rr - 6, by], [bx + rr + 6, by]], { dashed: true, width: 0.9, opacity: 0.6 });
       c.polyline([[bx, by - rr - 6], [bx, by + rr + 6]], { dashed: true, width: 0.9, opacity: 0.6 });
       drawLabel(s, [bx, by]);
-    } else if (view === 'front' || view === 'side') {
+    } else if (view === 'front' || view === 'side' || view === 'section') {
       const rr = r * scale;
       const poly = [[bx - rr, ty], [bx + rr, ty], [bx + rr, by], [bx - rr, by]];
       growAll(poly);
@@ -183,6 +246,8 @@ function drawView(model, view, scale, c) {
     draw[s.type](s);
     c.end();
   }
+
+  for (const pts of overlay) c.polyline(pts, { dashed: true, opacity: 0.6, width: 1 });
 
   for (const s of shapes.filter((x) => x.type === 'line')) {
     const pts = s.points.map(P);

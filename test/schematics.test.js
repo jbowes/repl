@@ -40,7 +40,7 @@ test('a horizontal circle projects to an ellipse in iso', () => {
 
 test('unknown views are errors', () => {
   assert.throws(() => project([0, 0, 0], 'top'), /unknown view/);
-  assert.throws(() => renderSchematic(DECK, { view: 'top' }), /view: expected a list of plan, front, side, iso/);
+  assert.throws(() => renderSchematic(DECK, { view: 'top' }), /view: expected a list of plan, front, side, section, iso/);
 });
 
 const box = (id, at, size) => ({ type: 'box', id, at, size });
@@ -70,21 +70,24 @@ test('painter order follows the view direction', () => {
 
 test('a source renders as plan, front or iso, and views can be overridden', () => {
   const view = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/data-view="(\w+)"/g)].map((m) => m[1]);
-  assert.deepEqual(view(), ['plan', 'front', 'iso']);
+  assert.deepEqual(view(), ['plan', 'front', 'section', 'iso']);
   assert.deepEqual(view('iso'), ['iso']);
   assert.deepEqual(view('plan, side'), ['plan', 'side']);
 
-  // iso draws three faces per box, plan one rectangle
+  // plan has the hollow body (outer and inner outline) and the card case; the
+  // lid is off. iso has the body (inside, three faces, the rim's inner edge),
+  // the card case and the lifted lid (three faces each).
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('iso'), 4 * 3);
-  assert.equal(polys('plan'), 4);
+  assert.equal(polys('plan'), 2 + 1);
+  assert.equal(polys('iso'), 7 + 3 + 3);
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
   const text = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/>(\d+ mm)<\/text>/g)].map((m) => m[1]);
   assert.deepEqual(text('plan'), ['110 mm', '104 mm']);
   assert.deepEqual(text('front'), ['110 mm', '102 mm']);
-  assert.deepEqual(text('iso'), ['110 mm', '104 mm', '102 mm']);
+  // the lid is lifted in iso, so there is no closed height to dimension there
+  assert.deepEqual(text('iso'), ['110 mm', '104 mm']);
 });
 
 test('iso faces are shaded differently: top, left and right', () => {
@@ -139,7 +142,7 @@ test('errors name the field path', () => {
   bad('shapes: []', /shapes: expected a non-empty list/);
   bad('views: [plan]\nview: iso\nshapes:\n  - { type: label, at: [0, 0], text: x }', /use either `view` or `views`/);
   bad('units: mm\nsahpes: []', /sahpes: unknown field/);
-  bad('shapes:\n  - { type: label, at: [0, 0], text: x, views: [top] }', /shapes\[0\]\.views: expected a list of plan, front, side, iso/);
+  bad('shapes:\n  - { type: label, at: [0, 0], text: x, views: [top] }', /shapes\[0\]\.views: expected a list of plan, front, side, section, iso/);
   bad('shapes: [', /invalid YAML/);
 });
 
@@ -166,4 +169,57 @@ test('the deck box fixture carries only the three outer dimensions', () => {
   const m = parse(DECK);
   const dims = m.shapes.filter((s) => s.type === 'dim').map((s) => Math.round(Math.hypot(...s.to.map((v, i) => v - s.from[i]))));
   assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [102, 104, 110]);
+});
+
+const HOLLOW = 'views: [plan, section, iso]\nshapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], wall: 4, floor: 20, style: blue }\n';
+
+test('a hollow box takes wall and an optional floor, defaulting to the wall', () => {
+  const [s] = parse(HOLLOW).shapes;
+  assert.deepEqual([s.wall, s.floor], [4, 20]);
+  const [d] = parse('shapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], wall: 4 }\n').shapes;
+  assert.equal(d.floor, 4);
+});
+
+test('hollow box validation names the field', () => {
+  const bad = (box) => parse(`shapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], ${box} }\n`);
+  assert.throws(() => bad('wall: 40'), /shapes\[0\]\.wall: must be less than half/);
+  assert.throws(() => bad('wall: 4, floor: 60'), /shapes\[0\]\.floor: must be less than h/);
+  assert.throws(() => bad('floor: 4'), /shapes\[0\]\.floor: needs wall/);
+  assert.throws(() => bad('wall: -1'), /shapes\[0\]\.wall/);
+});
+
+test('plan draws a hatched rim around an empty cavity', () => {
+  const svg = renderSchematic(HOLLOW, { view: 'plan' });
+  // the rim is an even-odd ring, so the cavity is not filled or hatched
+  assert.match(svg, /fill-rule="evenodd"/);
+  assert.equal((svg.match(/<polygon class="ln"/g) || []).length, 2); // outer and inner outline
+});
+
+test('section hatches only the cut walls and floor, as a U', () => {
+  const svg = renderSchematic(HOLLOW, { view: 'section' });
+  const u = /<polygon class="ln" points="([^"]+)"/.exec(svg)[1].split(' ');
+  assert.equal(u.length, 8); // outer sides and floor, then back up the inner sides
+  assert.ok(!svg.includes('fill-rule="evenodd"'));
+});
+
+test('section removes solids wholly on the viewer side of the cut', () => {
+  const src = (cut) => `views: [section]\n${cut}shapes:\n  - { type: box, id: back, at: [0, 0, 0], size: [10, 10, 10] }\n  - { type: box, id: front, at: [0, 20, 0], size: [10, 10, 10], style: red }\n`;
+  // the middle is y = 15, so the red box (y 20 to 30) is on the removed half
+  assert.ok(!renderSchematic(src('')).includes('dg-red'));
+  assert.ok(renderSchematic(src('cut: 25\n')).includes('dg-red')); // the cut plane moved behind the front box
+});
+
+test('iso draws the inside of a hollow box: floor and two inner walls, then a rim', () => {
+  const hollow = renderSchematic(HOLLOW, { view: 'iso' });
+  const solid = renderSchematic('views: [iso]\nshapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], style: blue }\n');
+  const polys = (svg) => (svg.match(/<polygon class="ln"/g) || []).length;
+  assert.equal(polys(solid), 3);
+  assert.equal(polys(hollow), 3 + 3 + 1); // faces + inside + the rim's inner edge
+  assert.match(hollow, /fill-rule="evenodd"/);
+});
+
+test('the deck box models a hollow body, not stacked slabs', () => {
+  const body = parse(DECK).shapes.find((s) => s.id === 'body');
+  assert.ok(body.wall > 0 && body.floor > body.wall);
+  assert.deepEqual(parse(DECK).views, ['plan', 'front', 'section', 'iso']);
 });

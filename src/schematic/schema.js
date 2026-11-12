@@ -14,9 +14,9 @@
 const yaml = require('js-yaml');
 const { COLORS, FILLS } = require('../diagram/parse');
 
-const VIEWS = ['plan', 'front', 'side', 'iso'];
+const VIEWS = ['plan', 'front', 'side', 'section', 'iso'];
 const TYPES = {
-  box: ['at', 'size', 'hidden'],
+  box: ['at', 'size', 'hidden', 'wall', 'floor'],
   cylinder: ['at', 'r', 'h'],
   rect: ['at', 'size', 'dashed'],
   line: ['points', 'dashed', 'closed'],
@@ -26,7 +26,7 @@ const TYPES = {
 };
 const ALIASES = { plane: 'rect', wire: 'line' };
 const COMMON = ['type', 'id', 'label', 'style', 'views'];
-const TOP = ['units', 'scale', 'view', 'views', 'columns', 'shapes'];
+const TOP = ['units', 'scale', 'view', 'views', 'columns', 'cut', 'shapes'];
 
 class SchematicError extends Error {
   constructor(path, msg) {
@@ -114,6 +114,17 @@ function shape(raw, path, ids, parentStyle) {
       s.at = point(required(raw, 'at', path), `${path}.at`);
       s.size = sizeOf(required(raw, 'size', path), `${path}.size`, 3);
       s.hidden = flag('hidden');
+      if (raw.wall !== undefined) {
+        // A hollow, open-top shell: walls `wall` thick, floor `floor` thick.
+        s.wall = positive(raw.wall, `${path}.wall`);
+        if (s.wall * 2 >= Math.min(s.size[0], s.size[1])) {
+          throw new SchematicError(`${path}.wall`, `must be less than half of w and d ${show(s.size.slice(0, 2))}, got ${show(raw.wall)}`);
+        }
+        s.floor = raw.floor === undefined ? s.wall : positive(raw.floor, `${path}.floor`);
+        if (s.floor >= s.size[2]) throw new SchematicError(`${path}.floor`, `must be less than h (${s.size[2]}), got ${show(raw.floor)}`);
+      } else if (raw.floor !== undefined) {
+        throw new SchematicError(`${path}.floor`, 'needs wall (a hollow box has both)');
+      }
       break;
     case 'cylinder':
       s.at = point(required(raw, 'at', path), `${path}.at`);
@@ -201,6 +212,10 @@ function parse(source) {
     model.columns = doc.columns;
   }
   if (doc.view !== undefined && doc.views !== undefined) throw new SchematicError('views', 'use either `view` or `views`, not both');
+  if (doc.cut !== undefined) {
+    if (!isNum(doc.cut)) throw new SchematicError('cut', `expected a number (the y of the section plane), got ${show(doc.cut)}`);
+    model.cut = doc.cut;
+  }
   if (doc.views !== undefined) model.views = viewList(doc.views, 'views');
   else if (doc.view !== undefined) model.views = viewList([doc.view], 'view');
   else model.views = ['plan'];

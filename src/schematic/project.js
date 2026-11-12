@@ -4,19 +4,21 @@
 // Axes: x right, y toward the viewer in plan (down the page), z up. The viewer
 // of an iso drawing stands at +x, +y, +z, so the +y face is the left face, the
 // +x face the right face. `front` looks from +y (x right, z up), `side` from +x
-// (y right, z up), `plan` from +z (x right, y down).
+// (y right, z up), `plan` from +z (x right, y down). `section` is `front` with
+// the model cut at a plane y = const and the near half removed.
 const COS30 = Math.cos(Math.PI / 6);
 const SIN30 = 0.5;
 
 // The axes the viewer looks along; a solid whose extent ends before another's
 // starts on one of these is behind it.
-const VIEW_AXES = { plan: [2], front: [1], side: [0], iso: [0, 1, 2] };
+const VIEW_AXES = { plan: [2], front: [1], section: [1], side: [0], iso: [0, 1, 2] };
 
 /** Screen position in model units, y down the page. */
 function project([x, y, z], view) {
   switch (view) {
     case 'plan': return [x, y];
-    case 'front': return [x, -z];
+    case 'front':
+    case 'section': return [x, -z];
     case 'side': return [y, -z];
     case 'iso': return [(x - y) * COS30, (x + y) * SIN30 - z];
     default: throw new Error(`schematic: unknown view "${view}"`);

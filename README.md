@@ -71,13 +71,16 @@ are `[w, d, h]` (x, y, z extents) in real units. Top level fields:
 
 - `units`: a label for dimension text, default `mm`. Nothing is converted.
 - `scale`: pixels per unit. Default fits the largest dimension to about 240px.
-- `view: plan|front|side|iso`, or `views: [plan, front, iso]` for several views
+- `view: plan|front|side|section|iso`, or `views: [plan, front, iso]` for several views
   of the same model, each in a framed cell with a caption. `columns: N` wraps
   them into a grid (default one row).
 - `shapes`: the list of primitives below.
 
 Views: `plan` is top-down (x right, y down, z ignored); `front` looks from +y
-(x right, z up) and `side` from +x (y right, z up), so they drop an axis; `iso`
+(x right, z up) and `side` from +x (y right, z up), so they drop an axis;
+`section` is `front` with the model cut at the plane `y = cut` (top level
+`cut:`, default the middle of the model's y extent) and the near half removed,
+so cut material is hatched and a hollow stays empty; `iso`
 is 30-degree isometric, `sx = (x - y) cos30`, `sy = (x + y) sin30 - z`, viewed
 from +x, +y, +z, so the +y face is the left face and the +x face the right.
 
@@ -89,7 +92,7 @@ colour alone is hachure).
 
 | `type` | fields | notes |
 | --- | --- | --- |
-| `box` | `at`, `size: [w, d, h]`, `hidden` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. |
+| `box` | `at`, `size: [w, d, h]`, `hidden`, `wall`, `floor` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. `wall: t` makes it a hollow, open-top shell with walls `t` thick and a floor `floor` thick (default `t`): plan hatches the rim around an empty cavity, the section view hatches only the cut walls and floor, the front and side elevations show the cavity as dash-dot hidden lines, and iso shows the inside through the opening. |
 | `cylinder` | `at` (centre of the base), `r`, `h` | Vertical. A circle in plan, a rectangle with a centre line in elevations, an ellipse-topped can in iso. |
 | `rect` (or `plane`) | `at`, `size: [w, d]`, `dashed` | A flat horizontal outline at height `at[2]`: a footprint, a cutout. A line in elevations. |
 | `line` (or `wire`) | `points: [[x, y, z], ...]`, `dashed`, `closed` | A 3D polyline; `dashed` is dash-dot, for hidden lines. |
