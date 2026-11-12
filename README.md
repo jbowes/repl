@@ -84,9 +84,11 @@ so cut material is hatched and a hollow stays empty; `iso`
 is 30-degree isometric, `sx = (x - y) cos30`, `sy = (x + y) sin30 - z`, viewed
 from +x, +y, +z, so the +y face is the left face and the +x face the right.
 
-Every primitive takes `type`, an optional `id`, `label`, `style` and `views`
+Every primitive takes `type`, an optional `id`, `label`, `style`, `views`
 (a list, to show it in some views only: dimension lines usually differ per
-view). `style` is `blue`, `red`, `green`, `orange` or `yellow` with an optional
+view) and `hide` (`hide: true` keeps it in the source and in the generated
+description, but does not draw it: for measurements worth recording that
+would crowd the drawing). `style` is `blue`, `red`, `green`, `orange` or `yellow` with an optional
 `-solid` or `-cross` suffix, as in diagrams (default: uncoloured, no fill; a
 colour alone is hachure).
 

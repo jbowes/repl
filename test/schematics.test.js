@@ -86,8 +86,8 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
   const text = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/>([\d.]+ mm)<\/text>/g)].map((m) => m[1]);
-  assert.deepEqual(text('plan'), ['110 mm', '104 mm', '80 mm', '85.7 mm', '69.4 mm', '75.1 mm', '29.5 mm', '26.7 mm', '88.5 mm']);
-  assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '19 mm', '14.7 mm', '80 mm', '36 mm']);
+  assert.deepEqual(text('plan'), ['110 mm', '104 mm', '80 mm', '85.7 mm', '69.4 mm', '75.1 mm', '88.5 mm']);
+  assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '80 mm', '36 mm']);
   assert.deepEqual(text('front'), ['110 mm', '102 mm']);
   // the lid is lifted in iso, so there is no closed height to dimension there
   assert.deepEqual(text('iso'), ['110 mm', '104 mm', '80 mm', '33.7 mm']);
@@ -369,4 +369,22 @@ test('iso clips each scoop cut surface to its notch, and fills the rim as one sh
   // the six rim pieces are subpaths of one backing path, so no seams show between them
   const backing = [...svg.matchAll(/<path d="([^"]+)" class="sb"/g)].map((m) => (m[1].match(/M/g) || []).length);
   assert.ok(backing.includes(6), `${backing}`);
+});
+
+test('hide keeps a shape in the model and the description, but does not draw it', () => {
+  const src = (hide) => `shapes:\n  - { type: box, id: crate, at: [0, 0], size: [10, 20, 30] }\n  - { type: dim, from: [0, 0], to: [10, 0], offset: [0, -3]${hide} }\n  - { type: label, at: [5, 5], text: a note${hide} }\n`;
+  const shown = renderSchematic(src(''));
+  const hidden = renderSchematic(src(', hide: true'));
+  assert.match(shown, />10 mm<\/text>/);
+  assert.match(shown, />a note<\/text>/);
+  assert.doesNotMatch(hidden, />10 mm<\/text>/);
+  assert.doesNotMatch(hidden, />a note<\/text>/);
+  // still recorded for the description
+  assert.match(hidden, /<desc[^>]*>[^<]*Dimensions: 10 mm\.[^<]*Callouts: a note\./);
+  assert.equal(parse(src(', hide: true')).shapes.filter((s) => s.hide).length, 2);
+  assert.throws(() => parse('shapes:\n  - { type: box, at: [0, 0], size: [1, 1, 1], hide: maybe }'), /shapes\[0\]\.hide/);
+  // the deck box records its tray scoop measurements this way
+  const deck = renderSchematic(DECK);
+  assert.doesNotMatch(deck, />(29\.5|26\.7|14\.7|19) mm<\/text>/);
+  assert.match(deck, /<desc[^>]*>[^<]*29\.5 mm/);
 });

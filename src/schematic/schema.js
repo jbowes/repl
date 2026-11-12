@@ -26,7 +26,7 @@ const TYPES = {
   group: ['at', 'shapes'],
 };
 const ALIASES = { plane: 'rect', wire: 'line' };
-const COMMON = ['type', 'id', 'label', 'style', 'views'];
+const COMMON = ['type', 'id', 'label', 'style', 'views', 'hide'];
 const TOP = ['units', 'scale', 'view', 'views', 'columns', 'cut', 'shapes'];
 
 class SchematicError extends Error {
@@ -110,6 +110,8 @@ function shape(raw, path, ids, parentStyle) {
   }
 
   const flag = (k) => (raw[k] === undefined ? false : bool(raw[k], `${path}.${k}`));
+  // Kept in the model (and the generated description) but not drawn.
+  if (flag('hide')) s.hide = true;
   switch (type) {
     case 'box':
       s.at = point(required(raw, 'at', path), `${path}.at`);

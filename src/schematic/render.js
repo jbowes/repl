@@ -73,7 +73,7 @@ function drawView(model, view, scale, c) {
     c.halo(x, y, str, opts);
   };
 
-  let shapes = model.shapes.filter((s) => !s.views || s.views.includes(view));
+  let shapes = model.shapes.filter((s) => !s.hide && (!s.views || s.views.includes(view)));
   // A section cuts the model at y = cut (default: the middle) and removes the
   // near half, so solids wholly on the viewer's side of the cut are not drawn.
   const ys = model.shapes.flatMap(shapePoints).map((p) => p[1]);
