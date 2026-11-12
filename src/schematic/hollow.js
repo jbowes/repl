@@ -100,8 +100,9 @@ function rimPieces(f, t, scoops) {
 
 /**
  * The real edges of those pieces, as 3D line segments: the outer and inner
- * edge of the rim and the ends at a scoop. Where two walls' pieces meet at a
- * corner there is no edge, the rim is one surface.
+ * edge of the rim, the ends at a scoop, and the short stretch of the box's
+ * outer face at each corner. Where two walls' pieces meet at a corner there
+ * is no edge, the rim is one surface.
  */
 function rimEdges(f, t, scoops) {
   const { ranges, lo, hi } = rimRanges(f, t, scoops);
@@ -112,7 +113,11 @@ function rimEdges(f, t, scoops) {
     const [a, b] = [Math.max(from, iLo), Math.min(to, iHi)];
     if (b - a > 1e-9) edges.push([wallPoint(f, f.inner, a, f.top), wallPoint(f, f.inner, b, f.top)]);
     for (const u of [from, to]) {
-      if (u - lo > 1e-9 && hi - u > 1e-9) edges.push([wallPoint(f, f.outer, u, f.top), wallPoint(f, f.inner, u, f.top)]);
+      // An end at a scoop is an edge. So is the end of a wall that owns its
+      // corners: that short stretch is on the box's outer face. The end of a
+      // wall that stops at the cavity corner only meets its neighbour's rim.
+      const atScoop = u - lo > 1e-9 && hi - u > 1e-9;
+      if (atScoop || f.normal === 1) edges.push([wallPoint(f, f.outer, u, f.top), wallPoint(f, f.inner, u, f.top)]);
     }
   }
   return edges;

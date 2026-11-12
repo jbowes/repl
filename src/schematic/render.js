@@ -12,7 +12,7 @@ const { createHash } = require('crypto');
 const { parse, parseViewOption } = require('./schema');
 const { project, extent, paintOrder, isoCircle, points: shapePoints } = require('./project');
 const { SchematicCanvas, esc, num } = require('./canvas');
-const { SIDES, wallFrame, wallPoint, faceLoop, rimPieces, rimEdges, cutBand } = require('./hollow');
+const { SIDES, wallFrame, wallPoint, notch3, faceLoop, rimPieces, rimEdges, cutBand } = require('./hollow');
 const { STANDALONE, STANDALONE_CSS } = require('../diagram/render');
 
 const FIT = 240; // px the largest dimension gets when `scale` is not given
@@ -90,6 +90,10 @@ function drawView(model, view, scale, c) {
   const ringShape = (outer, inner) => (a) =>
     `<path d="M${outer.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}ZM${inner.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}Z" fill-rule="evenodd" clip-rule="evenodd" ${a}/>`;
 
+  // Several polygons as one path, so shared edges between them do not show.
+  const piecesShape = (polys) => (a) =>
+    `<path d="${polys.map((q) => `M${q.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}Z`).join('')}" ${a}/>`;
+
   const scoopsOn = (s, side) => s.scoops.filter((sc) => sc.side === side);
   // How far the scoops on `side` cut down the wall at distance v along it from its start.
   const dropAt = (s, side, v) => {
@@ -137,13 +141,11 @@ function drawView(model, view, scale, c) {
             const q = [[f.outer, u0], [f.outer, u1], [f.inner, u1], [f.inner, u0]].map(([n, u]) => P(wallPoint(f, n, u, z1)));
             lowered(q);
           }
-          for (const piece of rimPieces(f, s.wall, scoopsOn(s, side))) {
-            const q = piece.map(P);
-            c.shade(polyShape(q), boxOf(q), s.style, 'flat');
-          }
         }
-        // Outlines last and only on real edges, so the walls' pieces read as
-        // one rim with no seam at the corners.
+        // The rim is filled as one shape and outlined only on its real edges,
+        // so the walls' pieces read as one surface with no seam between them.
+        const rim = SIDES.flatMap((side) => rimPieces(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))).map((q) => q.map(P));
+        c.shade(piecesShape(rim), boxOf(rim.flat()), s.style, 'flat');
         for (const side of SIDES) {
           for (const edge of rimEdges(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) c.polyline(edge.map(P));
         }
@@ -230,20 +232,28 @@ function drawView(model, view, scale, c) {
       if (face === 'top' && hollow && s.scoops.length) {
         // The cut surface of each scoop, then the rim in pieces around the gaps.
         for (const sc of s.scoops) {
-          const band = cutBand(wallFrame(e, s.wall, sc.side), sc).map(P);
+          const f = wallFrame(e, s.wall, sc.side);
+          const band = cutBand(f, sc).map(P);
           growAll(band);
+          // Only the part of the cut seen through the notch shows: the rest is
+          // behind the wall. The opening is the notch in the face nearer the
+          // viewer (the outer face of the +x and +y walls, the inner face of
+          // the others) plus the gap it leaves in the rim.
+          const [near, far] = sc.side[0] === '+' ? [f.outer, f.inner] : [f.inner, f.outer];
+          const [u0, u1] = [f.start + sc.at - sc.width / 2, f.start + sc.at + sc.width / 2];
+          const opening = [...notch3(f, near, sc), wallPoint(f, far, u1, f.top), wallPoint(f, far, u0, f.top)].map(P);
+          const id = `${c.id}-${c.n++}`;
+          c.raw(`<clipPath id="${id}">${polyShape(opening)('')}</clipPath><g clip-path="url(#${id})">`);
           c.backing(polyShape(band));
           c.shade(polyShape(band), boxOf(band), s.style, 'top');
           c.polygon2(band);
+          c.raw('</g>');
         }
-        for (const side of SIDES) {
-          for (const piece of rimPieces(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) {
-            const q = piece.map(P);
-            c.backing(polyShape(q));
-            c.shade(polyShape(q), boxOf(q), s.style, 'top');
-          }
-        }
-        // Outlines last and only on real edges: no seam where walls meet.
+        // The rim is filled as one shape and outlined only on its real edges:
+        // no seam where walls meet.
+        const rim = SIDES.flatMap((side) => rimPieces(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))).map((q) => q.map(P));
+        c.backing(piecesShape(rim));
+        c.shade(piecesShape(rim), boxOf(rim.flat()), s.style, 'top');
         for (const side of SIDES) {
           for (const edge of rimEdges(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) c.polyline(edge.map(P));
         }

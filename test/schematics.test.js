@@ -326,13 +326,18 @@ test('the rim has no seam where walls meet: only outer, inner and scoop edges', 
   const scoop = { side: '+x', at: 30, width: 20, depth: 12 };
   const edges = ['+x', '-x', '+y', '-y'].flatMap((side) => rimEdges(wallFrame(e, t, side), t, side === '+x' ? [scoop] : []));
   // +y, -y and -x: an outer and an inner edge each. +x, in two pieces: two of
-  // each, and an end at each side of the scoop.
-  assert.equal(edges.length, 3 * 2 + (2 * 2 + 2));
+  // each, and an end at each side of the scoop. The +y and -y walls own the
+  // corners, so each also closes the outer face at its two ends.
+  assert.equal(edges.length, 3 * 2 + (2 * 2 + 2) + 4);
   const across = edges.filter(([a, b]) => a[0] !== b[0] && a[1] !== b[1]);
   assert.equal(across.length, 0); // nothing diagonal
-  // the edges that cross the wall's thickness are the scoop's two ends, at y 20 and 40
+  // the edges that cross the +x wall's thickness are the scoop's two ends, at y 20 and 40
   const crossing = edges.filter(([a, b]) => Math.abs(a[0] - b[0]) === t && a[1] === b[1]);
   assert.deepEqual(crossing.map(([a]) => a[1]).sort((x, y) => x - y), [20, 40]);
+  // the outline is closed: the outer face runs unbroken round all four corners
+  const onFace = (x) => edges.filter(([a, b]) => a[0] === x && b[0] === x).reduce((n, [a, b]) => n + Math.abs(a[1] - b[1]), 0);
+  assert.equal(onFace(0), 60);
+  assert.equal(onFace(70), 60 - 20); // less the scoop's opening
   // inner edges stop at the cavity corners, they do not run on to the outer face
   for (const [a, b] of edges) {
     for (const p of [a, b]) {
@@ -354,4 +359,13 @@ test('the deck box fixture has a tray pulled out to the left, with scoops', () =
   assert.equal(tray.scoops[0].side, '+x'); // the wall facing the box
   assert.equal(body.scoops[0].side, '-x');
   assert.equal(body.scoops[0].shape, 'round');
+});
+
+test('iso clips each scoop cut surface to its notch, and fills the rim as one shape', () => {
+  const svg = renderSchematic(TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -x, at: 30, width: 20, depth: 12 }]'), { view: 'iso' });
+  // the part of a cut behind the wall is hidden: one clipped group per scoop
+  assert.equal((svg.match(/<g clip-path="url\(#[^)]+\)">/g) || []).length, 2);
+  // the six rim pieces are subpaths of one backing path, so no seams show between them
+  const backing = [...svg.matchAll(/<path d="([^"]+)" class="sb"/g)].map((m) => (m[1].match(/M/g) || []).length);
+  assert.ok(backing.includes(6), `${backing}`);
 });
