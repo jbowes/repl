@@ -1,119 +1,24 @@
-// Renders diagram source to a hand-drawn-looking <svg> string with rough.js.
-// Everything is deterministic: rough.js is seeded from a hash of the source
-// and no DOM is needed (generator API only), so rebuilds are byte-identical.
+// Renders diagram source to an <svg> string, either hand-drawn with rough.js
+// ('sketch') or as a technical drawing ('technical', the default). Everything
+// is deterministic: rough.js is seeded from a hash of the source and no DOM is
+// needed, so rebuilds are byte-identical.
 const { createHash } = require('crypto');
-// The CJS build exports `generator` directly; webpack picks the ESM build,
-// which hangs it off the default export.
-const roughModule = require('roughjs');
-const rough = roughModule.default || roughModule;
 const dagre = require('@dagrejs/dagre');
 
 const { parse } = require('./parse');
+const { RoughCanvas, esc } = require('./canvas-rough');
+const { TechCanvas } = require('./canvas-tech');
 
-const FONT = "'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Neue', 'Comic Sans MS', cursive, sans-serif";
-const FONT_SIZE = 16;
-const CHAR_W = 8.2; // rough per-character width for the font stack above
 const PAD = 14;
-// Marks rough.js fill strokes so they can be told apart from outlines (see
-// Canvas.drawable); it never reaches the output.
-const FILL_MARK = '#f0f';
-const STANDALONE = ';background:#0d1315;color:#d8d4bd;padding:16px;border-radius:4px';
-// The same rules as in src/css/style.css, with the palette inlined.
-const STANDALONE_CSS =
-  '.dg-edge .ln{stroke:#92b0c2}.dg-life .ln{stroke-opacity:.45}' +
-  '.dg-blue{--dg:#92b0c2}.dg-red{--dg:#f88a87}.dg-green{--dg:#8cc298}.dg-orange{--dg:#f88f00}.dg-yellow{--dg:#bab215}' +
-  '.dg-node .ln,.dg-node .fl{stroke:var(--dg,currentColor)}.dg-node .fs{fill:var(--dg)}';
-
-const esc = (s) =>
-  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const num = (n) => Math.round(n * 10) / 10;
-const textWidth = (s) => s.length * CHAR_W;
+const STYLES = { technical: TechCanvas, sketch: RoughCanvas };
 
 function seedFor(source) {
   // rough.js wants a non-zero integer
   return (createHash('sha256').update(source).digest().readUInt32BE(0) % 2147483000) + 1;
 }
 
-class Canvas {
-  constructor(seed) {
-    this.gen = rough.generator();
-    this.seed = seed;
-    this.n = 0;
-    this.out = [];
-  }
-
-  opts(style) {
-    // A distinct seed per shape keeps shapes from looking identical, while
-    // staying a pure function of the source.
-    const o = { seed: this.seed + this.n++, roughness: 1.2, bowing: 1, strokeWidth: 1.6 };
-    if (style) Object.assign(o, { fill: FILL_MARK, fillStyle: style.fill, fillWeight: 2, hachureGap: 7 });
-    return o;
-  }
-
-  // Colours come from classes in src/css/style.css, so they follow the theme;
-  // the attributes are the fallback for an SVG viewed on its own.
-  begin(cls, style) {
-    const colour = style ? ` dg-${style.color}` : '';
-    this.out.push(`<g class="${cls}${colour}">`);
-  }
-
-  end() {
-    this.out.push('</g>');
-  }
-
-  drawable(d, dashed) {
-    const dash = dashed ? ' stroke-dasharray="6 5"' : '';
-    for (const set of this.gen.toPaths(d)) {
-      if (set.stroke === 'none') {
-        // solid fill
-        this.out.push(`<path class="fs" d="${set.d}" fill="currentColor" fill-opacity=".3" stroke="none"/>`);
-      } else if (set.stroke === FILL_MARK) {
-        this.out.push(`<path class="fl" d="${set.d}" stroke="currentColor" stroke-opacity=".6" stroke-width="${num(set.strokeWidth)}"/>`);
-      } else {
-        this.out.push(`<path class="ln" d="${set.d}" stroke="currentColor" stroke-width="${num(set.strokeWidth)}"${dash}/>`);
-      }
-    }
-  }
-
-  line(x1, y1, x2, y2, dashed) {
-    this.drawable(this.gen.line(x1, y1, x2, y2, this.opts()), dashed);
-  }
-
-  path(points, dashed) {
-    this.drawable(this.gen.linearPath(points, this.opts()), dashed);
-  }
-
-  rect(x, y, w, h, style) {
-    this.drawable(this.gen.rectangle(x, y, w, h, this.opts(style)));
-  }
-
-  ellipse(cx, cy, w, h, style) {
-    this.drawable(this.gen.ellipse(cx, cy, w, h, this.opts(style)));
-  }
-
-  polygon(points, style) {
-    this.drawable(this.gen.polygon(points, this.opts(style)));
-  }
-
-  arrowhead(x, y, angle) {
-    const len = 11;
-    const a = 0.45;
-    this.path([
-      [x - len * Math.cos(angle - a), y - len * Math.sin(angle - a)],
-      [x, y],
-      [x - len * Math.cos(angle + a), y - len * Math.sin(angle + a)],
-    ]);
-  }
-
-  text(x, y, str, anchor = 'middle') {
-    this.out.push(
-      `<text x="${num(x)}" y="${num(y)}" text-anchor="${anchor}" fill="currentColor" stroke="none">${esc(str)}</text>`
-    );
-  }
-}
-
 function layoutSequence(model, c) {
-  const labelW = (p) => Math.max(textWidth(p.label) + 2 * PAD, 90);
+  const labelW = (p) => Math.max(c.textWidth(p.label) + 2 * PAD, 90);
   const minGap = 40;
   const ps = model.participants;
   const xs = [];
@@ -128,7 +33,7 @@ function layoutSequence(model, c) {
     const b = idx.get(m.to);
     if (a === b) continue;
     const [lo, hi] = a < b ? [a, b] : [b, a];
-    const need = textWidth(m.text) + 40;
+    const need = c.textWidth(m.text) + 40;
     const have = xs[hi] - xs[lo];
     if (have < need) {
       const extra = (need - have) / (hi - lo);
@@ -137,12 +42,12 @@ function layoutSequence(model, c) {
   }
 
   const boxH = 40;
-  const top = 8;
+  const top = 8 + c.topInset;
   const rowH = 46;
   const bottom = top + boxH + 20 + model.messages.length * rowH + 10;
   let width = xs[xs.length - 1] + labelW(ps[ps.length - 1]) / 2 + 10;
   for (const m of model.messages) {
-    if (m.from === m.to) width = Math.max(width, xs[idx.get(m.from)] + 44 + textWidth(m.text) + 10);
+    if (m.from === m.to) width = Math.max(width, xs[idx.get(m.from)] + 44 + c.textWidth(m.text) + 10);
   }
   const height = bottom + boxH + 8;
 
@@ -151,6 +56,7 @@ function layoutSequence(model, c) {
     c.begin('dg-life');
     c.line(xs[i], top + boxH, xs[i], bottom, true);
     c.end();
+    c.tag(xs[i] - w / 2, top - 5, i + 1);
     for (const y of [top, bottom]) {
       c.begin('dg-node', p.style);
       c.rect(xs[i] - w / 2, y, w, boxH, p.style);
@@ -181,8 +87,8 @@ function layoutSequence(model, c) {
   return { width, height };
 }
 
-function nodeSize(n) {
-  const w = textWidth(n.label) + 2 * PAD;
+function nodeSize(n, c) {
+  const w = c.textWidth(n.label) + 2 * PAD;
   const h = 40;
   if (n.shape === 'diamond') return { width: w * 1.5 + 10, height: h * 1.6 };
   return { width: Math.max(w, 70), height: h };
@@ -203,18 +109,20 @@ function clipToShape(n, tx, ty) {
 function layoutFlow(model, c) {
   const horizontal = model.direction === 'LR' || model.direction === 'RL';
   const g = new dagre.graphlib.Graph({ multigraph: true });
-  g.setGraph({ rankdir: model.direction, nodesep: 40, ranksep: 70, marginx: 10, marginy: 10 });
+  g.setGraph({ rankdir: model.direction, nodesep: 40, ranksep: 70, marginx: 10, marginy: 10 + c.topInset });
   g.setDefaultEdgeLabel(() => ({}));
-  for (const n of model.nodes) g.setNode(n.id, nodeSize(n));
+  for (const n of model.nodes) g.setNode(n.id, nodeSize(n, c));
   model.edges.forEach((e, i) => {
-    g.setEdge(e.from, e.to, e.label ? { width: textWidth(e.label) + 10, height: 22, labelpos: 'c' } : {}, String(i));
+    g.setEdge(e.from, e.to, e.label ? { width: c.textWidth(e.label) + 10, height: 22, labelpos: 'c' } : {}, String(i));
   });
   dagre.layout(g);
 
   const info = new Map(model.nodes.map((n) => [n.id, { ...n, ...g.node(n.id) }]));
 
+  let index = 0;
   for (const n of info.values()) {
     const { x, y, width: w, height: h, style } = n;
+    c.tag(x - w / 2, y - h / 2 - 6, ++index);
     c.begin('dg-node', style);
     if (n.shape === 'round') c.ellipse(x, y, w, h, style);
     else if (n.shape === 'diamond') c.polygon([[x, y - h / 2], [x + w / 2, y], [x, y + h / 2], [x - w / 2, y]], style);
@@ -260,33 +168,44 @@ function describe(model) {
   return `Flow diagram. ${steps}.`;
 }
 
+// For an SVG viewed on its own: the code-block panel, and the same rules as in
+// src/css/style.css with the palette inlined.
+const STANDALONE = ';background:#0d1315;color:#d8d4bd;padding:16px;border-radius:4px';
+const STANDALONE_CSS =
+  '.dg-edge .ln{stroke:#92b0c2}.dg-edge .ah{fill:#92b0c2}.dg-life .ln{stroke-opacity:.45}' +
+  '.dg-blue{--dg:#92b0c2}.dg-red{--dg:#f88a87}.dg-green{--dg:#8cc298}.dg-orange{--dg:#f88f00}.dg-yellow{--dg:#bab215}' +
+  '.dg-node .ln,.dg-node .fl,.dg-node .pl,.dg-node .tk{stroke:var(--dg,currentColor)}.dg-node .fs,.dg-node circle.tk{fill:var(--dg)}';
+
 /**
  * @param {string} source diagram source (see parse.js)
- * @param {{alt?: string, standalone?: boolean}} [options] alt becomes
- *   <title>; a generated step-by-step description becomes <desc>. standalone
- *   gives the SVG the code-block panel colours, for use outside the site.
+ * @param {{alt?: string, style?: 'technical'|'sketch', standalone?: boolean}} [options]
+ *   alt becomes <title>; a generated step-by-step description becomes <desc>.
+ *   style picks the drawing style (default technical). standalone gives the
+ *   SVG the code-block panel colours, for use outside the site.
  * @returns {string} an <svg> element
  */
 function renderDiagram(source, options = {}) {
+  const style = options.style || 'technical';
+  if (!STYLES[style]) throw new Error(`diagram: unknown style "${style}" (technical or sketch)`);
+
   const model = parse(source);
   const seed = seedFor(source);
-  const c = new Canvas(seed);
+  const c = new STYLES[style](seed);
   const size = model.type === 'sequence' ? layoutSequence(model, c) : layoutFlow(model, c);
 
-  const w = Math.ceil(size.width + 8);
-  const h = Math.ceil(size.height + 8);
+  const m = c.margin;
+  const w = Math.ceil(size.width + 2 * m);
+  const h = Math.ceil(size.height + 2 * m);
   const id = `diagram-${seed.toString(36)}`;
   const title = options.alt || (model.type === 'sequence' ? 'Sequence diagram' : 'Flow diagram');
 
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" class="diagram-svg" role="img" aria-labelledby="${id}-t ${id}-d"` +
-    ` viewBox="-4 -4 ${w} ${h}" width="${w}" height="${h}"` +
-    ` style="max-width:100%;height:auto${options.standalone ? STANDALONE : ''}"` +
-    ` fill="none" stroke-linecap="round" stroke-linejoin="round"` +
-    ` font-family="${esc(FONT)}" font-size="${FONT_SIZE}">` +
+    `<svg xmlns="http://www.w3.org/2000/svg" class="diagram-svg diagram-${style}" role="img" aria-labelledby="${id}-t ${id}-d"` +
+    ` viewBox="${-m} ${-m} ${w} ${h}" width="${w}" height="${h}"` +
+    ` style="max-width:100%;height:auto${options.standalone ? STANDALONE : ''}" ${c.root}>` +
     (options.standalone ? `<style>${STANDALONE_CSS}</style>` : '') +
     `<title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(describe(model))}</desc>` +
-    c.out.join('') +
+    c.finish() +
     '</svg>'
   );
 }

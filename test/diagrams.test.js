@@ -39,3 +39,33 @@ test('rendering is deterministic', () => {
   const src = 'flowchart TB\n  A[a]:::red --> B[b]:::yellow-cross';
   assert.equal(renderDiagram(src), renderDiagram(src));
 });
+
+test('technical is the default style; sketch is hand-drawn with rough.js', () => {
+  const src = 'flowchart LR\n  A[a] --> B(b)';
+  const technical = renderDiagram(src);
+  assert.match(technical, /class="diagram-svg diagram-technical"/);
+  assert.match(technical, /class="pl"/); // inset panel line
+  assert.match(technical, /class="ah"/); // solid arrowhead
+  assert.equal(technical, renderDiagram(src, { style: 'technical' }));
+
+  const sketch = renderDiagram(src, { style: 'sketch' });
+  assert.match(sketch, /class="diagram-svg diagram-sketch"/);
+  assert.ok(!sketch.includes('class="pl"'));
+  assert.notEqual(sketch, technical);
+});
+
+test('dashed edges use a dash-dot centre line, and nodes get index tags', () => {
+  const svg = renderDiagram('flowchart LR\n  A[a] -.-> B[b]');
+  assert.match(svg, /stroke-dasharray="12 4 2 4"/);
+  assert.match(svg, />01<\/text>/);
+  assert.match(svg, />02<\/text>/);
+});
+
+test('hatch fills are clipped to their shape', () => {
+  const svg = renderDiagram('flowchart LR\n  A[a]:::blue-cross');
+  assert.match(svg, /<clipPath id="(t[a-z0-9]+-\d+)">.*clip-path="url\(#\1\)"/s);
+});
+
+test('an unknown drawing style is an error', () => {
+  assert.throws(() => renderDiagram('flowchart LR\n  A[a]', { style: 'neon' }), /unknown style/);
+});

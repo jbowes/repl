@@ -40,10 +40,12 @@ function* genFiles(dir) {
 
 
 function codeblock(state, node) {
-  // ```diagram alt="..." blocks become an SVG drawn at build time.
+  // ```diagram alt="..." [style="sketch"] blocks become an SVG drawn at build
+  // time.
   if (node.lang === 'diagram') {
     const alt = /\balt="([^"]*)"/.exec(node.meta || '');
-    const svg = renderDiagram(node.value, { alt: alt && alt[1] });
+    const style = /\bstyle="([^"]*)"/.exec(node.meta || '');
+    const svg = renderDiagram(node.value, { alt: alt && alt[1], style: style && style[1] });
     const result = {
       type: 'element',
       tagName: 'diagram',

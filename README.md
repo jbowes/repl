@@ -8,7 +8,7 @@ There are many like it, but this one is mine.
 ## Diagrams
 
 A fenced block tagged `diagram` in `content/*.md` is drawn at build time as an
-inline, hand-drawn-looking SVG ([rough.js](https://roughjs.com), laid out with
+inline SVG (technical line art, or hand-drawn with [rough.js](https://roughjs.com); laid out with
 [dagre](https://github.com/dagrejs/dagre)). The source is a small subset of
 Mermaid syntax. `alt` becomes the SVG `<title>`; a step-by-step `<desc>` is
 generated from the diagram.
@@ -34,8 +34,12 @@ sequenceDiagram
   `orange` and `yellow`, the code-highlighting palette. A `-solid` or `-cross`
   suffix changes the fill from hachure (`:::red-solid`, `:::orange-cross`).
 
-Diagrams are centred in the same panel as code blocks (`--code-bg`), with edges
-in the operator blue and uncoloured nodes in the code foreground.
+Diagrams are centred in the same panel as code blocks (`--code-bg`) on a faint
+grid, with edges in the operator blue and uncoloured nodes in the code
+foreground. The default style is technical line art: chamfered panels with an
+inset panel line and crop marks, hatch fills, dash-dot lines for dashed edges,
+solid arrowheads, monospace labels and index tags. Add `style="sketch"` to the
+fence for the hand-drawn rough.js look (`--style sketch` in the CLI).
 
 Output is deterministic: rough.js is seeded from a hash of the source. Preview
 one with `node scripts/render-diagram.js in.diagram out.svg`; examples live in
