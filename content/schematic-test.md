@@ -18,13 +18,15 @@ What is measured and what is not:
   listings and is unverified: one retailer lists 85 x 100 x 102 mm, and the
   manufacturer does not publish dimensions.
 - The token tray's outer size (about 80 x 85.7 x 33.7 mm), the cubby it slides
-  into (88.5 x 36 x 80 mm) and the material thickness (5.3 mm) were measured
-  by the box's owner. They are approximate, not a manufacturer spec, and they
-  are the only parts besides the outer size that carry dimension lines.
+  into (88.5 x 36 x 80 mm), the material thickness (5.3 mm) and the tray's
+  thumb scoops (about 26.7 mm wide and 14.7 mm deep, one on each of two
+  opposite sides) were measured by the box's owner. They are approximate, not a manufacturer spec. The tray
+  and cubby sizes are the only parts besides the outer size that carry
+  dimension lines.
 - The walls, base, compartment floor and lid are all assumed to be that same
-  5.3 mm material. Where the cubby sits, the tray's floor, the size of the
-  scoops (the tray has a thumb scoop on two opposite sides) and the card case
-  are guesses from a product photo.
+  5.3 mm material. Where the cubby sits, the tray's floor, the U shape of its
+  scoops, the compartment's thumb scoop and the card case are guesses from a
+  product photo.
 - Known wrong: the real cover is a flap hinged at the bottom front, not a
   lift-off lid, and the card case is a slide-in window, not a solid slab.
   With a 36 mm cubby under it the compartment drawn here is too shallow for a
@@ -43,16 +45,18 @@ What is measured and what is not:
 #     the token tray's outer size, about 80 x 85.7 x 33.7 mm (W x D x H);
 #     the tray cubby (the slot the tray slides into), 88.5 x 36 x 80 mm
 #     (opening width x opening height x depth into the box);
-#     the "material width", 5.3 mm, used for the tray's walls.
+#     the "material width", 5.3 mm, used for the tray's walls;
+#     the tray's thumb scoops, one on each of two opposite sides, starting
+#     about 29.5 mm from each end of the wall with about 19 mm of wall left
+#     under them (so 26.7 mm wide and 14.7 mm deep, assuming they are in the
+#     85.7 mm walls; they are not dimensioned on the drawing).
 # - ASSUMED from that 5.3 mm material: the body's walls, the slab under the
 #   cubby, the compartment floor above it and the lid are all drawn 5.3 mm
 #   thick. Nobody measured those.
 # - GUESSED, estimated from a product photo, with no dimension lines: where the
 #   cubby sits in the box (opening on the left face, 5.3 mm up from the base
-#   and in from the back), the tray's floor thickness, the scoops (a 36 mm
-#   round thumb scoop in the compartment's left wall, and a 30 x 16 mm
-#   U-shaped thumb scoop in each of two opposite walls of the tray; the owner
-#   confirmed the tray has one on both sides, the size is a guess), the 10 mm card case and the lift
+#   and in from the back), the tray's floor thickness, the 36 mm round thumb
+#   scoop in the compartment's left wall, the U shape of the tray's scoops, the 10 mm card case and the lift
 #   of the lid in the exploded view.
 # - KNOWN WRONG: the real cover is a flap hinged at the bottom front, not a
 #   lift-off lid, and the card case is a slide-in window, not a solid slab.
@@ -94,8 +98,8 @@ shapes:
   - { type: box, id: body, at: [0, 0, 41.3], size: [110, 94, 55.4], wall: 5.3, style: blue,
       scoops: [{ side: -x, at: 47, width: 36, shape: round }] }
   # The token tray, a separate open-top tray shown pulled out of its cubby to
-  # the left, with a thumb scoop on both sides. Outer size and wall measured;
-  # floor and scoop size estimated.
+  # the left, with a thumb scoop on both sides. Outer size, wall and scoop size
+  # measured; floor and the scoops' U shape estimated.
   - type: box
     id: tray
     label: tray
@@ -105,8 +109,9 @@ shapes:
     wall: 5.3
     style: yellow
     scoops:
-      - { side: +x, at: 42.85, width: 30, depth: 16, shape: u }
-      - { side: -x, at: 42.85, width: 30, depth: 16, shape: u }
+      # 29.5 mm in from each end of the 85.7 mm wall, 19 mm of wall left under it
+      - { side: +x, at: 42.85, width: 26.7, depth: 14.7, shape: u }
+      - { side: -x, at: 42.85, width: 26.7, depth: 14.7, shape: u }
   # Approximate: the front slide-in card case, a thin slab on the front face.
   - { type: box, id: card-case, at: [0, 94, 41.3], size: [110, 10, 55.4], style: green }
   # Approximate: the lid. Closed in the elevations...
@@ -137,7 +142,7 @@ shapes:
   # Callouts name the parts.
   - { type: label, views: [plan], at: [70, 20, 96.7], to: [50, -22, 96.7], text: deck compartment (hollow) }
   - { type: label, views: [plan], at: [2.6, 47, 96.7], to: [-45, -14, 96.7], text: thumb scoop (approx.) }
-  - { type: label, views: [plan], at: [-65, 49.55, 33.7], to: [-70, 105, 33.7], text: scoops (approx.) }
+  - { type: label, views: [plan], at: [-65, 49.55, 33.7], to: [-70, 105, 33.7], text: thumb scoops }
   - { type: label, views: [plan], at: [60, 60, 5.3], to: [118, 124, 5.3], text: tray cubby under (hidden) }
   - { type: label, views: [plan], at: [20, 99, 96.7], to: [-12, 126, 96.7], text: card case (approx.) }
   - { type: label, views: [section], at: [2.6, 52, 60], to: [-45, 52, 90], text: "wall, scoop cut (approx.)" }
@@ -166,16 +171,18 @@ The same source as a single isometric view, using `view="iso"` on the fence:
 #     the token tray's outer size, about 80 x 85.7 x 33.7 mm (W x D x H);
 #     the tray cubby (the slot the tray slides into), 88.5 x 36 x 80 mm
 #     (opening width x opening height x depth into the box);
-#     the "material width", 5.3 mm, used for the tray's walls.
+#     the "material width", 5.3 mm, used for the tray's walls;
+#     the tray's thumb scoops, one on each of two opposite sides, starting
+#     about 29.5 mm from each end of the wall with about 19 mm of wall left
+#     under them (so 26.7 mm wide and 14.7 mm deep, assuming they are in the
+#     85.7 mm walls; they are not dimensioned on the drawing).
 # - ASSUMED from that 5.3 mm material: the body's walls, the slab under the
 #   cubby, the compartment floor above it and the lid are all drawn 5.3 mm
 #   thick. Nobody measured those.
 # - GUESSED, estimated from a product photo, with no dimension lines: where the
 #   cubby sits in the box (opening on the left face, 5.3 mm up from the base
-#   and in from the back), the tray's floor thickness, the scoops (a 36 mm
-#   round thumb scoop in the compartment's left wall, and a 30 x 16 mm
-#   U-shaped thumb scoop in each of two opposite walls of the tray; the owner
-#   confirmed the tray has one on both sides, the size is a guess), the 10 mm card case and the lift
+#   and in from the back), the tray's floor thickness, the 36 mm round thumb
+#   scoop in the compartment's left wall, the U shape of the tray's scoops, the 10 mm card case and the lift
 #   of the lid in the exploded view.
 # - KNOWN WRONG: the real cover is a flap hinged at the bottom front, not a
 #   lift-off lid, and the card case is a slide-in window, not a solid slab.
@@ -217,8 +224,8 @@ shapes:
   - { type: box, id: body, at: [0, 0, 41.3], size: [110, 94, 55.4], wall: 5.3, style: blue,
       scoops: [{ side: -x, at: 47, width: 36, shape: round }] }
   # The token tray, a separate open-top tray shown pulled out of its cubby to
-  # the left, with a thumb scoop on both sides. Outer size and wall measured;
-  # floor and scoop size estimated.
+  # the left, with a thumb scoop on both sides. Outer size, wall and scoop size
+  # measured; floor and the scoops' U shape estimated.
   - type: box
     id: tray
     label: tray
@@ -228,8 +235,9 @@ shapes:
     wall: 5.3
     style: yellow
     scoops:
-      - { side: +x, at: 42.85, width: 30, depth: 16, shape: u }
-      - { side: -x, at: 42.85, width: 30, depth: 16, shape: u }
+      # 29.5 mm in from each end of the 85.7 mm wall, 19 mm of wall left under it
+      - { side: +x, at: 42.85, width: 26.7, depth: 14.7, shape: u }
+      - { side: -x, at: 42.85, width: 26.7, depth: 14.7, shape: u }
   # Approximate: the front slide-in card case, a thin slab on the front face.
   - { type: box, id: card-case, at: [0, 94, 41.3], size: [110, 10, 55.4], style: green }
   # Approximate: the lid. Closed in the elevations...
@@ -260,7 +268,7 @@ shapes:
   # Callouts name the parts.
   - { type: label, views: [plan], at: [70, 20, 96.7], to: [50, -22, 96.7], text: deck compartment (hollow) }
   - { type: label, views: [plan], at: [2.6, 47, 96.7], to: [-45, -14, 96.7], text: thumb scoop (approx.) }
-  - { type: label, views: [plan], at: [-65, 49.55, 33.7], to: [-70, 105, 33.7], text: scoops (approx.) }
+  - { type: label, views: [plan], at: [-65, 49.55, 33.7], to: [-70, 105, 33.7], text: thumb scoops }
   - { type: label, views: [plan], at: [60, 60, 5.3], to: [118, 124, 5.3], text: tray cubby under (hidden) }
   - { type: label, views: [plan], at: [20, 99, 96.7], to: [-12, 126, 96.7], text: card case (approx.) }
   - { type: label, views: [section], at: [2.6, 52, 60], to: [-45, 52, 90], text: "wall, scoop cut (approx.)" }
