@@ -8,52 +8,65 @@ description: |
 ---
 
 A Gamegenic Sidekick Pro XL, the Commander-sized deck box, drawn from one
-YAML source. The box is a hollow shell: a plan with the lid off, a front
-elevation with the lid on, a section cut through the middle, and an
-isometric view with the lid lifted clear so the empty compartment shows.
+YAML source: a plan with the lid off and the token tray pulled out, a front
+elevation, a section cut through the middle, and an isometric view with the
+lid lifted clear so the empty compartment shows.
 
-The three outer dimensions, 110 x 104 x 102 mm (W x D x H), come from retailer
-listings and are unverified: one retailer lists 85 x 100 x 102 mm, so the
-width in particular is disputed, and the manufacturer does not publish
-dimensions. Everything inside that, namely the wall thickness, the drawer
-tier, the card case, the lid and how far it is lifted, is approximate and for
-illustration only. Gamegenic does not publish sizes for those parts, so they
-carry no dimension lines and should not be read as a spec.
+What is measured and what is not:
 
-The small token tray, drawn pulled out to the left of the box, and the two
-scoops are also guesses: the tray (about 70 x 70 x 26 mm), the round thumb
-scoop in the compartment's left wall and the U-shaped scoop in the tray wall
-facing the box were estimated from a product photo, not from any published
-dimensions. The section is cut through the thumb scoop, so the left wall is
-shown lowered there.
+- The box's outer size, 110 x 104 x 102 mm (W x D x H), comes from retailer
+  listings and is unverified: one retailer lists 85 x 100 x 102 mm, and the
+  manufacturer does not publish dimensions.
+- The token tray's outer size (about 80 x 85.7 x 33.7 mm), the cubby it slides
+  into (88.5 x 36 x 80 mm) and the material thickness (5.3 mm) were measured
+  by the box's owner. They are approximate, not a manufacturer spec, and they
+  are the only parts besides the outer size that carry dimension lines.
+- The walls, base, compartment floor and lid are all assumed to be that same
+  5.3 mm material. Where the cubby sits, the tray's floor, both scoops and the
+  card case are guesses from a product photo.
+- Known wrong: the real cover is a flap hinged at the bottom front, not a
+  lift-off lid, and the card case is a slide-in window, not a solid slab.
+  With a 36 mm cubby under it the compartment drawn here is too shallow for a
+  sleeved card, so the retailer height probably does not match the measured
+  parts.
 
-```schematic alt="Plan, front, section and isometric views of a hollow Sidekick Pro XL deck box, 110 by 104 by 102 millimetres"
+```schematic alt="Plan, front, section and isometric views of a Sidekick Pro XL deck box with its token tray pulled out of the cubby under the deck compartment"
 # Gamegenic Sidekick Pro XL, a Magic: The Gathering Commander deck box.
 #
 # SOURCES AND HONESTY
 # - The three OUTER dimensions, 110 x 104 x 102 mm (W x D x H), come from
 #   retailer listings and are unverified. The manufacturer does not publish
 #   dimensions. One retailer lists 85 x 100 x 102 mm, so the width is disputed.
-# - Everything below the outer size is APPROXIMATE and illustrative only: the
-#   wall thickness (3 mm), the 26 mm drawer tier under the compartment, the
-#   10 mm card case, the 26 mm lid and the 36 mm lift in the exploded view are
-#   guesses, not a spec, and carry no dimension lines.
-# - The token tray (about 70 x 70 x 26 mm, 2.5 mm walls) and the two scoops
-#   (a 36 mm round thumb scoop in the compartment's left wall, a 30 x 16 mm
-#   U-shaped scoop in the tray wall facing the box) are ESTIMATED FROM A
-#   PRODUCT PHOTO, not published specs, and carry no dimension lines. The
-#   tray is drawn pulled out to the left in plan and iso; where it sits when
-#   closed (the drawer slot) is not modelled, the 26 mm floor stands for it.
+# - MEASURED by the owner of the box (approximate, not a manufacturer spec),
+#   and so dimensioned on the drawing:
+#     the token tray's outer size, about 80 x 85.7 x 33.7 mm (W x D x H);
+#     the tray cubby (the slot the tray slides into), 88.5 x 36 x 80 mm
+#     (opening width x opening height x depth into the box);
+#     the "material width", 5.3 mm, used for the tray's walls.
+# - ASSUMED from that 5.3 mm material: the body's walls, the slab under the
+#   cubby, the compartment floor above it and the lid are all drawn 5.3 mm
+#   thick. Nobody measured those.
+# - GUESSED, estimated from a product photo, with no dimension lines: where the
+#   cubby sits in the box (opening on the left face, 5.3 mm up from the base
+#   and in from the back), the tray's floor thickness, the two scoops (a 36 mm
+#   round thumb scoop in the compartment's left wall, a 30 x 16 mm U-shaped
+#   scoop in the tray wall facing the box), the 10 mm card case and the lift
+#   of the lid in the exploded view.
+# - KNOWN WRONG: the real cover is a flap hinged at the bottom front, not a
+#   lift-off lid, and the card case is a slide-in window, not a solid slab.
+#   With a 36 mm cubby under it, the compartment drawn here is about 50 mm
+#   deep, which is less than a sleeved card is wide, so the retailer height of
+#   102 mm probably does not match the measured parts.
 # - Features per the manufacturer: a removable cover that clips onto the
 #   bottom, a front slide-in card case (UV protective, shows the commander
 #   card), an integrated drawer for tokens and dice, magnets closing the lid,
 #   capacity 100 double-sleeved cards.
 #
-# The box is hollow: the body is an open-top shell with a deck compartment in
-# the middle. The plan shows it with the lid off; the section cuts it through
-# the middle (the card case is on the removed near half); the isometric view
-# lifts the lid clear (exploded) so the inside shows; the front elevation is
-# closed up.
+# The plan shows the box with the lid off and the tray pulled out to the left;
+# the front elevation is closed up, with the cubby as hidden (dash-dot) lines;
+# the section cuts through the middle (the card case is on the removed near
+# half) and shows the empty cubby and compartment; the isometric view lifts
+# the lid clear so the inside shows.
 #
 # Axes: x is width (left to right), y is depth (the front, with the slide-in
 # card case, faces +y), z is height.
@@ -61,86 +74,118 @@ units: mm
 scale: 2.2
 views: [plan, front, section, iso]
 columns: 1
+cut: 52
 shapes:
-  # Approximate: the body, a hollow open-top shell. The 26 mm floor stands for
-  # the token drawer tier under the deck compartment.
-  - { type: box, id: body, at: [0, 0, 0], size: [110, 94, 76], wall: 3, floor: 26, style: blue,
-      scoops: [{ side: -x, at: 47, width: 36, shape: round }] }  # thumb scoop, estimated from a photo
-  # Approximate, estimated from a photo: the small token tray, a separate open-top
-  # tray shown pulled out to the left (plan and iso only), with a U-shaped scoop
-  # in the wall that faces the box.
+  # The drawer tier under the compartment, which holds the tray cubby. Outside
+  # views see a plain block (the opening is on the far, left face)...
+  - { type: box, id: tier, views: [plan, front, iso], at: [0, 0, 0], size: [110, 104, 41.3], style: blue }
+  # ...and the section sees what is left once the cubby (x 0 to 80, 36 high) is
+  # taken out: the slab under it and the block beside it.
+  - { type: box, id: tier-base, views: [section], at: [0, 0, 0], size: [110, 104, 5.3], style: blue }
+  - { type: box, id: tier-side, views: [section], at: [80, 0, 5.3], size: [30, 104, 36], style: blue }
+  # The cubby as hidden lines where a solid covers it.
+  - { type: line, views: [plan], dashed: true, closed: true, points: [[0, 5.3, 5.3], [80, 5.3, 5.3], [80, 93.8, 5.3], [0, 93.8, 5.3]] }
+  - { type: line, views: [front], dashed: true, closed: true, points: [[0, 104, 5.3], [80, 104, 5.3], [80, 104, 41.3], [0, 104, 41.3]] }
+
+  # The deck compartment, a hollow open-top shell standing on the tier, with a
+  # thumb scoop in its left wall (estimated from a photo).
+  - { type: box, id: body, at: [0, 0, 41.3], size: [110, 94, 55.4], wall: 5.3, style: blue,
+      scoops: [{ side: -x, at: 47, width: 36, shape: round }] }
+  # The token tray, a separate open-top tray shown pulled out of its cubby to
+  # the left. Outer size and wall measured; floor and scoop estimated.
   - type: box
     id: tray
-    label: tray (approx.)
-    views: [plan, iso]
-    at: [-135, 35, 0]
-    size: [70, 70, 26]
-    wall: 2.5
+    label: tray
+    views: [plan, section, iso]
+    at: [-145, 6.7, 0]
+    size: [80, 85.7, 33.7]
+    wall: 5.3
     style: yellow
-    scoops: [{ side: +x, at: 35, width: 30, depth: 16, shape: u }]
+    scoops: [{ side: +x, at: 42.85, width: 30, depth: 16, shape: u }]
   # Approximate: the front slide-in card case, a thin slab on the front face.
-  - { type: box, id: card-case, at: [0, 94, 26], size: [110, 10, 50], style: green }
-  # Approximate: the magnetic lid. Closed in the elevation...
-  - { type: box, id: lid, views: [front, section], at: [0, 0, 76], size: [110, 104, 26], style: orange }
+  - { type: box, id: card-case, at: [0, 94, 41.3], size: [110, 10, 55.4], style: green }
+  # Approximate: the lid. Closed in the elevations...
+  - { type: box, id: lid, views: [front, section], at: [0, 0, 96.7], size: [110, 104, 5.3], style: orange }
   # ...and lifted off in the isometric view, with guide lines to where it seats.
-  - { type: box, id: lid-lifted, views: [iso], at: [0, 0, 201], size: [110, 104, 26], style: orange }
-  - { type: line, views: [iso], dashed: true, points: [[0, 104, 76], [0, 104, 201]] }
-  - { type: line, views: [iso], dashed: true, points: [[110, 104, 76], [110, 104, 201]] }
-  - { type: line, views: [iso], dashed: true, points: [[110, 0, 76], [110, 0, 201]] }
+  - { type: box, id: lid-lifted, views: [iso], at: [0, 0, 190], size: [110, 104, 5.3], style: orange }
+  - { type: line, views: [iso], dashed: true, points: [[0, 104, 96.7], [0, 104, 190]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 104, 96.7], [110, 104, 190]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 0, 96.7], [110, 0, 190]] }
 
-  # The only dimensions: the outer width and depth, and the closed height.
+  # The box's outer width and depth, and the closed height (retailer listings).
   - { type: dim, views: [plan, iso], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 24, 0] }
   - { type: dim, views: [plan, iso], from: [110, 0, 0], to: [110, 104, 0], offset: [24, 0, 0] }
   - { type: dim, views: [front], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [110, 104, 0], to: [110, 104, 102], offset: [24, 0, 0] }
 
-  # Callouts name the approximate parts.
-  - { type: label, views: [plan], at: [55, 20, 76], to: [30, -22, 76], text: deck compartment (hollow) }
-  - { type: label, views: [plan], at: [1.5, 47, 76], to: [-45, -12, 76], text: thumb scoop (approx.) }
-  - { type: label, views: [plan], at: [-65, 70, 26], to: [-85, 96, 26], text: scoop }
-  - { type: label, views: [plan], at: [20, 99, 76], to: [-35, 112, 76], text: card case (approx.) }
-  - { type: label, views: [section], at: [1.5, 52, 45], to: [-45, 52, 60], text: "wall, scoop cut (approx.)" }
-  - { type: label, views: [section], at: [55, 52, 13], to: [-45, 52, 13], text: floor / drawer tier (approx.) }
-  - { type: label, views: [section], at: [55, 52, 52], to: [118, 52, 52], text: hollow deck compartment }
-  - { type: label, views: [section], at: [55, 52, 89], to: [118, 52, 100], text: lid (approx.) }
-  - { type: label, views: [front], at: [0, 104, 90], to: [-30, 104, 110], text: lid (approx.) }
-  - { type: label, views: [front], at: [0, 104, 51], to: [-30, 104, 60], text: slide-in card case (approx.) }
-  - { type: label, views: [front], at: [0, 104, 13], to: [-30, 104, 22], text: token drawer (approx.) }
-  - { type: label, views: [iso], at: [0, 104, 214], to: [-40, 150, 230], text: "lid, lifted (approx.)" }
-  - { type: label, views: [iso], at: [30, 104, 51], to: [-40, 150, 0], text: card case (approx.) }
-  - { type: label, views: [iso], at: [55, 47, 40], to: [-40, 40, 90], text: hollow deck compartment }
-  - { type: label, views: [iso], at: [1.5, 47, 60], to: [-120, 111, 125], text: thumb scoop (approx.) }
+  # The tray's three outer measurements (measured).
+  - { type: dim, views: [plan, iso], from: [-145, 92.4, 0], to: [-65, 92.4, 0], offset: [0, 24, 0] }
+  - { type: dim, views: [plan], from: [-145, 6.7, 0], to: [-145, 92.4, 0], offset: [-24, 0, 0] }
+  - { type: dim, views: [iso], from: [-145, 92.4, 0], to: [-145, 92.4, 33.7], offset: [-24, 0, 0] }
+  - { type: dim, views: [section], from: [-145, 52, 0], to: [-145, 52, 33.7], offset: [-20, 0, 0] }
+
+  # The cubby's three measurements (measured).
+  - { type: dim, views: [plan], from: [0, 5.3, 5.3], to: [0, 93.8, 5.3], offset: [24, 0, 0] }
+  - { type: dim, views: [section], from: [0, 52, 0], to: [80, 52, 0], offset: [0, 0, -22] }
+  - { type: dim, views: [section], from: [0, 52, 5.3], to: [0, 52, 41.3], offset: [-16, 0, 0] }
+
+  # Callouts name the parts.
+  - { type: label, views: [plan], at: [70, 20, 96.7], to: [50, -22, 96.7], text: deck compartment (hollow) }
+  - { type: label, views: [plan], at: [2.6, 47, 96.7], to: [-45, -14, 96.7], text: thumb scoop (approx.) }
+  - { type: label, views: [plan], at: [-65, 49.55, 33.7], to: [-70, 105, 33.7], text: scoop (approx.) }
+  - { type: label, views: [plan], at: [60, 60, 5.3], to: [118, 124, 5.3], text: tray cubby under (hidden) }
+  - { type: label, views: [plan], at: [20, 99, 96.7], to: [-12, 126, 96.7], text: card case (approx.) }
+  - { type: label, views: [section], at: [2.6, 52, 60], to: [-45, 52, 90], text: "wall, scoop cut (approx.)" }
+  - { type: label, views: [section], at: [40, 52, 23], to: [118, 52, 23], text: tray cubby }
+  - { type: label, views: [section], at: [55, 52, 70], to: [118, 52, 70], text: hollow deck compartment }
+  - { type: label, views: [section], at: [55, 52, 99], to: [118, 52, 108], text: lid (approx.) }
+  - { type: label, views: [front], at: [0, 104, 99], to: [-30, 104, 112], text: lid (approx.) }
+  - { type: label, views: [front], at: [0, 104, 70], to: [-30, 104, 78], text: slide-in card case (approx.) }
+  - { type: label, views: [front], at: [40, 104, 23], to: [-30, 104, 30], text: tray cubby (hidden) }
+  - { type: label, views: [iso], at: [0, 104, 192.6], to: [-40, 150, 215], text: "lid, lifted (approx.)" }
+  - { type: label, views: [iso], at: [30, 104, 70], to: [60, 200, 60], text: card case (approx.) }
+  - { type: label, views: [iso], at: [2.6, 47, 85], to: [-123, 73, 110], text: thumb scoop (approx.) }
 ```
 
 The same source as a single isometric view, using `view="iso"` on the fence:
 
-```schematic alt="Isometric view of a hollow Sidekick Pro XL deck box with its lid lifted off" view="iso"
+```schematic alt="Isometric view of a Sidekick Pro XL deck box with its lid lifted off and its token tray beside it" view="iso"
 # Gamegenic Sidekick Pro XL, a Magic: The Gathering Commander deck box.
 #
 # SOURCES AND HONESTY
 # - The three OUTER dimensions, 110 x 104 x 102 mm (W x D x H), come from
 #   retailer listings and are unverified. The manufacturer does not publish
 #   dimensions. One retailer lists 85 x 100 x 102 mm, so the width is disputed.
-# - Everything below the outer size is APPROXIMATE and illustrative only: the
-#   wall thickness (3 mm), the 26 mm drawer tier under the compartment, the
-#   10 mm card case, the 26 mm lid and the 36 mm lift in the exploded view are
-#   guesses, not a spec, and carry no dimension lines.
-# - The token tray (about 70 x 70 x 26 mm, 2.5 mm walls) and the two scoops
-#   (a 36 mm round thumb scoop in the compartment's left wall, a 30 x 16 mm
-#   U-shaped scoop in the tray wall facing the box) are ESTIMATED FROM A
-#   PRODUCT PHOTO, not published specs, and carry no dimension lines. The
-#   tray is drawn pulled out to the left in plan and iso; where it sits when
-#   closed (the drawer slot) is not modelled, the 26 mm floor stands for it.
+# - MEASURED by the owner of the box (approximate, not a manufacturer spec),
+#   and so dimensioned on the drawing:
+#     the token tray's outer size, about 80 x 85.7 x 33.7 mm (W x D x H);
+#     the tray cubby (the slot the tray slides into), 88.5 x 36 x 80 mm
+#     (opening width x opening height x depth into the box);
+#     the "material width", 5.3 mm, used for the tray's walls.
+# - ASSUMED from that 5.3 mm material: the body's walls, the slab under the
+#   cubby, the compartment floor above it and the lid are all drawn 5.3 mm
+#   thick. Nobody measured those.
+# - GUESSED, estimated from a product photo, with no dimension lines: where the
+#   cubby sits in the box (opening on the left face, 5.3 mm up from the base
+#   and in from the back), the tray's floor thickness, the two scoops (a 36 mm
+#   round thumb scoop in the compartment's left wall, a 30 x 16 mm U-shaped
+#   scoop in the tray wall facing the box), the 10 mm card case and the lift
+#   of the lid in the exploded view.
+# - KNOWN WRONG: the real cover is a flap hinged at the bottom front, not a
+#   lift-off lid, and the card case is a slide-in window, not a solid slab.
+#   With a 36 mm cubby under it, the compartment drawn here is about 50 mm
+#   deep, which is less than a sleeved card is wide, so the retailer height of
+#   102 mm probably does not match the measured parts.
 # - Features per the manufacturer: a removable cover that clips onto the
 #   bottom, a front slide-in card case (UV protective, shows the commander
 #   card), an integrated drawer for tokens and dice, magnets closing the lid,
 #   capacity 100 double-sleeved cards.
 #
-# The box is hollow: the body is an open-top shell with a deck compartment in
-# the middle. The plan shows it with the lid off; the section cuts it through
-# the middle (the card case is on the removed near half); the isometric view
-# lifts the lid clear (exploded) so the inside shows; the front elevation is
-# closed up.
+# The plan shows the box with the lid off and the tray pulled out to the left;
+# the front elevation is closed up, with the cubby as hidden (dash-dot) lines;
+# the section cuts through the middle (the card case is on the removed near
+# half) and shows the empty cubby and compartment; the isometric view lifts
+# the lid clear so the inside shows.
 #
 # Axes: x is width (left to right), y is depth (the front, with the slide-in
 # card case, faces +y), z is height.
@@ -148,55 +193,77 @@ units: mm
 scale: 2.2
 views: [plan, front, section, iso]
 columns: 1
+cut: 52
 shapes:
-  # Approximate: the body, a hollow open-top shell. The 26 mm floor stands for
-  # the token drawer tier under the deck compartment.
-  - { type: box, id: body, at: [0, 0, 0], size: [110, 94, 76], wall: 3, floor: 26, style: blue,
-      scoops: [{ side: -x, at: 47, width: 36, shape: round }] }  # thumb scoop, estimated from a photo
-  # Approximate, estimated from a photo: the small token tray, a separate open-top
-  # tray shown pulled out to the left (plan and iso only), with a U-shaped scoop
-  # in the wall that faces the box.
+  # The drawer tier under the compartment, which holds the tray cubby. Outside
+  # views see a plain block (the opening is on the far, left face)...
+  - { type: box, id: tier, views: [plan, front, iso], at: [0, 0, 0], size: [110, 104, 41.3], style: blue }
+  # ...and the section sees what is left once the cubby (x 0 to 80, 36 high) is
+  # taken out: the slab under it and the block beside it.
+  - { type: box, id: tier-base, views: [section], at: [0, 0, 0], size: [110, 104, 5.3], style: blue }
+  - { type: box, id: tier-side, views: [section], at: [80, 0, 5.3], size: [30, 104, 36], style: blue }
+  # The cubby as hidden lines where a solid covers it.
+  - { type: line, views: [plan], dashed: true, closed: true, points: [[0, 5.3, 5.3], [80, 5.3, 5.3], [80, 93.8, 5.3], [0, 93.8, 5.3]] }
+  - { type: line, views: [front], dashed: true, closed: true, points: [[0, 104, 5.3], [80, 104, 5.3], [80, 104, 41.3], [0, 104, 41.3]] }
+
+  # The deck compartment, a hollow open-top shell standing on the tier, with a
+  # thumb scoop in its left wall (estimated from a photo).
+  - { type: box, id: body, at: [0, 0, 41.3], size: [110, 94, 55.4], wall: 5.3, style: blue,
+      scoops: [{ side: -x, at: 47, width: 36, shape: round }] }
+  # The token tray, a separate open-top tray shown pulled out of its cubby to
+  # the left. Outer size and wall measured; floor and scoop estimated.
   - type: box
     id: tray
-    label: tray (approx.)
-    views: [plan, iso]
-    at: [-135, 35, 0]
-    size: [70, 70, 26]
-    wall: 2.5
+    label: tray
+    views: [plan, section, iso]
+    at: [-145, 6.7, 0]
+    size: [80, 85.7, 33.7]
+    wall: 5.3
     style: yellow
-    scoops: [{ side: +x, at: 35, width: 30, depth: 16, shape: u }]
+    scoops: [{ side: +x, at: 42.85, width: 30, depth: 16, shape: u }]
   # Approximate: the front slide-in card case, a thin slab on the front face.
-  - { type: box, id: card-case, at: [0, 94, 26], size: [110, 10, 50], style: green }
-  # Approximate: the magnetic lid. Closed in the elevation...
-  - { type: box, id: lid, views: [front, section], at: [0, 0, 76], size: [110, 104, 26], style: orange }
+  - { type: box, id: card-case, at: [0, 94, 41.3], size: [110, 10, 55.4], style: green }
+  # Approximate: the lid. Closed in the elevations...
+  - { type: box, id: lid, views: [front, section], at: [0, 0, 96.7], size: [110, 104, 5.3], style: orange }
   # ...and lifted off in the isometric view, with guide lines to where it seats.
-  - { type: box, id: lid-lifted, views: [iso], at: [0, 0, 201], size: [110, 104, 26], style: orange }
-  - { type: line, views: [iso], dashed: true, points: [[0, 104, 76], [0, 104, 201]] }
-  - { type: line, views: [iso], dashed: true, points: [[110, 104, 76], [110, 104, 201]] }
-  - { type: line, views: [iso], dashed: true, points: [[110, 0, 76], [110, 0, 201]] }
+  - { type: box, id: lid-lifted, views: [iso], at: [0, 0, 190], size: [110, 104, 5.3], style: orange }
+  - { type: line, views: [iso], dashed: true, points: [[0, 104, 96.7], [0, 104, 190]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 104, 96.7], [110, 104, 190]] }
+  - { type: line, views: [iso], dashed: true, points: [[110, 0, 96.7], [110, 0, 190]] }
 
-  # The only dimensions: the outer width and depth, and the closed height.
+  # The box's outer width and depth, and the closed height (retailer listings).
   - { type: dim, views: [plan, iso], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 24, 0] }
   - { type: dim, views: [plan, iso], from: [110, 0, 0], to: [110, 104, 0], offset: [24, 0, 0] }
   - { type: dim, views: [front], from: [0, 104, 0], to: [110, 104, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [110, 104, 0], to: [110, 104, 102], offset: [24, 0, 0] }
 
-  # Callouts name the approximate parts.
-  - { type: label, views: [plan], at: [55, 20, 76], to: [30, -22, 76], text: deck compartment (hollow) }
-  - { type: label, views: [plan], at: [1.5, 47, 76], to: [-45, -12, 76], text: thumb scoop (approx.) }
-  - { type: label, views: [plan], at: [-65, 70, 26], to: [-85, 96, 26], text: scoop }
-  - { type: label, views: [plan], at: [20, 99, 76], to: [-35, 112, 76], text: card case (approx.) }
-  - { type: label, views: [section], at: [1.5, 52, 45], to: [-45, 52, 60], text: "wall, scoop cut (approx.)" }
-  - { type: label, views: [section], at: [55, 52, 13], to: [-45, 52, 13], text: floor / drawer tier (approx.) }
-  - { type: label, views: [section], at: [55, 52, 52], to: [118, 52, 52], text: hollow deck compartment }
-  - { type: label, views: [section], at: [55, 52, 89], to: [118, 52, 100], text: lid (approx.) }
-  - { type: label, views: [front], at: [0, 104, 90], to: [-30, 104, 110], text: lid (approx.) }
-  - { type: label, views: [front], at: [0, 104, 51], to: [-30, 104, 60], text: slide-in card case (approx.) }
-  - { type: label, views: [front], at: [0, 104, 13], to: [-30, 104, 22], text: token drawer (approx.) }
-  - { type: label, views: [iso], at: [0, 104, 214], to: [-40, 150, 230], text: "lid, lifted (approx.)" }
-  - { type: label, views: [iso], at: [30, 104, 51], to: [-40, 150, 0], text: card case (approx.) }
-  - { type: label, views: [iso], at: [55, 47, 40], to: [-40, 40, 90], text: hollow deck compartment }
-  - { type: label, views: [iso], at: [1.5, 47, 60], to: [-120, 111, 125], text: thumb scoop (approx.) }
+  # The tray's three outer measurements (measured).
+  - { type: dim, views: [plan, iso], from: [-145, 92.4, 0], to: [-65, 92.4, 0], offset: [0, 24, 0] }
+  - { type: dim, views: [plan], from: [-145, 6.7, 0], to: [-145, 92.4, 0], offset: [-24, 0, 0] }
+  - { type: dim, views: [iso], from: [-145, 92.4, 0], to: [-145, 92.4, 33.7], offset: [-24, 0, 0] }
+  - { type: dim, views: [section], from: [-145, 52, 0], to: [-145, 52, 33.7], offset: [-20, 0, 0] }
+
+  # The cubby's three measurements (measured).
+  - { type: dim, views: [plan], from: [0, 5.3, 5.3], to: [0, 93.8, 5.3], offset: [24, 0, 0] }
+  - { type: dim, views: [section], from: [0, 52, 0], to: [80, 52, 0], offset: [0, 0, -22] }
+  - { type: dim, views: [section], from: [0, 52, 5.3], to: [0, 52, 41.3], offset: [-16, 0, 0] }
+
+  # Callouts name the parts.
+  - { type: label, views: [plan], at: [70, 20, 96.7], to: [50, -22, 96.7], text: deck compartment (hollow) }
+  - { type: label, views: [plan], at: [2.6, 47, 96.7], to: [-45, -14, 96.7], text: thumb scoop (approx.) }
+  - { type: label, views: [plan], at: [-65, 49.55, 33.7], to: [-70, 105, 33.7], text: scoop (approx.) }
+  - { type: label, views: [plan], at: [60, 60, 5.3], to: [118, 124, 5.3], text: tray cubby under (hidden) }
+  - { type: label, views: [plan], at: [20, 99, 96.7], to: [-12, 126, 96.7], text: card case (approx.) }
+  - { type: label, views: [section], at: [2.6, 52, 60], to: [-45, 52, 90], text: "wall, scoop cut (approx.)" }
+  - { type: label, views: [section], at: [40, 52, 23], to: [118, 52, 23], text: tray cubby }
+  - { type: label, views: [section], at: [55, 52, 70], to: [118, 52, 70], text: hollow deck compartment }
+  - { type: label, views: [section], at: [55, 52, 99], to: [118, 52, 108], text: lid (approx.) }
+  - { type: label, views: [front], at: [0, 104, 99], to: [-30, 104, 112], text: lid (approx.) }
+  - { type: label, views: [front], at: [0, 104, 70], to: [-30, 104, 78], text: slide-in card case (approx.) }
+  - { type: label, views: [front], at: [40, 104, 23], to: [-30, 104, 30], text: tray cubby (hidden) }
+  - { type: label, views: [iso], at: [0, 104, 192.6], to: [-40, 150, 215], text: "lid, lifted (approx.)" }
+  - { type: label, views: [iso], at: [30, 104, 70], to: [60, 200, 60], text: card case (approx.) }
+  - { type: label, views: [iso], at: [2.6, 47, 85], to: [-123, 73, 110], text: thumb scoop (approx.) }
 ```
 
 A second example exercising a cylinder, a group, a footprint, wires and a
