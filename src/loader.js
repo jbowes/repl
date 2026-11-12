@@ -16,6 +16,7 @@ import CodeBlock from './components/codeblock';
 import Diagram from './components/diagram';
 import Link from './components/link';
 import { renderDiagram } from './diagram/render';
+import { isLocal, processImage } from './images';
 
 const markdownToReactComponents = {
   a: Link,
@@ -29,8 +30,9 @@ function* genFiles(dir) {
   for (const file of contents) {
     const full = join(dir, file);
     if (statSync(full).isDirectory()) {
-      yield* loadFiles(full);
-    } else {
+      yield* genFiles(full);
+    } else if (extname(full) === '.md') {
+      // content/images/ and friends are not posts.
       yield full;
     }
   }
@@ -74,6 +76,22 @@ function codeblock(state, node) {
   return state.applyData(node, result);
 }
 
+// ![alt](path) with a local path becomes an <img> carrying its size and either
+// an inlined data: URI or a hashed file; remote URLs pass through untouched.
+function image(file) {
+  return (state, node) => {
+    const props = isLocal(node.url)
+      ? processImage(node.url, node.alt, file)
+      : { src: node.url, alt: node.alt };
+    props.className = ['post-image'];
+    if (node.title) props.title = node.title;
+
+    const result = { type: 'element', tagName: 'img', properties: props, children: [] };
+    state.patch(node, result);
+    return state.applyData(node, result);
+  };
+}
+
 export function listFiles(dir) {
   let files = [];
   for (const file of genFiles(dir)) {
@@ -90,6 +108,7 @@ export function listFiles(dir) {
       .use(remark2rehype, {
         handlers: {
           code: codeblock,
+          image: image(file),
         },
       })
       .use(rehype2react, {

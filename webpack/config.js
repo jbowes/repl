@@ -1,10 +1,12 @@
 import path from 'path';
 import webpack from 'webpack';
 import StaticSitePlugin from './static-site-plugin';
+import ImagesPlugin from './images-plugin';
 import SitemapPlugin from 'sitemap-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 
 const site = require('../src/');
+const { emittedImages } = require('../src/images');
 
 export default {
   mode: 'production',
@@ -43,6 +45,7 @@ export default {
   },
   plugins: [
     new StaticSitePlugin({ entry: 'main', paths: site.staticRoutes() }),
+    new ImagesPlugin({ images: emittedImages }),
     new SitemapPlugin({ base: 'https://repl.ca', options: {
         skipgzip: true,
         lastmod: true, // default to "now",

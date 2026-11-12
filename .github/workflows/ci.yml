@@ -18,4 +18,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm audit --audit-level=low
+      - run: npm run check:images
+      - run: npm test
       - run: npm run release
