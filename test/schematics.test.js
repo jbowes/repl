@@ -75,21 +75,21 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   assert.deepEqual(view('plan, side'), ['plan', 'side']);
 
   // plan has the hollow body and the tray (their rims are stroked as edges,
-  // not polygons, so only the lowered wall under each scoop counts: 1 and 2) and the card case; the lid is off. iso has the body and
-  // the tray (3 inside faces, 2 outer faces, a cut band per scoop),
-  // the card case and the lifted lid (three faces each). The drawer tier under
+  // not polygons, so only the lowered wall under each scoop counts: 1 and 2) and the card case. iso has the body and
+  // the tray (3 inside faces, 2 outer faces, a cut band per scoop) and
+  // the card case (three faces). The cover is not drawn. The drawer tier under
   // the body is a plain block from outside: one rectangle, or three faces.
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
   assert.equal(polys('plan'), 1 + 2 + 1 + 1);
-  assert.equal(polys('iso'), (3 + 2 + 1) + (3 + 2 + 2) + 3 + 3 + 3);
+  assert.equal(polys('iso'), (3 + 2 + 1) + (3 + 2 + 2) + 3 + 3);
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
   const text = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/>([\d.]+ mm)<\/text>/g)].map((m) => m[1]);
-  assert.deepEqual(text('plan'), ['94.5 mm', '113 mm', '80 mm', '85.7 mm', '69.4 mm', '75.1 mm', '88.5 mm', '12.5 mm', '12.5 mm']);
+  assert.deepEqual(text('plan'), ['94.5 mm', '113 mm', '80 mm', '85.7 mm', '69.4 mm', '75.1 mm', '88.5 mm', '12.25 mm', '12.25 mm']);
   assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '80 mm', '36 mm']);
   assert.deepEqual(text('front'), ['94.5 mm', '102 mm']);
-  // the lid is lifted in iso, so there is no closed height to dimension there
+  // the height is dimensioned in the front elevation only
   assert.deepEqual(text('iso'), ['94.5 mm', '113 mm', '80 mm', '33.7 mm']);
 });
 
@@ -173,7 +173,7 @@ test('the deck box fixture dimensions only the box outer sizes and the measured 
   const dims = m.shapes.filter((s) => s.type === 'dim').map((s) => Math.round(Math.hypot(...s.to.map((v, i) => v - s.from[i]))));
   // box base 94.5 x 113 and height 102, tray 80 x 85.7 x 33.7 outside and
   // 69.4 x 75.1 x 28.4 inside, its scoops 29.5 in, 26.7 wide, 14.7 deep over 19,
-  // cubby 88.5 x 36 x 80 with 12.5 (drawn 12.25) of base on each side
+  // cubby 88.5 x 36 x 80 with 12.25 of base on each side
   assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [12, 15, 19, 27, 28, 30, 34, 36, 69, 75, 80, 86, 89, 95, 102, 113]);
   // and nothing else: every dimension is one of those measurements
   assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 4 + 4 + 3 + 4 + 5);
