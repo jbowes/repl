@@ -9,17 +9,17 @@ import Content from '../components/content';
 import Footer from '../components/footer';
 
 export default (props) => {
-  const Link = (props) => <a href="/" className="link blue">{ props.children }</a>
+  const Link = (props) => <a href="/" className="brand-link">{ props.children }</a>
   return (
     <Page>
       <Head canonical={props.post.slug} title={props.post.header.title} description={props.post.header.description} type="article" pubdate={props.post.header.date} />
-      <Body className="flex flex-column">
-        <header className="ttu bb bw3 mh5-l mh4-m mh3 flex flex-column flex-row-ns">
-          <div className="bb bw3 bb-0-ns br-ns bw3-ns flex-none ph3 pv2">
-            <p className="f3 f2-l lh-solid tracked-tight mv0 b"><Link>repl</Link></p>
+      <Body>
+        <header className="masthead post-masthead">
+          <div className="post-brand">
+            <p className="brand-name"><Link>repl</Link></p>
           </div>
-          <div className="flex-auto pl3 pl4-l pv3">
-            <p className="f6 lh-solid mv0 fw5 tracked-mega">
+          <div className="post-tagline">
+            <p className="tagline">
               1/128 scale realistic detail programming
             </p>
           </div>
