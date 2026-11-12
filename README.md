@@ -114,9 +114,11 @@ scoop, a tray's pour notch).
 - `shape`: `u` (default; straight sides, round bottom, `depth` required) or
   `round` (a semicircle, so `depth` is `width/2` and is omitted).
 
-Plan shows a gap in the rim; the elevation facing the wall (`front` for `+y`,
-`side` for `+x`) shows the notch in the wall's outline; a section whose cut
-passes through a scoop in the `-x`/`+x` wall lowers that wall; iso shows the
+Plan breaks the hatched rim at the scoop and draws the lowered wall under it
+darker and unhatched; the elevation facing the wall (`front` for `+y`, `side`
+for `+x`) shows the notch in the wall's outline; a section whose cut passes
+through a scoop in the `-x`/`+x` wall lowers that wall's hatched cut and shows
+the rest of the wall, past the cut, darker above it; iso shows the
 notch in the outer or inner face, the cut surface through the wall, and the
 gap in the rim. Scoops need `wall` (a solid box rejects them).
 

@@ -12,7 +12,7 @@ const { createHash } = require('crypto');
 const { parse, parseViewOption } = require('./schema');
 const { project, extent, paintOrder, isoCircle, points: shapePoints } = require('./project');
 const { SchematicCanvas, esc, num } = require('./canvas');
-const { SIDES, wallFrame, faceLoop, rimPieces, cutBand } = require('./hollow');
+const { SIDES, wallFrame, wallPoint, faceLoop, rimPieces, cutBand } = require('./hollow');
 const { STANDALONE, STANDALONE_CSS } = require('../diagram/render');
 
 const FIT = 240; // px the largest dimension gets when `scale` is not given
@@ -104,6 +104,12 @@ function drawView(model, view, scale, c) {
   };
 
   const drawBox = (s) => {
+    // A part of a wall that is lower than, or beyond, the hatched material
+    // around it: a flat tint and a fainter outline.
+    const lowered = (q) => {
+      c.shade(polyShape(q), boxOf(q), s.style && { ...s.style, fill: 'solid' }, 'right');
+      c.polygon2(q, { opacity: 0.55 });
+    };
     const e = extent(s);
     const [x0, y0, z0] = e.min;
     const [x1, y1, z1] = e.max;
@@ -122,9 +128,15 @@ function drawView(model, view, scale, c) {
       }
       c.backing(polyShape(poly));
       if (hollow && view === 'plan' && s.scoops.length) {
-        // The rim in pieces, with a gap in the wall at each scoop.
+        // The rim in pieces. A scoop only lowers the wall, so from above the
+        // wall is still there under it: drawn darker, without the rim's hatch.
         for (const side of SIDES) {
           const f = wallFrame(e, s.wall, side);
+          for (const sc of scoopsOn(s, side)) {
+            const [u0, u1] = [f.start + sc.at - sc.width / 2, f.start + sc.at + sc.width / 2];
+            const q = [[f.outer, u0], [f.outer, u1], [f.inner, u1], [f.inner, u0]].map(([n, u]) => P(wallPoint(f, n, u, z1)));
+            lowered(q);
+          }
           for (const piece of rimPieces(f, s.wall, scoopsOn(s, side))) {
             const q = piece.map(P);
             c.shade(polyShape(q), boxOf(q), s.style, 'flat');
@@ -150,6 +162,11 @@ function drawView(model, view, scale, c) {
         const zl = z1 - dropAt(s, '-x', cut - y0);
         const zr = z1 - dropAt(s, '+x', cut - y0);
         const u = [[x0, zl], [x0, z0], [x1, z0], [x1, zr], [ix1, zr], [ix1, fz], [ix0, fz], [ix0, zl]].map(([x, z]) => P([x, y0, z]));
+        // Past the cut the wall carries on at full height: not cut material,
+        // so it is drawn darker and unhatched above the lowered top.
+        for (const [xa, xb, zt] of [[x0, ix0, zl], [ix1, x1, zr]]) {
+          if (zt < z1) lowered([[xa, z1], [xb, z1], [xb, zt], [xa, zt]].map(([x, z]) => P([x, y0, z])));
+        }
         c.shade(polyShape(u), rect, s.style, 'flat');
         c.polygon2(u);
         drawLabel(s, centroid(poly));

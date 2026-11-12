@@ -80,7 +80,7 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   // the card case and the lifted lid (three faces each). The drawer tier under
   // the body is a plain block from outside: one rectangle, or three faces.
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('plan'), 5 + 6 + 1 + 1);
+  assert.equal(polys('plan'), (5 + 1) + (6 + 2) + 1 + 1); // each scoop adds the lowered wall under it
   assert.equal(polys('iso'), (3 + 2 + 1 + 5) + (3 + 2 + 2 + 6) + 3 + 3 + 3);
 });
 
@@ -243,7 +243,8 @@ test('the deck box models a hollow body, not stacked slabs', () => {
 const TRAY = (scoops, extra = '') =>
   `views: [plan, front, side, section, iso]\nshapes:\n  - { type: box, id: tray, at: [0, 0, 0], size: [70, 60, 30], wall: 3, style: yellow, ${extra}scoops: ${scoops} }\n`;
 const U = '[{ side: +x, at: 30, width: 20, depth: 12 }]';
-const firstOutline = (svg) => /<polygon class="ln" points="([^"]+)"/.exec(svg)[1].split(' ').map((p) => p.split(',').map(Number));
+// the first full-strength outline (lowered wall parts are fainter)
+const firstOutline = (svg) => /<polygon class="ln" points="([^"]+)" stroke="currentColor" stroke-width="1.5"\/>/.exec(svg)[1].split(' ').map((p) => p.split(',').map(Number));
 
 test('scoops are parsed per wall: u or round, depth for round is width/2', () => {
   const [s] = parse(TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -y, at: 35, width: 24, shape: round }]')).shapes;
@@ -271,11 +272,19 @@ test('scoop validation names the field', () => {
   assert.throws(() => parse('shapes:\n  - { type: box, at: [0, 0, 0], size: [10, 10, 10], scoops: [] }'), /shapes\[0\]\.scoops: needs `wall`/);
 });
 
-test('plan leaves a gap in the rim at each scoop', () => {
-  const polys = (src) => (renderSchematic(src, { view: 'plan' }).match(/<polygon class="ln"/g) || []).length;
-  // four walls, the +x wall in two pieces
-  assert.equal(polys(TRAY(U)), 5);
-  assert.equal(polys(TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -x, at: 30, width: 20, depth: 12 }]')), 6);
+const LOWERED = /<polygon class="ln" points="[^"]+" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.55"\/>/g;
+
+test('plan splits the hatched rim at each scoop and draws the lowered wall darker', () => {
+  const two = TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -x, at: 30, width: 20, depth: 12 }]');
+  const all = (src) => (renderSchematic(src, { view: 'plan' }).match(/<polygon class="ln"/g) || []).length;
+  const lowered = (src) => (renderSchematic(src, { view: 'plan' }).match(LOWERED) || []).length;
+  // four walls, the +x wall in two pieces, plus the wall under the scoop
+  assert.equal(all(TRAY(U)), 5 + 1);
+  assert.equal(lowered(TRAY(U)), 1);
+  assert.equal(all(two), 6 + 2);
+  assert.equal(lowered(two), 2);
+  // the lowered part is tinted, not hatched like the rim
+  assert.match(renderSchematic(TRAY(U), { view: 'plan' }), /class="sf" fill="currentColor" fill-opacity="0.16"/);
 });
 
 test('the elevation facing a scoop shows its notch in the wall outline', () => {
@@ -297,6 +306,9 @@ test('a section through a scoop lowers the cut wall', () => {
   // cut through the scoop, the walls are lower: both lowered -> the section is shorter by the depth
   const both = bottom(`[${left}, ${right}]`) - top(`[${left}, ${right}]`);
   assert.ok(Math.abs(height - both - 12 * (height / 30)) < 0.3, `${height} ${both}`);
+  // the wall past the cut still shows at full height, fainter, above each lowered top
+  const faint = (scoops) => (renderSchematic(only(scoops)).match(LOWERED) || []).length;
+  assert.deepEqual([faint('[]'), faint(`[${left}]`), faint(`[${left}, ${right}]`)], [0, 1, 2]);
 });
 
 test('iso draws the scoop notch, its cut surface and the gap in the rim', () => {
