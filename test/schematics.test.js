@@ -86,8 +86,8 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
   const text = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/>([\d.]+ mm)<\/text>/g)].map((m) => m[1]);
-  assert.deepEqual(text('plan'), ['110 mm', '104 mm', '80 mm', '85.7 mm', '88.5 mm']);
-  assert.deepEqual(text('section'), ['33.7 mm', '80 mm', '36 mm']);
+  assert.deepEqual(text('plan'), ['110 mm', '104 mm', '80 mm', '85.7 mm', '69.4 mm', '75.1 mm', '29.5 mm', '26.7 mm', '88.5 mm']);
+  assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '19 mm', '14.7 mm', '80 mm', '36 mm']);
   assert.deepEqual(text('front'), ['110 mm', '102 mm']);
   // the lid is lifted in iso, so there is no closed height to dimension there
   assert.deepEqual(text('iso'), ['110 mm', '104 mm', '80 mm', '33.7 mm']);
@@ -168,13 +168,14 @@ test('standalone output embeds the palette CSS', () => {
   assert.match(svg, /\.dg-node \.sf\{/);
 });
 
-test('the deck box fixture dimensions only the box outer sizes and the measured tray and cubby', () => {
+test('the deck box fixture dimensions only the box outer sizes and the measured tray, scoops and cubby', () => {
   const m = parse(DECK);
   const dims = m.shapes.filter((s) => s.type === 'dim').map((s) => Math.round(Math.hypot(...s.to.map((v, i) => v - s.from[i]))));
-  // box 110 x 104 x 102, tray 80 x 85.7 x 33.7, cubby 88.5 x 36 x 80
-  assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [34, 36, 80, 86, 89, 102, 104, 110]);
+  // box 110 x 104 x 102, tray 80 x 85.7 x 33.7 outside and 69.4 x 75.1 x 28.4
+  // inside, its scoops 29.5 in, 26.7 wide, 14.7 deep over 19, cubby 88.5 x 36 x 80
+  assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [15, 19, 27, 28, 30, 34, 36, 69, 75, 80, 86, 89, 102, 104, 110]);
   // and nothing else: every dimension is one of those measurements
-  assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 4 + 4 + 3);
+  assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 4 + 4 + 3 + 4 + 3);
 });
 
 const HOLLOW = 'views: [plan, section, iso]\nshapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], wall: 4, floor: 20, style: blue }\n';
