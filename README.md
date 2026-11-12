@@ -29,6 +29,13 @@ sequenceDiagram
   `-->`, `-.->` (dashed) and `---` (no arrowhead), with an optional
   `-->|label|`. Edges can be chained: `A --> B --> C`.
 - `%%` starts a comment line.
+- Colour: add `:::colour` to a node or participant, e.g. `A[Client]:::blue` or
+  `participant P as Provider:::green`. Colours are `blue`, `red`, `green`,
+  `orange` and `yellow`, the code-highlighting palette. A `-solid` or `-cross`
+  suffix changes the fill from hachure (`:::red-solid`, `:::orange-cross`).
+
+Diagrams are centred in the same panel as code blocks (`--code-bg`), with edges
+in the operator blue and uncoloured nodes in the code foreground.
 
 Output is deterministic: rough.js is seeded from a hash of the source. Preview
 one with `node scripts/render-diagram.js in.diagram out.svg`; examples live in

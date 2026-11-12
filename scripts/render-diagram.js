@@ -16,6 +16,6 @@ if (!input) {
   process.exit(2);
 }
 
-const svg = renderDiagram(fs.readFileSync(input, 'utf8'), { alt });
+const svg = renderDiagram(fs.readFileSync(input, 'utf8'), { alt, standalone: true });
 if (output) fs.writeFileSync(output, svg + '\n');
 else process.stdout.write(svg + '\n');
