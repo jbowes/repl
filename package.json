@@ -13,6 +13,10 @@
     "dev": "webpack serve --hot --port 5000",
     "build": "webpack --progress",
     "css": "postcss --no-map -o public/css/style.css src/css/style.css",
+    "test": "node --test test/",
+    "check:images": "node scripts/check-images.js",
+    "images:fix": "node scripts/check-images.js --fix",
+    "prepare": "git config core.hooksPath .githooks || true",
     "release": "npm run build && npm run css && node scripts/inline-css.js"
   },
   "dependencies": {
@@ -43,5 +47,8 @@
   },
   "overrides": {
     "glob": "^14.0.4"
+  },
+  "devDependencies": {
+    "sharp": "0.35.5"
   }
 }
