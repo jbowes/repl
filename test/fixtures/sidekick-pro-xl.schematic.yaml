@@ -8,6 +8,12 @@
 #   wall thickness (3 mm), the 26 mm drawer tier under the compartment, the
 #   10 mm card case, the 26 mm lid and the 36 mm lift in the exploded view are
 #   guesses, not a spec, and carry no dimension lines.
+# - The token tray (about 70 x 70 x 26 mm, 2.5 mm walls) and the two scoops
+#   (a 36 mm round thumb scoop in the compartment's left wall, a 30 x 16 mm
+#   U-shaped scoop in the tray wall facing the box) are ESTIMATED FROM A
+#   PRODUCT PHOTO, not published specs, and carry no dimension lines. The
+#   tray is drawn pulled out to the left in plan and iso; where it sits when
+#   closed (the drawer slot) is not modelled, the 26 mm floor stands for it.
 # - Features per the manufacturer: a removable cover that clips onto the
 #   bottom, a front slide-in card case (UV protective, shows the commander
 #   card), an integrated drawer for tokens and dice, magnets closing the lid,
@@ -28,7 +34,20 @@ columns: 1
 shapes:
   # Approximate: the body, a hollow open-top shell. The 26 mm floor stands for
   # the token drawer tier under the deck compartment.
-  - { type: box, id: body, at: [0, 0, 0], size: [110, 94, 76], wall: 3, floor: 26, style: blue }
+  - { type: box, id: body, at: [0, 0, 0], size: [110, 94, 76], wall: 3, floor: 26, style: blue,
+      scoops: [{ side: -x, at: 47, width: 36, shape: round }] }  # thumb scoop, estimated from a photo
+  # Approximate, estimated from a photo: the small token tray, a separate open-top
+  # tray shown pulled out to the left (plan and iso only), with a U-shaped scoop
+  # in the wall that faces the box.
+  - type: box
+    id: tray
+    label: tray (approx.)
+    views: [plan, iso]
+    at: [-135, 35, 0]
+    size: [70, 70, 26]
+    wall: 2.5
+    style: yellow
+    scoops: [{ side: +x, at: 35, width: 30, depth: 16, shape: u }]
   # Approximate: the front slide-in card case, a thin slab on the front face.
   - { type: box, id: card-case, at: [0, 94, 26], size: [110, 10, 50], style: green }
   # Approximate: the magnetic lid. Closed in the elevation...
@@ -46,9 +65,11 @@ shapes:
   - { type: dim, views: [front], from: [110, 104, 0], to: [110, 104, 102], offset: [24, 0, 0] }
 
   # Callouts name the approximate parts.
-  - { type: label, views: [plan], at: [55, 47, 76], to: [-35, 20, 76], text: deck compartment (hollow) }
+  - { type: label, views: [plan], at: [55, 20, 76], to: [30, -22, 76], text: deck compartment (hollow) }
+  - { type: label, views: [plan], at: [1.5, 47, 76], to: [-45, -12, 76], text: thumb scoop (approx.) }
+  - { type: label, views: [plan], at: [-65, 70, 26], to: [-85, 96, 26], text: scoop }
   - { type: label, views: [plan], at: [20, 99, 76], to: [-35, 112, 76], text: card case (approx.) }
-  - { type: label, views: [section], at: [1.5, 52, 60], to: [-45, 52, 70], text: wall (approx.) }
+  - { type: label, views: [section], at: [1.5, 52, 45], to: [-45, 52, 60], text: "wall, scoop cut (approx.)" }
   - { type: label, views: [section], at: [55, 52, 13], to: [-45, 52, 13], text: floor / drawer tier (approx.) }
   - { type: label, views: [section], at: [55, 52, 52], to: [118, 52, 52], text: hollow deck compartment }
   - { type: label, views: [section], at: [55, 52, 89], to: [118, 52, 100], text: lid (approx.) }
@@ -56,5 +77,6 @@ shapes:
   - { type: label, views: [front], at: [0, 104, 51], to: [-30, 104, 60], text: slide-in card case (approx.) }
   - { type: label, views: [front], at: [0, 104, 13], to: [-30, 104, 22], text: token drawer (approx.) }
   - { type: label, views: [iso], at: [0, 104, 214], to: [-40, 150, 230], text: "lid, lifted (approx.)" }
-  - { type: label, views: [iso], at: [30, 104, 51], to: [-40, 150, 70], text: card case (approx.) }
+  - { type: label, views: [iso], at: [30, 104, 51], to: [-40, 150, 0], text: card case (approx.) }
   - { type: label, views: [iso], at: [55, 47, 40], to: [-40, 40, 90], text: hollow deck compartment }
+  - { type: label, views: [iso], at: [1.5, 47, 60], to: [-120, 111, 125], text: thumb scoop (approx.) }

@@ -92,13 +92,33 @@ colour alone is hachure).
 
 | `type` | fields | notes |
 | --- | --- | --- |
-| `box` | `at`, `size: [w, d, h]`, `hidden`, `wall`, `floor` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. `wall: t` makes it a hollow, open-top shell with walls `t` thick and a floor `floor` thick (default `t`): plan hatches the rim around an empty cavity, the section view hatches only the cut walls and floor, the front and side elevations show the cavity as dash-dot hidden lines, and iso shows the inside through the opening. |
+| `box` | `at`, `size: [w, d, h]`, `hidden`, `wall`, `floor`, `scoops` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. `wall: t` makes it a hollow, open-top shell with walls `t` thick and a floor `floor` thick (default `t`): plan hatches the rim around an empty cavity, the section view hatches only the cut walls and floor, the front and side elevations show the cavity as dash-dot hidden lines, and iso shows the inside through the opening. `scoops` notch its walls (below). |
 | `cylinder` | `at` (centre of the base), `r`, `h` | Vertical. A circle in plan, a rectangle with a centre line in elevations, an ellipse-topped can in iso. |
 | `rect` (or `plane`) | `at`, `size: [w, d]`, `dashed` | A flat horizontal outline at height `at[2]`: a footprint, a cutout. A line in elevations. |
 | `line` (or `wire`) | `points: [[x, y, z], ...]`, `dashed`, `closed` | A 3D polyline; `dashed` is dash-dot, for hidden lines. |
 | `dim` | `from`, `to`, `offset`, `text` | A dimension line with extension lines, arrowheads and text. `offset` is the 3D vector from the measured points to the dimension line. The text is the true 3D distance plus the units unless `text` is given; it runs along the line. A dimension that has no length in a view (along the line of sight) is skipped there. |
 | `label` | `at`, `text`, `to` | Text with a leader line ending in a dot at `at`. `to` is where the text sits (a 3D point; default up and to the right). |
 | `group` | `at`, `shapes` | Translates its children by `at`; children inherit the group's `style`. |
+
+Scoops: a hollow box takes `scoops: [{ side, at, width, depth, shape }]`, each a
+notch cut down from the rim of one wall through its full thickness (a thumb
+scoop, a tray's pour notch).
+
+- `side`: `+x`, `-x`, `+y` or `-y`, the wall the scoop is in.
+- `at`: where along that wall its centre is, measured from the wall's start
+  (x min for the `+y`/`-y` walls, y min for `+x`/`-x`). The scoop must fit
+  inside the wall, clear of the corners (`wall <= at - width/2` and
+  `at + width/2 <= length - wall`).
+- `width`, `depth`: size of the notch; the depth is measured down from the rim
+  and must not exceed the wall's height above the floor.
+- `shape`: `u` (default; straight sides, round bottom, `depth` required) or
+  `round` (a semicircle, so `depth` is `width/2` and is omitted).
+
+Plan shows a gap in the rim; the elevation facing the wall (`front` for `+y`,
+`side` for `+x`) shows the notch in the wall's outline; a section whose cut
+passes through a scoop in the `-x`/`+x` wall lowers that wall; iso shows the
+notch in the outer or inner face, the cut surface through the wall, and the
+gap in the rim. Scoops need `wall` (a solid box rejects them).
 
 Errors fail the build with the field path, e.g.
 `schematic: shapes[2].size: expected [w, d, h] of positive numbers, got [1,2]`;
@@ -109,7 +129,9 @@ which is exact for axis-aligned solids that do not intersect (touching is
 fine); intersecting solids are drawn in source order. Lines, dimensions and
 labels are drawn over all solids and are never hidden by them. There are no
 rotated shapes, no cylinders on their side, no vertical `rect` (a window in a
-wall) and no curved dimensions. Hatch lines are screen-space 45 degrees in
+wall) and no curved dimensions. Scoops are notches from the rim only (no slots
+or holes in the middle of a wall) and are not seen in an elevation through the
+opposite wall's notch. Hatch lines are screen-space 45 degrees in
 every view.
 
 Output is deterministic. Preview one with

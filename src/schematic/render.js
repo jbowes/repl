@@ -12,6 +12,7 @@ const { createHash } = require('crypto');
 const { parse, parseViewOption } = require('./schema');
 const { project, extent, paintOrder, isoCircle, points: shapePoints } = require('./project');
 const { SchematicCanvas, esc, num } = require('./canvas');
+const { SIDES, wallFrame, faceLoop, rimPieces, cutBand } = require('./hollow');
 const { STANDALONE, STANDALONE_CSS } = require('../diagram/render');
 
 const FIT = 240; // px the largest dimension gets when `scale` is not given
@@ -89,6 +90,19 @@ function drawView(model, view, scale, c) {
   const ringShape = (outer, inner) => (a) =>
     `<path d="M${outer.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}ZM${inner.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}Z" fill-rule="evenodd" clip-rule="evenodd" ${a}/>`;
 
+  const scoopsOn = (s, side) => s.scoops.filter((sc) => sc.side === side);
+  // How far the scoops on `side` cut down the wall at distance v along it from its start.
+  const dropAt = (s, side, v) => {
+    let drop = 0;
+    for (const sc of scoopsOn(s, side)) {
+      const rx = sc.width / 2;
+      const ry = Math.min(sc.depth, rx);
+      const off = Math.abs(v - sc.at);
+      if (off < rx) drop = Math.max(drop, sc.depth - ry + ry * Math.sqrt(1 - (off / rx) ** 2));
+    }
+    return drop;
+  };
+
   const drawBox = (s) => {
     const e = extent(s);
     const [x0, y0, z0] = e.min;
@@ -98,9 +112,28 @@ function drawView(model, view, scale, c) {
     const [ix0, ix1, iy0, iy1, fz] = hollow ? [x0 + s.wall, x1 - s.wall, y0 + s.wall, y1 - s.wall, z0 + s.floor] : [];
     if (view !== 'iso') {
       const rect = boxOf([x0, x1].flatMap((x) => [y0, y1].flatMap((y) => [z0, z1].map((z) => P([x, y, z])))));
-      const poly = [[rect.x, rect.y], [rect.x + rect.w, rect.y], [rect.x + rect.w, rect.y + rect.h], [rect.x, rect.y + rect.h]];
+      let poly = [[rect.x, rect.y], [rect.x + rect.w, rect.y], [rect.x + rect.w, rect.y + rect.h], [rect.x, rect.y + rect.h]];
       growAll(poly);
+      // Scoops in the wall facing the viewer notch the outline of its face.
+      const facing = view === 'front' ? '+y' : view === 'side' ? '+x' : null;
+      if (hollow && facing && scoopsOn(s, facing).length) {
+        const f = wallFrame(e, s.wall, facing);
+        poly = faceLoop(f, f.outer, f.start, f.start + f.len, z0, scoopsOn(s, facing)).map(P);
+      }
       c.backing(polyShape(poly));
+      if (hollow && view === 'plan' && s.scoops.length) {
+        // The rim in pieces, with a gap in the wall at each scoop.
+        for (const side of SIDES) {
+          const f = wallFrame(e, s.wall, side);
+          for (const piece of rimPieces(f, s.wall, scoopsOn(s, side))) {
+            const q = piece.map(P);
+            c.shade(polyShape(q), boxOf(q), s.style, 'flat');
+            c.polygon2(q);
+          }
+        }
+        drawLabel(s, centroid(poly));
+        return;
+      }
       if (hollow && view === 'plan') {
         // The rim is hatched; the cavity is left empty.
         const inner = [[ix0, iy0], [ix1, iy0], [ix1, iy1], [ix0, iy1]].map(([x, y]) => P([x, y, z1]));
@@ -113,7 +146,10 @@ function drawView(model, view, scale, c) {
       if (hollow && view === 'section') {
         // Cut through the middle: only the walls and floor are cut material,
         // the cavity is empty.
-        const u = [[x0, z1], [x0, z0], [x1, z0], [x1, z1], [ix1, z1], [ix1, fz], [ix0, fz], [ix0, z1]].map(([x, z]) => P([x, y0, z]));
+        // A scoop the cut passes through lowers the top of that wall.
+        const zl = z1 - dropAt(s, '-x', cut - y0);
+        const zr = z1 - dropAt(s, '+x', cut - y0);
+        const u = [[x0, zl], [x0, z0], [x1, z0], [x1, zr], [ix1, zr], [ix1, fz], [ix0, fz], [ix0, zl]].map(([x, z]) => P([x, y0, z]));
         c.shade(polyShape(u), rect, s.style, 'flat');
         c.polygon2(u);
         drawLabel(s, centroid(poly));
@@ -139,6 +175,13 @@ function drawView(model, view, scale, c) {
         ['right', [[ix0, iy0, fz], [ix0, iy1, fz], [ix0, iy1, z1], [ix0, iy0, z1]]],
         ['left', [[ix0, iy0, fz], [ix1, iy0, fz], [ix1, iy0, z1], [ix0, iy0, z1]]],
       ];
+      if (s.scoops.length) {
+        // The inner faces of the far walls carry the scoops too.
+        for (const [k, side, face] of [[1, '-x', 'right'], [2, '-y', 'left']]) {
+          const f = wallFrame(e, s.wall, side);
+          inside[k] = [face, faceLoop(f, f.inner, f.start + s.wall, f.start + f.len - s.wall, fz, scoopsOn(s, side))];
+        }
+      }
       for (const [face, corners] of inside) {
         const poly = corners.map(P);
         growAll(poly);
@@ -152,11 +195,36 @@ function drawView(model, view, scale, c) {
       ['right', [[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]]],
       ['top', [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]]],
     ];
+    if (hollow && s.scoops.length) {
+      for (const [k, side] of [[0, '+y'], [1, '+x']]) {
+        const f = wallFrame(e, s.wall, side);
+        faces[k][1] = faceLoop(f, f.outer, f.start, f.start + f.len, z0, scoopsOn(s, side));
+      }
+    }
     let topCentre;
     for (const [face, corners] of faces) {
       const poly = corners.map(P);
       growAll(poly);
       if (face === 'top') topCentre = centroid(poly);
+      if (face === 'top' && hollow && s.scoops.length) {
+        // The cut surface of each scoop, then the rim in pieces around the gaps.
+        for (const sc of s.scoops) {
+          const band = cutBand(wallFrame(e, s.wall, sc.side), sc).map(P);
+          growAll(band);
+          c.backing(polyShape(band));
+          c.shade(polyShape(band), boxOf(band), s.style, 'top');
+          c.polygon2(band);
+        }
+        for (const side of SIDES) {
+          for (const piece of rimPieces(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) {
+            const q = piece.map(P);
+            c.backing(polyShape(q));
+            c.shade(polyShape(q), boxOf(q), s.style, 'top');
+            c.polygon2(q);
+          }
+        }
+        continue;
+      }
       if (face === 'top' && hollow) {
         // The rim: the top face with the opening cut out.
         const inner = [[ix0, iy0, z1], [ix1, iy0, z1], [ix1, iy1, z1], [ix0, iy1, z1]].map(P);
@@ -325,7 +393,11 @@ function describe(model, views) {
   const at = (s) => `at (${s.at.map(fmt).join(', ')})`;
   for (const s of named) {
     const name = s.label || s.id;
-    if (s.type === 'box') parts.push(`${name}: box ${s.size.map(fmt).join(' by ')} ${model.units} ${at(s)}.`);
+    if (s.type === 'box') {
+      const hollow = s.wall !== undefined ? `, hollow with ${fmt(s.wall)} ${model.units} walls` : '';
+      const scoops = (s.scoops || []).map((sc) => `${sc.shape === 'round' ? 'round' : 'U-shaped'} scoop ${fmt(sc.width)} wide and ${fmt(sc.depth)} deep in the ${sc.side} wall`);
+      parts.push(`${name}: box ${s.size.map(fmt).join(' by ')} ${model.units} ${at(s)}${hollow}${scoops.length ? `, with a ${scoops.join(' and a ')}` : ''}.`);
+    }
     else if (s.type === 'cylinder') parts.push(`${name}: cylinder of radius ${fmt(s.r)} and height ${fmt(s.h)} ${model.units} ${at(s)}.`);
     else parts.push(`${name}: flat rectangle ${s.size.map(fmt).join(' by ')} ${model.units} ${at(s)}.`);
   }

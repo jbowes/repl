@@ -74,12 +74,13 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   assert.deepEqual(view('iso'), ['iso']);
   assert.deepEqual(view('plan, side'), ['plan', 'side']);
 
-  // plan has the hollow body (outer and inner outline) and the card case; the
-  // lid is off. iso has the body (inside, three faces, the rim's inner edge),
+  // plan has the hollow body and the tray (rim pieces: five each, as a scoop
+  // splits one wall) and the card case; the lid is off. iso has the body and
+  // the tray (3 inside faces, 2 outer faces, a cut band, 5 rim pieces each),
   // the card case and the lifted lid (three faces each).
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('plan'), 2 + 1);
-  assert.equal(polys('iso'), 7 + 3 + 3);
+  assert.equal(polys('plan'), 5 + 5 + 1);
+  assert.equal(polys('iso'), 2 * (3 + 2 + 1 + 5) + 3 + 3);
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
@@ -222,4 +223,86 @@ test('the deck box models a hollow body, not stacked slabs', () => {
   const body = parse(DECK).shapes.find((s) => s.id === 'body');
   assert.ok(body.wall > 0 && body.floor > body.wall);
   assert.deepEqual(parse(DECK).views, ['plan', 'front', 'section', 'iso']);
+});
+
+const TRAY = (scoops, extra = '') =>
+  `views: [plan, front, side, section, iso]\nshapes:\n  - { type: box, id: tray, at: [0, 0, 0], size: [70, 60, 30], wall: 3, style: yellow, ${extra}scoops: ${scoops} }\n`;
+const U = '[{ side: +x, at: 30, width: 20, depth: 12 }]';
+const firstOutline = (svg) => /<polygon class="ln" points="([^"]+)"/.exec(svg)[1].split(' ').map((p) => p.split(',').map(Number));
+
+test('scoops are parsed per wall: u or round, depth for round is width/2', () => {
+  const [s] = parse(TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -y, at: 35, width: 24, shape: round }]')).shapes;
+  assert.deepEqual(s.scoops, [
+    { side: '+x', at: 30, width: 20, depth: 12, shape: 'u' },
+    { side: '-y', at: 35, width: 24, depth: 12, shape: 'round' },
+  ]);
+});
+
+test('scoop validation names the field', () => {
+  const bad = (scoops, re) => assert.throws(() => parse(TRAY(scoops)), re);
+  bad('[{ side: up, at: 30, width: 20, depth: 12 }]', /shapes\[0\]\.scoops\[0\]\.side: unknown side "up"/);
+  bad('[{ side: +x, width: 20, depth: 12 }]', /scoops\[0\]\.at: is required/);
+  bad('[{ side: +x, at: 30, depth: 12 }]', /scoops\[0\]\.width: is required/);
+  bad('[{ side: +x, at: 30, width: 20 }]', /scoops\[0\]\.depth: is required/);
+  bad('[{ side: +x, at: 30, width: 20, depth: 12, shape: v }]', /scoops\[0\]\.shape: unknown shape "v"/);
+  bad('[{ side: +x, at: 30, width: 20, depth: 12, colour: x }]', /scoops\[0\]\.colour: unknown field for a scoop/);
+  bad('[{ side: +x, at: 30, width: 20, shape: round, depth: 5 }]', /scoops\[0\]\.depth: a round scoop is a semicircle/);
+  // wider than the +x wall (60 long, less 3 at each end)
+  bad('[{ side: +x, at: 30, width: 56, depth: 12 }]', /scoops\[0\]: scoop does not fit in the \+x wall/);
+  bad('[{ side: +x, at: 5, width: 20, depth: 12 }]', /scoops\[0\]: scoop does not fit/);
+  // deeper than the wall is tall (30 high, 3 of floor)
+  bad('[{ side: +x, at: 30, width: 20, depth: 28 }]', /scoops\[0\]\.depth: 28 is deeper than the wall is tall \(27/);
+  bad('[{ side: +x, at: 25, width: 20, depth: 12 }, { side: +x, at: 35, width: 20, depth: 12 }]', /scoops\[1\]: overlaps scoops\[0\]/);
+  assert.throws(() => parse('shapes:\n  - { type: box, at: [0, 0, 0], size: [10, 10, 10], scoops: [] }'), /shapes\[0\]\.scoops: needs `wall`/);
+});
+
+test('plan leaves a gap in the rim at each scoop', () => {
+  const polys = (src) => (renderSchematic(src, { view: 'plan' }).match(/<polygon class="ln"/g) || []).length;
+  // four walls, the +x wall in two pieces
+  assert.equal(polys(TRAY(U)), 5);
+  assert.equal(polys(TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -x, at: 30, width: 20, depth: 12 }]')), 6);
+});
+
+test('the elevation facing a scoop shows its notch in the wall outline', () => {
+  const points = (view, scoops) => firstOutline(renderSchematic(TRAY(scoops), { view })).length;
+  assert.equal(points('side', '[]'), 4);
+  assert.ok(points('side', U) > 10); // the +x wall faces the side view
+  assert.equal(points('front', U), 4); // seen edge on from the front: no change
+});
+
+test('a section through a scoop lowers the cut wall', () => {
+  const only = (scoops) => TRAY(scoops).replace('views: [plan, front, side, section, iso]', 'views: [section]');
+  const top = (scoops) => Math.min(...firstOutline(renderSchematic(only(scoops))).map((p) => p[1]));
+  const bottom = (scoops) => Math.max(...firstOutline(renderSchematic(only(scoops))).map((p) => p[1]));
+  const left = '{ side: -x, at: 30, width: 20, depth: 12 }';
+  const right = '{ side: +x, at: 30, width: 20, depth: 12 }';
+  const height = bottom('[]') - top('[]');
+  // one wall still reaches the rim, so the outline's height is unchanged
+  assert.ok(Math.abs(bottom(`[${left}]`) - top(`[${left}]`) - height) < 0.2);
+  // cut through the scoop, the walls are lower: both lowered -> the section is shorter by the depth
+  const both = bottom(`[${left}, ${right}]`) - top(`[${left}, ${right}]`);
+  assert.ok(Math.abs(height - both - 12 * (height / 30)) < 0.3, `${height} ${both}`);
+});
+
+test('iso draws the scoop notch, its cut surface and the gap in the rim', () => {
+  const svg = renderSchematic(TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -x, at: 30, width: 20, depth: 12 }]'), { view: 'iso' });
+  assert.doesNotMatch(svg, /NaN|undefined/);
+  const polys = (svg.match(/<polygon class="ln"/g) || []).length;
+  // 3 inside faces, 2 outer faces, 2 cut bands, and rim pieces: +y, -y, and the
+  // +x and -x walls each in two pieces
+  assert.equal(polys, 3 + 2 + 2 + (1 + 1 + 2 + 2));
+});
+
+test('scoops are described', () => {
+  assert.match(renderSchematic(TRAY(U)), /tray: box 70 by 60 by 30 mm at \(0, 0, 0\), hollow with 3 mm walls, with a U-shaped scoop 20 wide and 12 deep in the \+x wall/);
+});
+
+test('the deck box fixture has a tray pulled out to the left, with scoops', () => {
+  const m = parse(DECK);
+  const tray = m.shapes.find((s) => s.id === 'tray');
+  const body = m.shapes.find((s) => s.id === 'body');
+  assert.ok(tray.at[0] + tray.size[0] < body.at[0]); // clear of the body, to its left
+  assert.equal(tray.scoops[0].side, '+x'); // the wall facing the box
+  assert.equal(body.scoops[0].side, '-x');
+  assert.equal(body.scoops[0].shape, 'round');
 });

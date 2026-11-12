@@ -13,10 +13,11 @@
 // children and inheriting the group's style.
 const yaml = require('js-yaml');
 const { COLORS, FILLS } = require('../diagram/parse');
+const { SIDES, wallLength } = require('./hollow');
 
 const VIEWS = ['plan', 'front', 'side', 'section', 'iso'];
 const TYPES = {
-  box: ['at', 'size', 'hidden', 'wall', 'floor'],
+  box: ['at', 'size', 'hidden', 'wall', 'floor', 'scoops'],
   cylinder: ['at', 'r', 'h'],
   rect: ['at', 'size', 'dashed'],
   line: ['points', 'dashed', 'closed'],
@@ -125,6 +126,7 @@ function shape(raw, path, ids, parentStyle) {
       } else if (raw.floor !== undefined) {
         throw new SchematicError(`${path}.floor`, 'needs wall (a hollow box has both)');
       }
+      scoopsOf(raw, s, path);
       break;
     case 'cylinder':
       s.at = point(required(raw, 'at', path), `${path}.at`);
@@ -168,6 +170,61 @@ function shape(raw, path, ids, parentStyle) {
     }
   }
   return [s];
+}
+
+// `scoops` notch the walls of a hollow box (one with `wall`) down from the rim,
+// through the wall's full thickness.
+function scoopsOf(raw, s, path) {
+  if (raw.scoops !== undefined && raw.wall === undefined) {
+    throw new SchematicError(`${path}.scoops`, 'needs `wall`: only a hollow box (with a wall thickness) can have scoops');
+  }
+  if (raw.wall === undefined) return;
+  const [, , h] = s.size;
+  const t = s.wall;
+  const floor = s.floor;
+  s.scoops = [];
+  if (raw.scoops === undefined) return;
+  if (!Array.isArray(raw.scoops)) throw new SchematicError(`${path}.scoops`, `expected a list, got ${show(raw.scoops)}`);
+  raw.scoops.forEach((r, i) => {
+    const p = `${path}.scoops[${i}]`;
+    if (!r || typeof r !== 'object' || Array.isArray(r)) throw new SchematicError(p, 'expected a mapping with side, at, width');
+    for (const key of Object.keys(r)) {
+      if (!['side', 'at', 'width', 'depth', 'shape'].includes(key)) {
+        throw new SchematicError(`${p}.${key}`, 'unknown field for a scoop (allowed: side, at, width, depth, shape)');
+      }
+    }
+    const side = required(r, 'side', p);
+    if (!SIDES.includes(side)) throw new SchematicError(`${p}.side`, `unknown side ${show(side)} (${SIDES.join(', ')})`);
+    const shape = r.shape === undefined ? 'u' : r.shape;
+    if (shape !== 'u' && shape !== 'round') throw new SchematicError(`${p}.shape`, `unknown shape ${show(shape)} (u, round)`);
+    const at = required(r, 'at', p);
+    if (!isNum(at)) throw new SchematicError(`${p}.at`, `expected a number, got ${show(at)}`);
+    const width = positive(required(r, 'width', p), `${p}.width`);
+    const len = wallLength(s.size, side);
+    if (at - width / 2 < t - 1e-9 || at + width / 2 > len - t + 1e-9) {
+      throw new SchematicError(p, `scoop does not fit in the ${side} wall: at +- width/2 must lie between ${t} and ${len - t}`);
+    }
+    let depth;
+    if (shape === 'round') {
+      if (r.depth !== undefined && r.depth !== width / 2) {
+        throw new SchematicError(`${p}.depth`, `a round scoop is a semicircle, so its depth is width/2 (${width / 2}); omit depth or use shape: u`);
+      }
+      depth = width / 2;
+    } else {
+      depth = positive(required(r, 'depth', p), `${p}.depth`);
+    }
+    if (depth > h - floor + 1e-9) {
+      throw new SchematicError(`${p}.depth`, `${depth} is deeper than the wall is tall (${h - floor}, the height above the floor)`);
+    }
+    s.scoops.push({ side, at, width, depth, shape });
+  });
+  s.scoops.forEach((a, i) => {
+    s.scoops.slice(0, i).forEach((b, j) => {
+      if (a.side === b.side && Math.abs(a.at - b.at) < (a.width + b.width) / 2) {
+        throw new SchematicError(`${path}.scoops[${i}]`, `overlaps scoops[${j}] on the ${a.side} wall`);
+      }
+    });
+  });
 }
 
 function translate(s, d) {
