@@ -44,3 +44,71 @@ fence for the hand-drawn rough.js look (`--style sketch` in the CLI).
 Output is deterministic: rough.js is seeded from a hash of the source. Preview
 one with `node scripts/render-diagram.js in.diagram out.svg`; examples live in
 `test/fixtures/`.
+
+## Schematics
+
+A fenced block tagged `schematic` draws plan, elevation and isometric views of
+physical objects from one small YAML description, in the same technical
+line-art style, panel and palette as diagrams (`src/schematic/`, no new
+dependencies). `alt` becomes the SVG `<title>`; a `<desc>` listing the named
+parts and dimensions is generated. Fence options: `alt="..."` and
+`view="iso"` (or `view="plan,front,iso"`) to override the views in the source.
+
+````
+```schematic alt="A crate with its width dimensioned"
+units: mm
+scale: 2
+views: [plan, iso]
+shapes:
+  - { type: box, id: crate, at: [0, 0, 0], size: [120, 80, 60], style: blue }
+  - { type: dim, from: [0, 80, 0], to: [120, 80, 0], offset: [0, 20, 0] }
+```
+````
+
+Every shape sits in 3D coordinates `[x, y, z]` (`z` optional, default 0): x is
+left to right, y runs down the page in plan (toward the viewer), z is up. Sizes
+are `[w, d, h]` (x, y, z extents) in real units. Top level fields:
+
+- `units`: a label for dimension text, default `mm`. Nothing is converted.
+- `scale`: pixels per unit. Default fits the largest dimension to about 240px.
+- `view: plan|front|side|iso`, or `views: [plan, front, iso]` for several views
+  of the same model, each in a framed cell with a caption. `columns: N` wraps
+  them into a grid (default one row).
+- `shapes`: the list of primitives below.
+
+Views: `plan` is top-down (x right, y down, z ignored); `front` looks from +y
+(x right, z up) and `side` from +x (y right, z up), so they drop an axis; `iso`
+is 30-degree isometric, `sx = (x - y) cos30`, `sy = (x + y) sin30 - z`, viewed
+from +x, +y, +z, so the +y face is the left face and the +x face the right.
+
+Every primitive takes `type`, an optional `id`, `label`, `style` and `views`
+(a list, to show it in some views only: dimension lines usually differ per
+view). `style` is `blue`, `red`, `green`, `orange` or `yellow` with an optional
+`-solid` or `-cross` suffix, as in diagrams (default: uncoloured, no fill; a
+colour alone is hachure).
+
+| `type` | fields | notes |
+| --- | --- | --- |
+| `box` | `at`, `size: [w, d, h]`, `hidden` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. |
+| `cylinder` | `at` (centre of the base), `r`, `h` | Vertical. A circle in plan, a rectangle with a centre line in elevations, an ellipse-topped can in iso. |
+| `rect` (or `plane`) | `at`, `size: [w, d]`, `dashed` | A flat horizontal outline at height `at[2]`: a footprint, a cutout. A line in elevations. |
+| `line` (or `wire`) | `points: [[x, y, z], ...]`, `dashed`, `closed` | A 3D polyline; `dashed` is dash-dot, for hidden lines. |
+| `dim` | `from`, `to`, `offset`, `text` | A dimension line with extension lines, arrowheads and text. `offset` is the 3D vector from the measured points to the dimension line. The text is the true 3D distance plus the units unless `text` is given; it runs along the line. A dimension that has no length in a view (along the line of sight) is skipped there. |
+| `label` | `at`, `text`, `to` | Text with a leader line ending in a dot at `at`. `to` is where the text sits (a 3D point; default up and to the right). |
+| `group` | `at`, `shapes` | Translates its children by `at`; children inherit the group's `style`. |
+
+Errors fail the build with the field path, e.g.
+`schematic: shapes[2].size: expected [w, d, h] of positive numbers, got [1,2]`;
+unknown fields are errors too, so typos do not pass silently.
+
+Limits: boxes and cylinders are ordered back to front by separating planes,
+which is exact for axis-aligned solids that do not intersect (touching is
+fine); intersecting solids are drawn in source order. Lines, dimensions and
+labels are drawn over all solids and are never hidden by them. There are no
+rotated shapes, no cylinders on their side, no vertical `rect` (a window in a
+wall) and no curved dimensions. Hatch lines are screen-space 45 degrees in
+every view.
+
+Output is deterministic. Preview one with
+`node scripts/render-schematic.js in.yaml out.svg --view iso`; examples live in
+`test/fixtures/*.schematic.yaml`.

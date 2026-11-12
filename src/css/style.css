@@ -302,6 +302,12 @@ pre:focus-visible {
 .dg-yellow { --dg: var(--light-yellow); }
 .dg-node .ln, .dg-node .fl, .dg-node .pl, .dg-node .tk { stroke: var(--dg, currentColor); }
 .dg-node .fs, .dg-node circle.tk { fill: var(--dg); }
+/* Schematics (src/schematic) reuse the diagram classes. Faces shade with the
+   node colour, opaque backing hides what is behind a nearer solid, and text
+   gets a halo in the panel colour. */
+.dg-node .sf, .dg-node circle.tk { fill: var(--dg, currentColor); }
+.sb { fill: var(--code-bg); }
+.ht { stroke: var(--code-bg); }
 
 @media screen and (min-width: 30em) {
   main {

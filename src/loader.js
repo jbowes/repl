@@ -16,6 +16,7 @@ import CodeBlock from './components/codeblock';
 import Diagram from './components/diagram';
 import Link from './components/link';
 import { renderDiagram } from './diagram/render';
+import { renderSchematic } from './schematic/render';
 import { isLocal, processImage } from './images';
 
 const markdownToReactComponents = {
@@ -46,6 +47,22 @@ function codeblock(state, node) {
     const alt = /\balt="([^"]*)"/.exec(node.meta || '');
     const style = /\bstyle="([^"]*)"/.exec(node.meta || '');
     const svg = renderDiagram(node.value, { alt: alt && alt[1], style: style && style[1] });
+    const result = {
+      type: 'element',
+      tagName: 'diagram',
+      properties: {},
+      children: [u('text', svg)],
+    };
+    state.patch(node, result);
+    return state.applyData(node, result);
+  }
+
+  // ```schematic alt="..." [view="iso"] blocks: plan and isometric drawings of
+  // physical objects, drawn at build time in the same panel as diagrams.
+  if (node.lang === 'schematic') {
+    const alt = /\balt="([^"]*)"/.exec(node.meta || '');
+    const view = /\bviews?="([^"]*)"/.exec(node.meta || '');
+    const svg = renderSchematic(node.value, { alt: alt && alt[1], view: view && view[1] });
     const result = {
       type: 'element',
       tagName: 'diagram',

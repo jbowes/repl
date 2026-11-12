@@ -137,4 +137,4 @@ function parse(source) {
   throw new Error('diagram: source must start with "sequenceDiagram" or "flowchart <TB|LR>"');
 }
 
-module.exports = { parse };
+module.exports = { parse, COLORS, FILLS };
