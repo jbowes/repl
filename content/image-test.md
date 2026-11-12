@@ -9,17 +9,17 @@ description: |
 
 Images at or under 4096 bytes are inlined as `data:` URIs. Larger ones are emitted to `/images/` with a content hash and lazy loading.
 
-A small PNG (294 bytes), inlined as base64:
+A small WebP, inlined as base64:
 
-![Tiny test PNG, inlined](images/small.png)
+![Tiny test WebP, inlined](images/small.webp)
 
 A small SVG (inlined, URL-encoded rather than base64):
 
 ![Tiny test SVG, inlined](images/small.svg)
 
-A large PNG (7010 bytes), emitted as a hashed file with `loading="lazy"`:
+A large WebP, emitted as a hashed file with `loading="lazy"`:
 
-![Larger test PNG, served as a file](images/large.png "With a title")
+![Larger test WebP, served as a file](images/large.webp "With a title")
 
 A remote image passes through untouched:
 
