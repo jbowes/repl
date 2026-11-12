@@ -12,7 +12,7 @@ const { createHash } = require('crypto');
 const { parse, parseViewOption } = require('./schema');
 const { project, extent, paintOrder, isoCircle, points: shapePoints } = require('./project');
 const { SchematicCanvas, esc, num } = require('./canvas');
-const { SIDES, wallFrame, wallPoint, faceLoop, rimPieces, cutBand } = require('./hollow');
+const { SIDES, wallFrame, wallPoint, faceLoop, rimPieces, rimEdges, cutBand } = require('./hollow');
 const { STANDALONE, STANDALONE_CSS } = require('../diagram/render');
 
 const FIT = 240; // px the largest dimension gets when `scale` is not given
@@ -140,8 +140,12 @@ function drawView(model, view, scale, c) {
           for (const piece of rimPieces(f, s.wall, scoopsOn(s, side))) {
             const q = piece.map(P);
             c.shade(polyShape(q), boxOf(q), s.style, 'flat');
-            c.polygon2(q);
           }
+        }
+        // Outlines last and only on real edges, so the walls' pieces read as
+        // one rim with no seam at the corners.
+        for (const side of SIDES) {
+          for (const edge of rimEdges(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) c.polyline(edge.map(P));
         }
         drawLabel(s, centroid(poly));
         return;
@@ -237,8 +241,11 @@ function drawView(model, view, scale, c) {
             const q = piece.map(P);
             c.backing(polyShape(q));
             c.shade(polyShape(q), boxOf(q), s.style, 'top');
-            c.polygon2(q);
           }
+        }
+        // Outlines last and only on real edges: no seam where walls meet.
+        for (const side of SIDES) {
+          for (const edge of rimEdges(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) c.polyline(edge.map(P));
         }
         continue;
       }

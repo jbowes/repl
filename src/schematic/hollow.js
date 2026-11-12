@@ -73,25 +73,49 @@ function faceLoop(f, plane, uStart, uEnd, z0, scoops) {
   return loop;
 }
 
-/** The pieces of a wall's top surface left between its scoops, as 3D quads at rim height. */
-function rimPieces(f, t, scoops) {
+// The stretches [from, to] of a wall's rim left between its scoops, with the
+// ends [lo, hi] of the stretch of rim this wall owns.
+function rimRanges(f, t, scoops) {
   const lo = f.normal === 1 ? f.start : f.start + t; // +-y walls own the corners
   const hi = f.normal === 1 ? f.start + f.len : f.start + f.len - t;
   const gaps = scoops
     .map((sc) => [f.start + sc.at - sc.width / 2, f.start + sc.at + sc.width / 2])
     .sort((a, b) => a[0] - b[0]);
-  const pieces = [];
+  const ranges = [];
   let from = lo;
   for (const [a, b] of [...gaps, [hi, hi]]) {
-    if (a - from > 1e-9) {
-      pieces.push([
-        wallPoint(f, f.outer, from, f.top), wallPoint(f, f.outer, a, f.top),
-        wallPoint(f, f.inner, a, f.top), wallPoint(f, f.inner, from, f.top),
-      ]);
-    }
+    if (a - from > 1e-9) ranges.push([from, a]);
     from = Math.max(from, b);
   }
-  return pieces;
+  return { ranges, lo, hi };
+}
+
+/** The pieces of a wall's top surface left between its scoops, as 3D quads at rim height. */
+function rimPieces(f, t, scoops) {
+  return rimRanges(f, t, scoops).ranges.map(([from, to]) => [
+    wallPoint(f, f.outer, from, f.top), wallPoint(f, f.outer, to, f.top),
+    wallPoint(f, f.inner, to, f.top), wallPoint(f, f.inner, from, f.top),
+  ]);
+}
+
+/**
+ * The real edges of those pieces, as 3D line segments: the outer and inner
+ * edge of the rim and the ends at a scoop. Where two walls' pieces meet at a
+ * corner there is no edge, the rim is one surface.
+ */
+function rimEdges(f, t, scoops) {
+  const { ranges, lo, hi } = rimRanges(f, t, scoops);
+  const [iLo, iHi] = [f.start + t, f.start + f.len - t]; // the cavity's extent along the wall
+  const edges = [];
+  for (const [from, to] of ranges) {
+    edges.push([wallPoint(f, f.outer, from, f.top), wallPoint(f, f.outer, to, f.top)]);
+    const [a, b] = [Math.max(from, iLo), Math.min(to, iHi)];
+    if (b - a > 1e-9) edges.push([wallPoint(f, f.inner, a, f.top), wallPoint(f, f.inner, b, f.top)]);
+    for (const u of [from, to]) {
+      if (u - lo > 1e-9 && hi - u > 1e-9) edges.push([wallPoint(f, f.outer, u, f.top), wallPoint(f, f.inner, u, f.top)]);
+    }
+  }
+  return edges;
 }
 
 /**
@@ -102,4 +126,4 @@ function cutBand(f, scoop) {
   return [...notch3(f, f.outer, scoop), ...notch3(f, f.inner, scoop).reverse()];
 }
 
-module.exports = { SIDES, wallFrame, wallPoint, wallLength, notchOutline, notch3, faceLoop, rimPieces, cutBand };
+module.exports = { SIDES, wallFrame, wallPoint, wallLength, notchOutline, notch3, faceLoop, rimPieces, rimEdges, cutBand };

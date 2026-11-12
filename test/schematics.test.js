@@ -74,14 +74,14 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   assert.deepEqual(view('iso'), ['iso']);
   assert.deepEqual(view('plan, side'), ['plan', 'side']);
 
-  // plan has the hollow body (five rim pieces, as its scoop splits one wall),
-  // the tray (six: it has a scoop in two walls) and the card case; the lid is off. iso has the body and
-  // the tray (3 inside faces, 2 outer faces, a cut band per scoop, the rim pieces),
+  // plan has the hollow body and the tray (their rims are stroked as edges,
+  // not polygons, so only the lowered wall under each scoop counts: 1 and 2) and the card case; the lid is off. iso has the body and
+  // the tray (3 inside faces, 2 outer faces, a cut band per scoop),
   // the card case and the lifted lid (three faces each). The drawer tier under
   // the body is a plain block from outside: one rectangle, or three faces.
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('plan'), (5 + 1) + (6 + 2) + 1 + 1); // each scoop adds the lowered wall under it
-  assert.equal(polys('iso'), (3 + 2 + 1 + 5) + (3 + 2 + 2 + 6) + 3 + 3 + 3);
+  assert.equal(polys('plan'), 1 + 2 + 1 + 1);
+  assert.equal(polys('iso'), (3 + 2 + 1) + (3 + 2 + 2) + 3 + 3 + 3);
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
@@ -278,10 +278,10 @@ test('plan splits the hatched rim at each scoop and draws the lowered wall darke
   const two = TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -x, at: 30, width: 20, depth: 12 }]');
   const all = (src) => (renderSchematic(src, { view: 'plan' }).match(/<polygon class="ln"/g) || []).length;
   const lowered = (src) => (renderSchematic(src, { view: 'plan' }).match(LOWERED) || []).length;
-  // four walls, the +x wall in two pieces, plus the wall under the scoop
-  assert.equal(all(TRAY(U)), 5 + 1);
+  // the rim is stroked edge by edge, so the only polygons are the walls under the scoops
+  assert.equal(all(TRAY(U)), 1);
   assert.equal(lowered(TRAY(U)), 1);
-  assert.equal(all(two), 6 + 2);
+  assert.equal(all(two), 2);
   assert.equal(lowered(two), 2);
   // the lowered part is tinted, not hatched like the rim
   assert.match(renderSchematic(TRAY(U), { view: 'plan' }), /class="sf" fill="currentColor" fill-opacity="0.16"/);
@@ -315,9 +315,31 @@ test('iso draws the scoop notch, its cut surface and the gap in the rim', () => 
   const svg = renderSchematic(TRAY('[{ side: +x, at: 30, width: 20, depth: 12 }, { side: -x, at: 30, width: 20, depth: 12 }]'), { view: 'iso' });
   assert.doesNotMatch(svg, /NaN|undefined/);
   const polys = (svg.match(/<polygon class="ln"/g) || []).length;
-  // 3 inside faces, 2 outer faces, 2 cut bands, and rim pieces: +y, -y, and the
-  // +x and -x walls each in two pieces
-  assert.equal(polys, 3 + 2 + 2 + (1 + 1 + 2 + 2));
+  // 3 inside faces, 2 outer faces, 2 cut bands; the rim is stroked as edges
+  assert.equal(polys, 3 + 2 + 2);
+});
+
+test('the rim has no seam where walls meet: only outer, inner and scoop edges', () => {
+  const { wallFrame, rimEdges } = require('../src/schematic/hollow');
+  const e = { min: [0, 0, 0], max: [70, 60, 30] };
+  const t = 3;
+  const scoop = { side: '+x', at: 30, width: 20, depth: 12 };
+  const edges = ['+x', '-x', '+y', '-y'].flatMap((side) => rimEdges(wallFrame(e, t, side), t, side === '+x' ? [scoop] : []));
+  // +y, -y and -x: an outer and an inner edge each. +x, in two pieces: two of
+  // each, and an end at each side of the scoop.
+  assert.equal(edges.length, 3 * 2 + (2 * 2 + 2));
+  const across = edges.filter(([a, b]) => a[0] !== b[0] && a[1] !== b[1]);
+  assert.equal(across.length, 0); // nothing diagonal
+  // the edges that cross the wall's thickness are the scoop's two ends, at y 20 and 40
+  const crossing = edges.filter(([a, b]) => Math.abs(a[0] - b[0]) === t && a[1] === b[1]);
+  assert.deepEqual(crossing.map(([a]) => a[1]).sort((x, y) => x - y), [20, 40]);
+  // inner edges stop at the cavity corners, they do not run on to the outer face
+  for (const [a, b] of edges) {
+    for (const p of [a, b]) {
+      const onInnerY = p[1] === t || p[1] === 60 - t;
+      if (onInnerY && a[1] === b[1]) assert.ok(p[0] >= t && p[0] <= 70 - t, `${a} ${b}`);
+    }
+  }
 });
 
 test('scoops are described', () => {
