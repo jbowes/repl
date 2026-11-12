@@ -77,18 +77,20 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   // plan has the hollow body and the tray (rim pieces: five each, as a scoop
   // splits one wall) and the card case; the lid is off. iso has the body and
   // the tray (3 inside faces, 2 outer faces, a cut band, 5 rim pieces each),
-  // the card case and the lifted lid (three faces each).
+  // the card case and the lifted lid (three faces each). The drawer tier under
+  // the body is a plain block from outside: one rectangle, or three faces.
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('plan'), 5 + 5 + 1);
-  assert.equal(polys('iso'), 2 * (3 + 2 + 1 + 5) + 3 + 3);
+  assert.equal(polys('plan'), 5 + 5 + 1 + 1);
+  assert.equal(polys('iso'), 2 * (3 + 2 + 1 + 5) + 3 + 3 + 3);
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
-  const text = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/>(\d+ mm)<\/text>/g)].map((m) => m[1]);
-  assert.deepEqual(text('plan'), ['110 mm', '104 mm']);
+  const text = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/>([\d.]+ mm)<\/text>/g)].map((m) => m[1]);
+  assert.deepEqual(text('plan'), ['110 mm', '104 mm', '80 mm', '85.7 mm', '88.5 mm']);
+  assert.deepEqual(text('section'), ['33.7 mm', '80 mm', '36 mm']);
   assert.deepEqual(text('front'), ['110 mm', '102 mm']);
   // the lid is lifted in iso, so there is no closed height to dimension there
-  assert.deepEqual(text('iso'), ['110 mm', '104 mm']);
+  assert.deepEqual(text('iso'), ['110 mm', '104 mm', '80 mm', '33.7 mm']);
 });
 
 test('iso faces are shaded differently: top, left and right', () => {
@@ -166,10 +168,13 @@ test('standalone output embeds the palette CSS', () => {
   assert.match(svg, /\.dg-node \.sf\{/);
 });
 
-test('the deck box fixture carries only the three outer dimensions', () => {
+test('the deck box fixture dimensions only the box outer sizes and the measured tray and cubby', () => {
   const m = parse(DECK);
   const dims = m.shapes.filter((s) => s.type === 'dim').map((s) => Math.round(Math.hypot(...s.to.map((v, i) => v - s.from[i]))));
-  assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [102, 104, 110]);
+  // box 110 x 104 x 102, tray 80 x 85.7 x 33.7, cubby 88.5 x 36 x 80
+  assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [34, 36, 80, 86, 89, 102, 104, 110]);
+  // and nothing else: every dimension is one of those measurements
+  assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 4 + 4 + 3);
 });
 
 const HOLLOW = 'views: [plan, section, iso]\nshapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], wall: 4, floor: 20, style: blue }\n';
@@ -220,9 +225,19 @@ test('iso draws the inside of a hollow box: floor and two inner walls, then a ri
 });
 
 test('the deck box models a hollow body, not stacked slabs', () => {
-  const body = parse(DECK).shapes.find((s) => s.id === 'body');
-  assert.ok(body.wall > 0 && body.floor > body.wall);
+  const shapes = parse(DECK).shapes;
+  const body = shapes.find((s) => s.id === 'body');
+  assert.ok(body.wall > 0);
   assert.deepEqual(parse(DECK).views, ['plan', 'front', 'section', 'iso']);
+  // the section leaves the tray cubby empty: 80 deep and 36 high, above the
+  // base slab and beside the side block
+  const base = shapes.find((s) => s.id === 'tier-base');
+  const side = shapes.find((s) => s.id === 'tier-side');
+  assert.deepEqual([base.views, side.views], [['section'], ['section']]);
+  assert.equal(side.at[0], 80);
+  assert.equal(side.size[2], 36);
+  assert.equal(side.at[2], base.size[2]);
+  assert.equal(body.at[2], base.size[2] + side.size[2]);
 });
 
 const TRAY = (scoops, extra = '') =>
