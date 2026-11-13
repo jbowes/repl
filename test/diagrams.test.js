@@ -29,10 +29,10 @@ test('unknown colours and fills are errors', () => {
 
 test('coloured nodes get theme classes and fill paths', () => {
   const svg = renderDiagram('flowchart LR\n  A[a]:::blue-solid --> B[b]\n');
-  assert.match(svg, /<g class="dg-node dg-blue">/);
+  assert.match(svg, /<g class="dg-node dg-blue" color="#92b0c2">/);
   assert.match(svg, /class="fs"/);
   assert.match(svg, /<g class="dg-node">/);
-  assert.match(svg, /<g class="dg-edge">/);
+  assert.match(svg, /<g class="dg-edge" color="#92b0c2">/);
 });
 
 test('rendering is deterministic', () => {
@@ -68,4 +68,25 @@ test('hatch fills are clipped to their shape', () => {
 
 test('an unknown drawing style is an error', () => {
   assert.throws(() => renderDiagram('flowchart LR\n  A[a]', { style: 'neon' }), /unknown style/);
+});
+
+test('a diagram stands on its own without the page CSS, as in reading mode', () => {
+  const svg = renderDiagram('flowchart LR\n  A[a]:::red --> B[b]');
+  const root = /<svg [^>]*>/.exec(svg)[0];
+  // it fits any width: no fixed width or height, it scales by its viewBox;
+  // the page's own limit is an inline max-width at its natural size
+  assert.match(root, / width="100%"/);
+  assert.doesNotMatch(root, / height="/);
+  assert.match(root, /viewBox="-12 -12 (\d+) \d+"[^>]* style="max-width:\1px"/);
+  // colours: text and strokes default to the panel text colour, palette groups
+  // to their colour, edges to the operator blue
+  assert.match(root, / color="#d8d4bd"/);
+  assert.match(svg, /<g class="dg-node dg-red" color="#f88a87">/);
+  assert.match(svg, /<g class="dg-edge" color="#92b0c2">/);
+  // and the dark panel behind it, which the page hides and draws itself
+  assert.match(svg, /<rect class="dg-backdrop" x="-12" y="-12" width="\d+" height="\d+" fill="#0d1315"\/>/);
+  // with the page CSS taking these back over
+  const css = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'css', 'style.css'), 'utf8');
+  assert.match(css, /\.diagram-svg, \.diagram-svg g \{ color: inherit; \}/);
+  assert.match(css, /\.dg-backdrop \{ display: none; \}/);
 });

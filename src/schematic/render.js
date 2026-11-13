@@ -13,7 +13,7 @@ const { parse, parseViewOption } = require('./schema');
 const { project, extent, paintOrder, isoCircle, points: shapePoints } = require('./project');
 const { SchematicCanvas, esc, num } = require('./canvas');
 const { SIDES, wallFrame, wallPoint, notch3, faceLoop, rimPieces, rimEdges, cutBand } = require('./hollow');
-const { STANDALONE, STANDALONE_CSS } = require('../diagram/render');
+const { STANDALONE, STANDALONE_CSS, svgOpen, backdrop } = require('../diagram/render');
 
 const FIT = 240; // px the largest dimension gets when `scale` is not given
 const FRAME_PAD = 16;
@@ -588,11 +588,10 @@ function renderSchematic(source, options = {}) {
   const title = options.alt || 'Schematic';
 
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" class="diagram-svg diagram-technical schematic-svg" role="img" aria-labelledby="${id}-t ${id}-d"` +
-    ` viewBox="${-m} ${-m} ${w} ${h}" width="${w}" height="${h}"` +
-    ` style="max-width:100%;height:auto${options.standalone ? STANDALONE : ''}" ${c.root}>` +
+    svgOpen({ cls: 'diagram-svg diagram-technical schematic-svg', id, m, w, h, root: c.root, standalone: options.standalone }) +
     (options.standalone ? `<style>${STANDALONE_CSS}${SCHEMATIC_CSS}</style>` : '') +
     `<title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(describe(model, views))}</desc>` +
+    backdrop(m, w, h) +
     placed.join('') +
     '</svg>'
   );

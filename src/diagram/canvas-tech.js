@@ -1,6 +1,8 @@
 // The technical-drawing canvas: precise thin lines, chamfered panels with an
 // inset panel line and crop marks, hatch fills, dash-dot centre lines, solid
 // arrowheads, monospace labels and small index tags. No randomness at all.
+const { groupColour } = require('./palette');
+
 const FONT = "ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace";
 const STROKE = 1.5;
 const HATCH_GAP = 6;
@@ -32,7 +34,9 @@ class TechCanvas {
   // the attributes are the fallback for an SVG viewed on its own.
   begin(cls, style) {
     const colour = style ? ` dg-${style.color}` : '';
-    this.out.push(`<g class="${cls}${colour}">`);
+    // Without the page's CSS, `color` is what currentColor falls back to.
+    const fallback = groupColour(cls, style);
+    this.out.push(`<g class="${cls}${colour}"${fallback ? ` color="${fallback}"` : ''}>`);
   }
 
   end() {

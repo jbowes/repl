@@ -6,6 +6,7 @@ const { createHash } = require('crypto');
 const dagre = require('@dagrejs/dagre');
 
 const { parse } = require('./parse');
+const { PANEL } = require('./palette');
 const { RoughCanvas, esc } = require('./canvas-rough');
 const { TechCanvas } = require('./canvas-tech');
 
@@ -200,14 +201,29 @@ function renderDiagram(source, options = {}) {
   const title = options.alt || (model.type === 'sequence' ? 'Sequence diagram' : 'Flow diagram');
 
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" class="diagram-svg diagram-${style}" role="img" aria-labelledby="${id}-t ${id}-d"` +
-    ` viewBox="${-m} ${-m} ${w} ${h}" width="${w}" height="${h}"` +
-    ` style="max-width:100%;height:auto${options.standalone ? STANDALONE : ''}" ${c.root}>` +
+    svgOpen({ cls: `diagram-svg diagram-${style}`, id, m, w, h, root: c.root, standalone: options.standalone }) +
     (options.standalone ? `<style>${STANDALONE_CSS}</style>` : '') +
     `<title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(describe(model))}</desc>` +
+    backdrop(m, w, h) +
     c.finish() +
     '</svg>'
   );
 }
 
-module.exports = { renderDiagram, STANDALONE, STANDALONE_CSS };
+// The opening <svg> tag, shared with schematics. It scales by itself, with no
+// CSS: 100% wide, its height following the viewBox. In the page an inline
+// max-width stops it growing past its natural size, and `color` is the text and
+// stroke colour where the page's CSS is gone (which sets color: inherit).
+function svgOpen({ cls, id, m, w, h, root, standalone }) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" role="img" aria-labelledby="${id}-t ${id}-d"` +
+    ` viewBox="${-m} ${-m} ${w} ${h}" width="100%" color="${PANEL.fg}"` +
+    ` style="max-width:${w}px${standalone ? STANDALONE : ''}" ${root}>`;
+}
+
+// The dark code panel as a rect inside the SVG, so the light strokes stay
+// readable where the page's CSS (which draws the panel, and hides this) is gone.
+function backdrop(m, w, h) {
+  return `<rect class="dg-backdrop" x="${-m}" y="${-m}" width="${w}" height="${h}" fill="${PANEL.bg}"/>`;
+}
+
+module.exports = { renderDiagram, svgOpen, backdrop, STANDALONE, STANDALONE_CSS };

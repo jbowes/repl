@@ -292,6 +292,10 @@ pre:focus-visible {
   color: var(--code-fg);
 }
 .diagram-svg { flex: none; }
+/* The SVG carries colour attributes and a backdrop for where this stylesheet is
+   gone (reading mode, feed readers); here the panel and theme take over. */
+.diagram-svg, .diagram-svg g { color: inherit; }
+.dg-backdrop { display: none; }
 .dg-edge .ln { stroke: var(--light-blue); }
 .dg-edge .ah { fill: var(--light-blue); }
 .dg-life .ln { stroke-opacity: .45; }
