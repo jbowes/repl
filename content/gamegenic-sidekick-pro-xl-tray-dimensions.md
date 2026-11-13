@@ -201,10 +201,7 @@ assumes the tray floor is also 5.3 thick.
 The tray is a snug fit in its cubby: it has 2.8 mm to spare across the opening and 2.3 mm of headroom, and it
 fills the full 80 mm of depth. That headroom is usable too, since anything standing a little proud of the tray's rim
 will still slide in. The inside of the tray is 75.1 x 69.4 x 28.4 mm, about 148 mL, and with the headroom the
-usable space is 75.1 x 69.4 x 30.7 mm, about 160 mL. That is enough room for a [Wizards of the Coast clickwheel
-life counter][clickwheel].
+usable space is 75.1 x 69.4 x 30.7 mm, about 160 mL. That is enough room for a Wizards of the Coast clickwheel
+life counter.
 
-*As an Amazon Associate I earn from qualifying purchases.*
-
-[sidekick]: https://www.amazon.com/s?k=Gamegenic+Sidekick+Pro+100%2B+XL+Convertible+Deck+Box&tag=repl03-20
-[clickwheel]: https://www.amazon.com/s?k=Magic+The+Gathering+clickwheel+life+counter&tag=repl03-20
+[sidekick]: https://www.gamegenic.com/product/magic-the-gathering-ecl-sidekick-pro-100xl/
