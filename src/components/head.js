@@ -4,6 +4,13 @@ import StructuredData from './structured-data';
 
 const SITE = "https://repl.ca/";
 
+const DEFAULT_IMAGE = {
+  url: SITE + "social-mushroom.jpg",
+  width: 1200,
+  height: 627,
+  alt: "A yellow mushroom with white flecks on its cap, growing from the forest floor",
+};
+
 // Prefetch same-site pages on hover/press; skip files (/sitemap.xml, images).
 const SPECULATION_RULES = JSON.stringify({
   prefetch: [{
@@ -20,6 +27,11 @@ export default (props) => {
   // The home page passes canonical "/"; posts pass their slug.
   const slug = (props.canonical || "").replace(/^\/+|\/+$/g, "");
   const url = slug ? SITE + slug + "/" : SITE;
+
+  // A post can set its own preview image; everything else gets the site's.
+  const image = props.image
+    ? { url: SITE + props.image.src.replace(/^\//, ""), width: props.image.width, height: props.image.height, alt: props.image.alt }
+    : DEFAULT_IMAGE;
 
   return (
     <head>
@@ -45,14 +57,14 @@ export default (props) => {
       <meta property="og:site_name" content="repl" />
       <meta property="og:url" content={url} />
       <meta property="og:type" content={props.type || "website"} />      
-      <meta property="og:image" content="https://repl.ca/social-mushroom.jpg" />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="627" />
-      <meta property="og:image:alt" content="A yellow mushroom with white flecks on its cap, growing from the forest floor" />
+      <meta property="og:image" content={image.url} />
+      <meta property="og:image:width" content={image.width} />
+      <meta property="og:image:height" content={image.height} />
+      <meta property="og:image:alt" content={image.alt} />
 
       <link rel="canonical" href={url} />
     
-      { props.type && <StructuredData title={props.title} pubdate={props.pubdate} /> }
+      { props.type && <StructuredData title={props.title} pubdate={props.pubdate} description={props.description} image={props.image && image.url} /> }
 
       <link rel="stylesheet" href="/css/style.css" />
 

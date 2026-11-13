@@ -9,6 +9,9 @@ export default (props) => {
     datePublished: props.pubdate,
     author: { '@type': 'Person', name: 'James Bowes' },
   };
+  // Only what the post has: a preview image of its own, and its description.
+  if (props.description) data.description = props.description;
+  if (props.image) data.image = props.image;
 
   return (
     <script

@@ -108,8 +108,10 @@ export function isLocal(url) {
 
 // Resolves `url` relative to the markdown file at `from` and returns the <img>
 // attributes. Throws (failing the build) on a missing file, an unsupported
-// type, unreadable dimensions, or missing alt text.
-export function processImage(url, alt, from) {
+// type, unreadable dimensions, or missing alt text. With `{ file: true }` the
+// image is always emitted as a file, never inlined, for uses that need a URL,
+// such as a social preview image.
+export function processImage(url, alt, from, { file: asFile = false } = {}) {
   const where = `${relative('.', from)}: image "${url}"`;
   if (!alt || !alt.trim()) throw new Error(`${where} needs alt text`);
 
@@ -124,7 +126,7 @@ export function processImage(url, alt, from) {
 
   const props = { alt, width: size.width, height: size.height };
 
-  if (data.length <= INLINE_LIMIT) {
+  if (!asFile && data.length <= INLINE_LIMIT) {
     props.src = ext === '.svg'
       // URL-encoded rather than base64: smaller, and it compresses better.
       ? `data:image/svg+xml,${encodeURIComponent(data.toString('utf8').trim())}`
