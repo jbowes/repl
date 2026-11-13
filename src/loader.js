@@ -17,6 +17,7 @@ import Diagram from './components/diagram';
 import Link from './components/link';
 import { renderDiagram } from './diagram/render';
 import { renderSchematic } from './schematic/render';
+import { schematicSource } from './schematic/source';
 import { isLocal, processImage } from './images';
 
 const markdownToReactComponents = {
@@ -40,7 +41,7 @@ function* genFiles(dir) {
 }
 
 
-function codeblock(state, node) {
+function codeblock(state, node, file) {
   // ```diagram alt="..." [style="sketch"] blocks become an SVG drawn at build
   // time.
   if (node.lang === 'diagram') {
@@ -57,12 +58,14 @@ function codeblock(state, node) {
     return state.applyData(node, result);
   }
 
-  // ```schematic alt="..." [view="iso"] blocks: plan and isometric drawings of
-  // physical objects, drawn at build time in the same panel as diagrams.
+  // ```schematic alt="..." [view="iso"] [src="file.yaml"] blocks: plan and
+  // isometric drawings of physical objects, drawn at build time in the same
+  // panel as diagrams. src reads the source from a file beside the post.
   if (node.lang === 'schematic') {
     const alt = /\balt="([^"]*)"/.exec(node.meta || '');
     const view = /\bviews?="([^"]*)"/.exec(node.meta || '');
-    const svg = renderSchematic(node.value, { alt: alt && alt[1], view: view && view[1] });
+    const source = schematicSource(node.value, node.meta, file);
+    const svg = renderSchematic(source, { alt: alt && alt[1], view: view && view[1] });
     const result = {
       type: 'element',
       tagName: 'diagram',
@@ -126,7 +129,7 @@ export function listFiles(dir) {
       })
       .use(remark2rehype, {
         handlers: {
-          code: codeblock,
+          code: (state, node) => codeblock(state, node, file),
           image: image(file),
         },
       })
