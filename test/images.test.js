@@ -89,7 +89,25 @@ test('only the widths narrower than the image are used', async () => {
   // an image no wider than the smallest width has nothing smaller to offer
   const narrow = processImage('narrow.webp', 'x', await tempImage('narrow.webp', 480, 480));
   assert.equal(narrow.srcSet, undefined);
-  assert.equal(narrow.sizes, undefined);
+  // it still gets a full-size AVIF
+  assert.deepEqual(narrow.sources.map((x) => x.srcSet.replace(/-[0-9a-f]{8}/, '')), ['/images/narrow.avif 480w']);
+});
+
+test('an emitted photo gets AVIF copies at every width and full size, as a source', async () => {
+  const from = await tempImage('photo.webp', 1400, 300);
+  const img = processImage('photo.webp', 'a photo', from);
+  const [, stem] = /^\/images\/(photo-[0-9a-f]{8})\.webp$/.exec(img.src);
+  assert.deepEqual(img.sources, [{
+    type: 'image/avif',
+    srcSet: [480, 720, 880, 1080].map((w) => `/images/${stem}-${w}w.avif ${w}w`).concat(`/images/${stem}.avif 1400w`).join(', '),
+    sizes: SIZES,
+  }]);
+  for (const w of [480, 720, 880, 1080]) assert.deepEqual(emittedImages().get(`images/${stem}-${w}w.avif`).format, 'avif');
+  const full = emittedImages().get(`images/${stem}.avif`);
+  assert.deepEqual([full.format, full.width], ['avif', undefined]);
+  // a social image, an SVG or a GIF has no other formats
+  assert.equal(processImage('photo.webp', 'social', from, { file: true }).sources, undefined);
+  assert.equal(processImage('small.svg', 'x', post).sources, undefined);
 });
 
 test('PNG and JPEG are resized too, in their own format; GIF and SVG are not', async () => {
@@ -125,6 +143,10 @@ test('SIZES describes the post column in style.css', () => {
   const wide = /@media screen and \(min-width: ([\d.]+em)\) \{\s*main \{\s*width: ([\d.]+)%;\s*padding-left: ([\d.]+)rem;\s*padding-right: ([\d.]+)rem;/.exec(css);
   assert.ok(base && wide, 'found both column rules');
   const [, at, pct, left, right] = wide;
-  const expected = `(min-width: ${at}) calc(${Number(pct).toFixed(3)}vw - ${Number(left) + Number(right)}rem), ${Number(base[1])}vw`;
+  const narrow = Number(base[1]);
+  // the narrow column claimed narrower on 3x and 2.5x screens, so they land at 2x
+  const capped = [3, 2.5].map((d) => `(min-resolution: ${d}dppx) ${+(narrow * 2 / d).toFixed(3)}vw`);
+  const expected = [`(min-width: ${at}) calc(${Number(pct).toFixed(3)}vw - ${Number(left) + Number(right)}rem)`, ...capped, `${narrow}vw`].join(', ');
   assert.equal(SIZES, expected);
+  assert.equal(SIZES, '(min-width: 48em) calc(66.667vw - 2rem), (min-resolution: 3dppx) 60vw, (min-resolution: 2.5dppx) 72vw, 90vw');
 });
