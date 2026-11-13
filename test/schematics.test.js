@@ -85,11 +85,11 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
   const text = (v) => [...renderSchematic(DECK, { view: v }).matchAll(/>([\d.]+ mm)<\/text>/g)].map((m) => m[1]);
-  assert.deepEqual(text('plan'), ['94.5 mm', '113 mm', '80 mm', '85.7 mm', '69.4 mm', '75.1 mm', '88.5 mm', '12.25 mm', '12.25 mm']);
-  assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '80 mm', '36 mm']);
-  assert.deepEqual(text('front'), ['94.5 mm', '102 mm']);
+  assert.deepEqual(text('plan'), ['113 mm', '94.5 mm', '85.7 mm', '80 mm', '75.1 mm', '69.4 mm', '12.25 mm', '88.5 mm', '12.25 mm', '80 mm']);
+  assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '88.5 mm', '36 mm']);
+  assert.deepEqual(text('front'), ['113 mm', '102 mm', '88.5 mm', '36 mm']);
   // the height is dimensioned in the front elevation only
-  assert.deepEqual(text('iso'), ['94.5 mm', '80 mm', '33.7 mm']);
+  assert.deepEqual(text('iso'), ['113 mm', '85.7 mm', '33.7 mm']);
 });
 
 test('iso faces are shaded differently: top, left and right', () => {
@@ -175,7 +175,7 @@ test('the deck box fixture dimensions only the box outer sizes and the measured 
   // cubby 88.5 x 36 x 80 with 12.25 of base on each side
   assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [12, 15, 19, 27, 28, 30, 34, 36, 69, 75, 80, 86, 89, 95, 102, 113]);
   // and nothing else: every dimension is one of those measurements
-  assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 4 + 4 + 3 + 4 + 5);
+  assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 5 + 4 + 3 + 4 + 8);
 });
 
 const HOLLOW = 'views: [plan, section, iso]\nshapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], wall: 4, floor: 20, style: blue }\n';
@@ -230,12 +230,15 @@ test('the deck box is one hollow body with the tray cubby as a slot in its floor
   const body = shapes.find((s) => s.id === 'body');
   assert.deepEqual(parse(DECK).views, ['plan', 'front', 'section', 'iso']);
   // one box from the base to the top: no seam between a tier and a compartment
-  assert.deepEqual(shapes.filter((s) => s.type === 'box').map((s) => s.id), ['body', 'tray']);
+  // (the tray is drawn twice: in plan and iso, and beside the box for the section)
+  assert.deepEqual(shapes.filter((s) => s.type === 'box').map((s) => s.id), ['body', 'tray', 'tray-section']);
   assert.deepEqual([body.at[2], body.size[2]], [0, 102]);
   // the floor holds the slab under the cubby, the cubby and the compartment floor
   const [slot] = body.slots;
   near(body.floor, 5.3 + 36 + 5.3);
-  assert.deepEqual(slot, { side: '+x', at: 56.5, width: 88.5, height: 36, depth: 80, bottom: 5.3 });
+  assert.deepEqual(slot, { side: '+y', at: 56.5, width: 88.5, height: 36, depth: 80, bottom: 5.3 });
+  // 113 mm along x and 94.5 deep, the opening in the 113 mm front face
+  assert.deepEqual(body.size.slice(0, 2), [113, 94.5]);
 });
 
 const TRAY = (scoops, extra = '') =>
@@ -349,16 +352,19 @@ test('scoops are described', () => {
   assert.match(renderSchematic(TRAY(U)), /tray: box 70 by 60 by 30 mm at \(0, 0, 0\), hollow with 3 mm walls, with a U-shaped scoop 20 wide and 12 deep in the \+x wall/);
 });
 
-test('the deck box fixture has a tray pulled out beside the cubby opening, with scoops', () => {
+test('the deck box fixture has a tray pulled out of the cubby opening, with scoops', () => {
   const m = parse(DECK);
   const tray = m.shapes.find((s) => s.id === 'tray');
   const body = m.shapes.find((s) => s.id === 'body');
-  // clear of the body, on the side the cubby opens on, which iso can see
-  assert.ok(tray.at[0] > body.at[0] + body.size[0]);
-  assert.equal(body.slots[0].side, '+x');
+  // clear of the body, on the side the cubby opens on: the front, which is the
+  // left face in iso, so the tray is drawn to the left
+  assert.ok(tray.at[1] > body.at[1] + body.size[1]);
+  assert.equal(body.slots[0].side, '+y');
+  // lined up with the opening: both centred on the same line
+  near(tray.at[0] + tray.size[0] / 2, body.slots[0].at);
   // a thumb scoop in the top of both side walls of the box, and of the tray
-  assert.deepEqual(body.scoops.map((sc) => [sc.side, sc.shape]), [['-x', 'round'], ['+x', 'round']]);
-  assert.deepEqual(tray.scoops.map((sc) => sc.side), ['+x', '-x']);
+  assert.deepEqual(body.scoops.map((sc) => [sc.side, sc.shape]), [['-y', 'round'], ['+y', 'round']]);
+  assert.deepEqual(tray.scoops.map((sc) => sc.side), ['+y', '-y']);
 });
 
 test('iso clips each scoop cut surface to its notch, and fills the rim as one shape', () => {

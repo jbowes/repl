@@ -38,96 +38,113 @@
 #   card), an integrated drawer for tokens and dice, magnets closing the lid,
 #   capacity 100 double-sleeved cards.
 #
-# The plan shows the box and the tray pulled out to the right; the front
-# elevation shows the cubby and compartment as hidden (dash-dot) lines; the
-# section cuts through the middle and shows them empty; the isometric view
-# shows the inside through the open top and the cubby opening on the right.
+# The plan shows the box and the tray pulled out of the cubby, toward the
+# viewer; the front elevation looks straight into the cubby opening; the
+# section cuts through the middle, across the cubby, and shows the tray in
+# section beside it; the isometric view shows the inside through the open top,
+# the cubby opening on the left face and the tray pulled out to the left.
 #
-# Axes: x is the 94.5 mm side (left to right), y is the 113 mm side (the
-# front faces +y), z is height. The box is turned so the cubby opens on the
-# right, +x, face, which the isometric view can see.
+# Axes: x is the 113 mm side (left to right), y is the 94.5 mm side (the front
+# faces +y, and the cubby opens on the front face, which is the left face in
+# the isometric view), z is height.
 units: mm
 scale: 2.2
 views: [plan, front, section, iso]
 columns: 1
-cut: 56.5
+cut: 47.25
 shapes:
   # The deck box: one hollow open-top shell. Its floor is 46.6 mm thick, which
   # is the 5.3 mm slab under the cubby, the 36 mm cubby and the 5.3 mm
   # compartment floor above it. The cubby is a slot into that floor from the
-  # right face, centred in the 113 mm side. Thumb scoops in the top of both
-  # side walls (size estimated from a photo).
+  # front face, centred in the 113 mm side. Thumb scoops in the top of both
+  # 113 mm walls (size estimated from a photo).
   - type: box
     id: body
     at: [0, 0, 0]
-    size: [94.5, 113, 102]
+    size: [113, 94.5, 102]
     wall: 5.3
     floor: 46.6
     style: blue
     scoops:
-      - { side: -x, at: 56.5, width: 36, shape: round }
-      - { side: +x, at: 56.5, width: 36, shape: round }
+      - { side: -y, at: 56.5, width: 36, shape: round }
+      - { side: +y, at: 56.5, width: 36, shape: round }
     slots:
-      - { side: +x, at: 56.5, width: 88.5, height: 36, depth: 80, bottom: 5.3 }
-  # The token tray, a separate open-top tray shown pulled out of its cubby to
-  # the right, with a thumb scoop on both sides. Outer size, wall and scoop size
-  # measured; floor and the scoops' U shape estimated.
+      - { side: +y, at: 56.5, width: 88.5, height: 36, depth: 80, bottom: 5.3 }
+  # The token tray, a separate open-top tray shown pulled out of its cubby
+  # toward the front, with a thumb scoop on both sides. Outer size, wall and
+  # scoop size measured; floor and the scoops' U shape estimated.
   - type: box
     id: tray
     label: tray
-    views: [plan, section, iso]
-    at: [159.5, 13.65, 0]
-    size: [80, 85.7, 33.7]
+    views: [plan, iso]
+    at: [13.65, 154.5, 0]
+    size: [85.7, 80, 33.7]
     wall: 5.3
     style: yellow
     scoops:
       # 29.5 mm in from each end of the 85.7 mm wall, 19 mm of wall left under it
-      - { side: +x, at: 42.85, width: 26.7, depth: 14.7, shape: u }
-      - { side: -x, at: 42.85, width: 26.7, depth: 14.7, shape: u }
+      - { side: +y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
+      - { side: -y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
+  # The same tray for the section, beside the box where the cut crosses it.
+  - type: box
+    id: tray-section
+    label: tray
+    views: [section]
+    at: [150, 7.25, 0]
+    size: [85.7, 80, 33.7]
+    wall: 5.3
+    style: yellow
+    scoops:
+      - { side: +y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
+      - { side: -y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
 
   # The box's base (measured) and its height (retailer listings).
-  - { type: dim, views: [plan, iso], from: [0, 113, 0], to: [94.5, 113, 0], offset: [0, 24, 0] }
-  - { type: dim, views: [plan], from: [0, 0, 0], to: [0, 113, 0], offset: [-24, 0, 0] }
-  - { type: dim, views: [front], from: [0, 113, 0], to: [94.5, 113, 0], offset: [0, 0, -24] }
-  - { type: dim, views: [front], from: [0, 113, 0], to: [0, 113, 102], offset: [-24, 0, 0] }
+  - { type: dim, views: [plan], from: [0, 0, 0], to: [113, 0, 0], offset: [0, -48, 0] }
+  - { type: dim, views: [plan], from: [0, 0, 0], to: [0, 94.5, 0], offset: [-24, 0, 0] }
+  - { type: dim, views: [iso], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
+  - { type: dim, views: [front], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
+  - { type: dim, views: [front], from: [0, 94.5, 0], to: [0, 94.5, 102], offset: [-24, 0, 0] }
 
   # The tray's three outer measurements (measured).
-  - { type: dim, views: [plan, iso], from: [159.5, 99.35, 0], to: [239.5, 99.35, 0], offset: [0, 24, 0] }
-  - { type: dim, views: [plan], from: [239.5, 13.65, 0], to: [239.5, 99.35, 0], offset: [24, 0, 0] }
-  - { type: dim, views: [iso], from: [239.5, 13.65, 0], to: [239.5, 13.65, 33.7], offset: [24, 0, 0] }
-  - { type: dim, views: [section], from: [239.5, 56.5, 0], to: [239.5, 56.5, 33.7], offset: [20, 0, 0] }
+  - { type: dim, views: [plan, iso], from: [13.65, 234.5, 0], to: [99.35, 234.5, 0], offset: [0, 24, 0] }
+  - { type: dim, views: [plan], from: [99.35, 154.5, 0], to: [99.35, 234.5, 0], offset: [24, 0, 0] }
+  - { type: dim, views: [iso], from: [13.65, 234.5, 0], to: [13.65, 234.5, 33.7], offset: [-24, 0, 0] }
+  - { type: dim, views: [section], from: [150, 47.25, 0], to: [150, 47.25, 33.7], offset: [-20, 0, 0] }
 
-  # The tray's inside: the outer size less the 5.3 mm walls (69.4 x 75.1), and
+  # The tray's inside: the outer size less the 5.3 mm walls (75.1 x 69.4), and
   # its depth above a floor ASSUMED to be 5.3 mm too (28.4).
-  - { type: dim, views: [plan], from: [164.8, 18.95, 0], to: [234.2, 18.95, 0], offset: [0, -22, 0] }
-  - { type: dim, views: [plan], from: [234.2, 18.95, 0], to: [234.2, 94.05, 0], offset: [-12, 0, 0] }
-  - { type: dim, views: [section], from: [219.5, 56.5, 5.3], to: [219.5, 56.5, 33.7] }
+  - { type: dim, views: [plan], from: [18.95, 159.8, 0], to: [94.05, 159.8, 0], offset: [0, -14, 0] }
+  - { type: dim, views: [plan], from: [94.05, 159.8, 0], to: [94.05, 229.2, 0], offset: [-12, 0, 0] }
+  - { type: dim, views: [section], from: [160, 47.25, 5.3], to: [160, 47.25, 33.7] }
   # The tray's thumb scoops (measured): 29.5 mm in from each end of the wall,
   # so 26.7 mm wide, with 19 mm of wall left under them, so 14.7 mm deep.
   # Recorded but hidden, to keep the drawing clear; the scoops are still drawn.
-  - { type: dim, views: [plan], from: [159.5, 13.65, 0], to: [159.5, 43.15, 0], offset: [-14, 0, 0], hide: true }
-  - { type: dim, views: [plan], from: [159.5, 43.15, 0], to: [159.5, 69.85, 0], offset: [-32, 0, 0], hide: true }
-  - { type: dim, views: [section], from: [159.5, 56.5, 0], to: [159.5, 56.5, 19], offset: [-14, 0, 0], hide: true }
-  - { type: dim, views: [section], from: [159.5, 56.5, 19], to: [159.5, 56.5, 33.7], offset: [-30, 0, 0], hide: true }
+  - { type: dim, views: [plan], from: [13.65, 234.5, 0], to: [43.15, 234.5, 0], offset: [0, 14, 0], hide: true }
+  - { type: dim, views: [plan], from: [43.15, 234.5, 0], to: [69.85, 234.5, 0], offset: [0, 32, 0], hide: true }
+  - { type: dim, views: [iso], from: [13.65, 234.5, 0], to: [13.65, 234.5, 19], offset: [-14, 0, 0], hide: true }
+  - { type: dim, views: [iso], from: [13.65, 234.5, 19], to: [13.65, 234.5, 33.7], offset: [-30, 0, 0], hide: true }
 
   # The cubby's three measurements, and the base left on each side of its
   # opening (measured). 12.5 + 88.5 + 12.5 is 113.5, half a millimetre over the
   # 113 mm base, so that half millimetre is taken off the two sides: the
   # opening is centred with 12.25 mm each side.
-  - { type: dim, views: [plan], from: [94.5, 12.25, 5.3], to: [94.5, 100.75, 5.3], offset: [-24, 0, 0] }
-  - { type: dim, views: [plan], from: [94.5, 0, 5.3], to: [94.5, 12.25, 5.3], offset: [16, 0, 0] }
-  - { type: dim, views: [plan], from: [94.5, 100.75, 5.3], to: [94.5, 113, 5.3], offset: [16, 0, 0] }
-  - { type: dim, views: [section], from: [14.5, 56.5, 0], to: [94.5, 56.5, 0], offset: [0, 0, -22] }
-  - { type: dim, views: [section], from: [94.5, 56.5, 5.3], to: [94.5, 56.5, 41.3], offset: [-20, 0, 0] }
+  - { type: dim, views: [plan], from: [0, 0, 5.3], to: [12.25, 0, 5.3], offset: [0, -24, 0] }
+  - { type: dim, views: [plan], from: [12.25, 0, 5.3], to: [100.75, 0, 5.3], offset: [0, -24, 0] }
+  - { type: dim, views: [plan], from: [100.75, 0, 5.3], to: [113, 0, 5.3], offset: [0, -24, 0] }
+  - { type: dim, views: [plan], from: [113, 14.5, 5.3], to: [113, 94.5, 5.3], offset: [24, 0, 0] }
+  - { type: dim, views: [front], from: [12.25, 94.5, 5.3], to: [100.75, 94.5, 5.3], offset: [0, 0, -12] }
+  - { type: dim, views: [front], from: [100.75, 94.5, 5.3], to: [100.75, 94.5, 41.3], offset: [20, 0, 0] }
+  - { type: dim, views: [section], from: [12.25, 47.25, 5.3], to: [100.75, 47.25, 5.3], offset: [0, 0, -22] }
+  - { type: dim, views: [section], from: [12.25, 47.25, 5.3], to: [12.25, 47.25, 41.3], offset: [-30, 0, 0] }
 
   # Callouts name the parts.
-  - { type: label, views: [plan], at: [30, 30, 102], to: [10, -22, 102], text: deck compartment (hollow) }
-  - { type: label, views: [plan], at: [2.6, 56.5, 102], to: [-8, -38, 102], text: thumb scoops (approx.), hide: true }
-  - { type: label, views: [plan], at: [159.5, 56.5, 33.7], to: [154, 112, 33.7], text: thumb scoops, hide: true }
-  - { type: label, views: [plan], at: [40, 75, 5.3], to: [60, -40, 5.3], text: tray cubby under (hidden) }
-  - { type: label, views: [section], at: [2.6, 56.5, 70], to: [-40, 56.5, 95], text: "wall, scoop cut (approx.)" }
-  - { type: label, views: [section], at: [50, 56.5, 23], to: [-12, 56.5, 23], text: tray cubby }
-  - { type: label, views: [section], at: [47, 56.5, 70], to: [-12, 56.5, 60], text: hollow deck compartment }
-  - { type: label, views: [front], at: [54.5, 113, 23], to: [124.5, 113, 30], text: tray cubby (hidden) }
-  - { type: label, views: [iso], at: [94.5, 56.5, 23], to: [150, -40, 60], text: tray cubby }
-  - { type: label, views: [iso], at: [2.6, 56.5, 90], to: [-90, 100, 130], text: thumb scoops (approx.) }
+  - { type: label, views: [plan], at: [30, 30, 102], to: [125, 28, 102], text: deck compartment (hollow) }
+  - { type: label, views: [plan], at: [56.5, 2.6, 102], to: [-30, -78, 102], text: thumb scoops (approx.), hide: true }
+  - { type: label, views: [plan], at: [56.5, 154.5, 33.7], to: [-40, 150, 33.7], text: thumb scoops, hide: true }
+  - { type: label, views: [plan], at: [60, 60, 5.3], to: [125, 70, 5.3], text: tray cubby under (hidden) }
+  - { type: label, views: [section], at: [56.5, 47.25, 20], to: [56.5, 47.25, -40], text: tray cubby }
+  - { type: label, views: [section], at: [2.6, 47.25, 80], to: [-40, 47.25, 105], text: wall (approx.) }
+  - { type: label, views: [section], at: [56.5, 47.25, 75], to: [20, 47.25, 120], text: hollow deck compartment }
+  - { type: label, views: [front], at: [56.5, 94.5, 23], to: [125, 94.5, 60], text: tray cubby }
+  - { type: label, views: [iso], at: [56.5, 94.5, 23], to: [-60, 180, 60], text: tray cubby }
+  - { type: label, views: [iso], at: [56.5, 2.6, 90], to: [-60, -20, 140], text: thumb scoops (approx.) }
