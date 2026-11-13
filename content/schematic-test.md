@@ -187,17 +187,18 @@ shapes:
   - { type: dim, views: [plan], from: [0, 0, 5.3], to: [12.25, 0, 5.3], offset: [0, -24, 0] }
   - { type: dim, views: [plan], from: [12.25, 0, 5.3], to: [100.75, 0, 5.3], offset: [0, -24, 0] }
   - { type: dim, views: [plan], from: [100.75, 0, 5.3], to: [113, 0, 5.3], offset: [0, -24, 0] }
-  - { type: dim, views: [plan], from: [113, 14.5, 5.3], to: [113, 94.5, 5.3], offset: [24, 0, 0] }
+  - { type: dim, views: [plan], from: [100.75, 14.5, 5.3], to: [100.75, 94.5, 5.3], offset: [36.25, 0, 0] }
   - { type: dim, views: [front], from: [12.25, 94.5, 5.3], to: [100.75, 94.5, 5.3], offset: [0, 0, -12] }
   - { type: dim, views: [front], from: [100.75, 94.5, 5.3], to: [100.75, 94.5, 41.3], offset: [20, 0, 0] }
   - { type: dim, views: [section], from: [12.25, 47.25, 5.3], to: [100.75, 47.25, 5.3], offset: [0, 0, -22] }
   - { type: dim, views: [section], from: [12.25, 47.25, 5.3], to: [12.25, 47.25, 41.3], offset: [-30, 0, 0] }
 
   # The cubby's width, height and depth in iso (measured): across and up the
-  # opening on the left face, and along the right face for the depth.
+  # opening on the left face, and for the depth along the tunnel's own bottom
+  # right edge, which shows through the box as a hidden line.
   - { type: dim, views: [iso], from: [12.25, 94.5, 5.3], to: [100.75, 94.5, 5.3], offset: [0, 0, -12] }
   - { type: dim, views: [iso], from: [100.75, 94.5, 5.3], to: [100.75, 94.5, 41.3], offset: [6, 0, 0] }
-  - { type: dim, views: [iso], from: [113, 14.5, 5.3], to: [113, 94.5, 5.3], offset: [24, 0, 0] }
+  - { type: dim, views: [iso], from: [100.75, 14.5, 5.3], to: [100.75, 94.5, 5.3], offset: [36.25, 0, 0] }
 
   # Callouts name the parts. Recorded but hidden: the drawing carries only the
   # dimensions, and the callouts stay in the description.
@@ -354,17 +355,18 @@ shapes:
   - { type: dim, views: [plan], from: [0, 0, 5.3], to: [12.25, 0, 5.3], offset: [0, -24, 0] }
   - { type: dim, views: [plan], from: [12.25, 0, 5.3], to: [100.75, 0, 5.3], offset: [0, -24, 0] }
   - { type: dim, views: [plan], from: [100.75, 0, 5.3], to: [113, 0, 5.3], offset: [0, -24, 0] }
-  - { type: dim, views: [plan], from: [113, 14.5, 5.3], to: [113, 94.5, 5.3], offset: [24, 0, 0] }
+  - { type: dim, views: [plan], from: [100.75, 14.5, 5.3], to: [100.75, 94.5, 5.3], offset: [36.25, 0, 0] }
   - { type: dim, views: [front], from: [12.25, 94.5, 5.3], to: [100.75, 94.5, 5.3], offset: [0, 0, -12] }
   - { type: dim, views: [front], from: [100.75, 94.5, 5.3], to: [100.75, 94.5, 41.3], offset: [20, 0, 0] }
   - { type: dim, views: [section], from: [12.25, 47.25, 5.3], to: [100.75, 47.25, 5.3], offset: [0, 0, -22] }
   - { type: dim, views: [section], from: [12.25, 47.25, 5.3], to: [12.25, 47.25, 41.3], offset: [-30, 0, 0] }
 
   # The cubby's width, height and depth in iso (measured): across and up the
-  # opening on the left face, and along the right face for the depth.
+  # opening on the left face, and for the depth along the tunnel's own bottom
+  # right edge, which shows through the box as a hidden line.
   - { type: dim, views: [iso], from: [12.25, 94.5, 5.3], to: [100.75, 94.5, 5.3], offset: [0, 0, -12] }
   - { type: dim, views: [iso], from: [100.75, 94.5, 5.3], to: [100.75, 94.5, 41.3], offset: [6, 0, 0] }
-  - { type: dim, views: [iso], from: [113, 14.5, 5.3], to: [113, 94.5, 5.3], offset: [24, 0, 0] }
+  - { type: dim, views: [iso], from: [100.75, 14.5, 5.3], to: [100.75, 94.5, 5.3], offset: [36.25, 0, 0] }
 
   # Callouts name the parts. Recorded but hidden: the drawing carries only the
   # dimensions, and the callouts stay in the description.
