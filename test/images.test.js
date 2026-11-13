@@ -50,3 +50,69 @@ test('file: true always emits a file, even for an image small enough to inline',
   assert.ok(emittedImages().has(small.src.slice(1)));
   assert.match(processImage('small.png', 'a gradient', post).src, /^data:/); // the default is unchanged
 });
+
+// Responsive copies of the images emitted as files.
+const sharp = require('sharp');
+const fs = require('fs');
+const os = require('os');
+
+async function tempImage(name, width, height, format = 'webp') {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'repl-img-'));
+  // noise, so it is well over INLINE_LIMIT at any size
+  const raw = Buffer.alloc(width * height * 3);
+  for (let i = 0; i < raw.length; i++) raw[i] = (i * 2654435761) >>> 24;
+  await sharp(raw, { raw: { width, height, channels: 3 } }).toFormat(format).toFile(path.join(dir, name));
+  return path.join(dir, 'post.md');
+}
+
+test('a wide image gets a srcset of the smaller widths and the original', async () => {
+  const from = await tempImage('wide.webp', 1400, 300);
+  const img = processImage('wide.webp', 'a wide one', from);
+  const [, stem] = /^\/images\/(wide-[0-9a-f]{8})\.webp$/.exec(img.src);
+  assert.equal(img.srcSet, [480, 800, 1200].map((w) => `/images/${stem}-${w}w.webp ${w}w`).concat(`${img.src} 1400w`).join(', '));
+  assert.equal(img.sizes, '(min-width: 30em) calc(66.667vw - 2rem), 90vw');
+  // width and height stay those of the original, so the layout does not shift
+  assert.deepEqual([img.width, img.height], [1400, 300]);
+  // each copy is queued to be made, from the same file, at its width
+  for (const w of [480, 800, 1200]) {
+    const queued = emittedImages().get(`images/${stem}-${w}w.webp`);
+    assert.equal(queued.width, w);
+    assert.equal(queued.file, path.join(path.dirname(from), 'wide.webp'));
+  }
+  assert.equal(emittedImages().get(`images/${stem}.webp`).width, undefined); // the original is copied as it is
+});
+
+test('only the widths narrower than the image are used', async () => {
+  const from = await tempImage('mid.webp', 900, 200);
+  const img = processImage('mid.webp', 'a mid one', from);
+  assert.deepEqual([...img.srcSet.matchAll(/ (\d+)w/g)].map((m) => Number(m[1])), [480, 800, 900]);
+  // an image no wider than the smallest width has nothing smaller to offer
+  const narrow = processImage('narrow.webp', 'x', await tempImage('narrow.webp', 480, 480));
+  assert.equal(narrow.srcSet, undefined);
+  assert.equal(narrow.sizes, undefined);
+});
+
+test('PNG and JPEG are resized too, in their own format; GIF and SVG are not', async () => {
+  const png = processImage('p.png', 'a png', await tempImage('p.png', 1000, 100, 'png'));
+  assert.match(png.srcSet, /-480w\.png 480w, .*-800w\.png 800w, \/images\/p-[0-9a-f]{8}\.png 1000w$/);
+  const jpg = processImage('j.jpg', 'a jpg', await tempImage('j.jpg', 1000, 100, 'jpeg'));
+  assert.match(jpg.srcSet, /-480w\.jpg 480w/);
+  assert.equal(processImage('large.png', 'x', post).srcSet, undefined); // 48 wide: nothing smaller
+  // an SVG scales on its own, and a GIF may be animated, which a resize would flatten
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'repl-img-'));
+  fs.writeFileSync(path.join(dir, 'big.svg'), `<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="100" viewBox="0 0 2000 100">${'<rect width="1" height="1"/>'.repeat(200)}</svg>`);
+  const svg = processImage('big.svg', 'an svg', path.join(dir, 'post.md'));
+  assert.equal(svg.srcSet, undefined);
+});
+
+test('a social image is one fixed file, with no srcset', async () => {
+  const from = await tempImage('social.webp', 1400, 300);
+  const img = processImage('social.webp', 'social', from, { file: true });
+  assert.equal(img.srcSet, undefined);
+  assert.equal([...emittedImages().keys()].filter((k) => k.includes('/social-')).length, 1);
+});
+
+test('the same image always gets the same names', async () => {
+  const from = await tempImage('same.webp', 1400, 300);
+  assert.deepEqual(processImage('same.webp', 'a', from), processImage('same.webp', 'a', from));
+});

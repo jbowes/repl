@@ -42,6 +42,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-rehype": "^11.1.2",
     "roughjs": "^4.6.6",
+    "sharp": "0.35.5",
     "sitemap-webpack-plugin": "^1.1.1",
     "unist-builder": "^4.0.0",
     "webpack": "^5.112.2",
@@ -49,8 +50,5 @@
   },
   "overrides": {
     "glob": "^14.0.4"
-  },
-  "devDependencies": {
-    "sharp": "0.35.5"
   }
 }

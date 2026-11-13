@@ -10,6 +10,16 @@ import { basename, dirname, extname, relative, resolve } from 'path';
 // output.
 export const INLINE_LIMIT = 4096;
 
+// Emitted raster images also get smaller copies for a srcset: each of these
+// widths that is narrower than the image, plus the image itself. The browser
+// picks by the `sizes` below, which describes the post column in
+// src/css/style.css (90% of the viewport, and below 30em that is all of it;
+// from 30em it is two thirds less 2rem of padding). The copies are made when
+// the images are emitted (webpack/images-plugin.js).
+export const RESPONSIVE_WIDTHS = [480, 800, 1200];
+export const SIZES = '(min-width: 30em) calc(66.667vw - 2rem), 90vw';
+const RESIZABLE = new Set(['.png', '.jpg', '.jpeg', '.webp']);
+
 // Directory (under public/) that file images are emitted to.
 export const OUTPUT_DIR = 'images';
 
@@ -22,8 +32,9 @@ const MIME = {
   '.svg': 'image/svg+xml',
 };
 
-// Files that need emitting to public/ (output path -> source file). Filled
-// while the markdown is processed; the webpack plugin reads it afterwards.
+// Files that need emitting to public/ (output path -> { file, width }). `width`
+// is set for a smaller copy, which is the source file resized to that width.
+// Filled while the markdown is processed; the webpack plugin reads it afterwards.
 const emitted = new Map();
 
 export function emittedImages() {
@@ -135,11 +146,25 @@ export function processImage(url, alt, from, { file: asFile = false } = {}) {
   }
 
   const hash = createHash('sha256').update(data).digest('hex').slice(0, 8);
-  const name = `${OUTPUT_DIR}/${basename(file, extname(file))}-${hash}${ext}`;
-  emitted.set(name, file);
+  const stem = `${OUTPUT_DIR}/${basename(file, extname(file))}-${hash}`;
+  const name = `${stem}${ext}`;
+  emitted.set(name, { file });
 
   props.src = `/${name}`;
   props.loading = 'lazy';
   props.decoding = 'async';
+
+  // Smaller copies, named for the same source hash so a changed image gets new
+  // names for all of them. Not for a social image, which is one fixed file.
+  const widths = asFile || !RESIZABLE.has(ext) ? [] : RESPONSIVE_WIDTHS.filter((w) => w < size.width);
+  if (widths.length) {
+    const copies = widths.map((w) => {
+      const copy = `${stem}-${w}w${ext}`;
+      emitted.set(copy, { file, width: w });
+      return `/${copy} ${w}w`;
+    });
+    props.srcSet = [...copies, `${props.src} ${size.width}w`].join(', ');
+    props.sizes = SIZES;
+  }
   return props;
 }
