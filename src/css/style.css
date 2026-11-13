@@ -310,11 +310,6 @@ pre:focus-visible {
 .ht { stroke: var(--code-bg); }
 
 @media screen and (min-width: 30em) {
-  main {
-    width: 66.66667%;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
   .post-brand {
     border-right-style: solid;
     border-bottom-width: 0;
@@ -327,6 +322,17 @@ pre:focus-visible {
   }
   .extract-title,
   .post-title { font-size: 2.25rem; }
+}
+
+/* The column narrows to two thirds only from 48em: from 30em it would leave a
+   480px screen a column narrower than a phone's. Keep SIZES in src/images.js,
+   which tells the browser how wide images are, in step with this rule. */
+@media screen and (min-width: 48em) {
+  main {
+    width: 66.66667%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 
 @media screen and (min-width: 30em) and (max-width: 60em) {

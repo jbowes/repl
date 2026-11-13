@@ -50,7 +50,7 @@ test('a photo in a post is built with smaller copies and a srcset', async () => 
   const widths = srcset.map(([, w]) => Number(w.replace('w', '')));
   assert.deepEqual(widths, [480, 800, 1200, 1400]);
   // the spaces inside calc() must survive: it needs them around the minus
-  assert.match(img, /sizes="\(min-width: 30em\) calc\(66\.667vw - 2rem\),90vw"/);
+  assert.match(img, /sizes="\(min-width: 48em\) calc\(66\.667vw - 2rem\),90vw"/);
   assert.match(img, /width="1400" height="695"/);
   // every file in the srcset was emitted, at the width it claims, with no metadata
   for (const [url, w] of srcset) {

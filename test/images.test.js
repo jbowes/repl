@@ -7,7 +7,7 @@ const { default: register } = require('@babel/register');
 
 register({ only: [/\/src\//] });
 
-const { INLINE_LIMIT, processImage, emittedImages } = require('../src/images');
+const { INLINE_LIMIT, SIZES, processImage, emittedImages } = require('../src/images');
 
 const post = path.join(__dirname, 'fixtures', 'post.md');
 
@@ -70,7 +70,7 @@ test('a wide image gets a srcset of the smaller widths and the original', async 
   const img = processImage('wide.webp', 'a wide one', from);
   const [, stem] = /^\/images\/(wide-[0-9a-f]{8})\.webp$/.exec(img.src);
   assert.equal(img.srcSet, [480, 800, 1200].map((w) => `/images/${stem}-${w}w.webp ${w}w`).concat(`${img.src} 1400w`).join(', '));
-  assert.equal(img.sizes, '(min-width: 30em) calc(66.667vw - 2rem), 90vw');
+  assert.equal(img.sizes, SIZES);
   // width and height stay those of the original, so the layout does not shift
   assert.deepEqual([img.width, img.height], [1400, 300]);
   // each copy is queued to be made, from the same file, at its width
@@ -115,4 +115,16 @@ test('a social image is one fixed file, with no srcset', async () => {
 test('the same image always gets the same names', async () => {
   const from = await tempImage('same.webp', 1400, 300);
   assert.deepEqual(processImage('same.webp', 'a', from), processImage('same.webp', 'a', from));
+});
+
+test('SIZES describes the post column in style.css', () => {
+  const css = fs.readFileSync(path.join(__dirname, '..', 'src', 'css', 'style.css'), 'utf8');
+  // the narrow column: main's width outside any media query
+  const base = /(?:^|\n)main \{[^}]*?width: ([\d.]+)%;/.exec(css);
+  // the wide column: main's width, and its padding, in a min-width query
+  const wide = /@media screen and \(min-width: ([\d.]+em)\) \{\s*main \{\s*width: ([\d.]+)%;\s*padding-left: ([\d.]+)rem;\s*padding-right: ([\d.]+)rem;/.exec(css);
+  assert.ok(base && wide, 'found both column rules');
+  const [, at, pct, left, right] = wide;
+  const expected = `(min-width: ${at}) calc(${Number(pct).toFixed(3)}vw - ${Number(left) + Number(right)}rem), ${Number(base[1])}vw`;
+  assert.equal(SIZES, expected);
 });

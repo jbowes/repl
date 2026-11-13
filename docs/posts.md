@@ -26,8 +26,8 @@ candidates: those three and itself, a 400 px one has none), each in its own
 format (WebP and JPEG at quality 72, `COPY_QUALITY` in `src/images.js`; PNG stays
 lossless) and named for the same hash, for example
 `photo-ab12cd34-800w.webp`. `sizes` tells the browser how wide the post column
-is: 90% of the viewport below 30em, and from there two thirds of it less 2rem
+is: 90% of the viewport below 48em, and from there two thirds of it less 2rem
 of padding. If the column changes in `src/css/style.css`, change `SIZES` in
-`src/images.js` to match. SVG and GIF are left alone, since an SVG scales by
+`src/images.js` to match; a test fails until they agree. SVG and GIF are left alone, since an SVG scales by
 itself and resizing a GIF would flatten an animation. A post's social preview
 image is one fixed file and gets no copies.
