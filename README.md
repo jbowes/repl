@@ -5,6 +5,11 @@ There are many like it, but this one is mine.
 - static AOT rendering with react
 - no SPA or data elements on the client. it's just plain html there.
 
+## Posts
+
+Posts are markdown files in `content/`, with YAML front matter. See
+[docs/posts.md](docs/posts.md) for the front matter and the social preview image.
+
 ## Diagrams
 
 A fenced block tagged `diagram` in `content/*.md` is drawn at build time as an

@@ -43,3 +43,10 @@ test('missing alt text or files fail the build', () => {
   assert.throws(() => processImage('small.png', '', post), /needs alt text/);
   assert.throws(() => processImage('nope.png', 'x', post), /does not exist/);
 });
+
+test('file: true always emits a file, even for an image small enough to inline', () => {
+  const small = processImage('small.png', 'a gradient', post, { file: true });
+  assert.match(small.src, /^\/images\/small-[0-9a-f]{8}\.png$/);
+  assert.ok(emittedImages().has(small.src.slice(1)));
+  assert.match(processImage('small.png', 'a gradient', post).src, /^data:/); // the default is unchanged
+});

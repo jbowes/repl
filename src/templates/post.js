@@ -12,7 +12,7 @@ export default (props) => {
   const Link = (props) => <a href="/" className="brand-link">{ props.children }</a>
   return (
     <Page>
-      <Head canonical={props.post.slug} title={props.post.header.title} description={props.post.header.description} type="article" pubdate={props.post.header.date} />
+      <Head canonical={props.post.slug} title={props.post.header.title} description={props.post.header.description} type="article" pubdate={props.post.header.date} image={props.post.header.social} />
       <Body>
         <header className="masthead post-masthead">
           <div className="post-brand">

@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { jsx, jsxs } from 'react/jsx-runtime';
 
 import { readdirSync, statSync, readFileSync } from 'fs';
-import { basename, extname, join } from 'path';
+import { basename, extname, join, relative } from 'path';
 
 import { remark } from 'remark';
 import frontmatter from 'remark-frontmatter';
@@ -148,6 +148,14 @@ export function listFiles(dir) {
     // newlines (`&#10;`) in the description meta tags.
     if (typeof header.description === 'string') {
       header.description = header.description.replace(/\s+/g, ' ').trim();
+    }
+
+    // `image:` and `image_alt:` in the front matter set the post's social
+    // preview. It must be a URL, so it is always a file, and not an SVG, which
+    // social sites do not show.
+    if (header.image) {
+      if (/\.svg$/i.test(header.image)) throw new Error(`${relative('.', file)}: image "${header.image}" cannot be an SVG, social sites do not show them`);
+      header.social = processImage(header.image, header.image_alt, file, { file: true });
     }
 
     let slug = basename(file, extname(file));
