@@ -355,6 +355,23 @@ test('scoops are described', () => {
   assert.match(renderSchematic(TRAY(U)), /tray: box 70 by 60 by 30 mm at \(0, 0, 0\), hollow with 3 mm walls, with a U-shaped scoop 20 wide and 12 deep in the \+x wall/);
 });
 
+test('the cubby depth dimension runs along the tunnel edge itself, not the box face', () => {
+  const m = parse(DECK);
+  const [slot] = m.shapes.find((s) => s.id === 'body').slots;
+  const front = m.shapes.find((s) => s.id === 'body').size[1]; // the face it opens on, y = 94.5
+  const right = slot.at + slot.width / 2; // the tunnel's right-hand wall, 100.75
+  // the dimensions of the cubby depth: 80 long in y, along the tunnel's bottom right edge
+  // (not the tray's own 80 mm depth, which is elsewhere)
+  const depthDims = m.shapes.filter((s) => s.type === 'dim' && Math.abs(s.to[1] - s.from[1]) === slot.depth && s.from[2] === slot.bottom && s.from[0] < 113);
+  assert.deepEqual(depthDims.map((d) => d.views).sort(), [['iso'], ['plan']]);
+  for (const d of depthDims) {
+    // both ends are the tunnel's corners: its mouth and its back, along its bottom edge
+    assert.deepEqual([d.from[0], d.to[0]], [right, right]);
+    assert.deepEqual([d.from[1], d.to[1]], [front - slot.depth, front]);
+    assert.deepEqual([d.from[2], d.to[2]], [slot.bottom, slot.bottom]);
+  }
+});
+
 test('the deck box fixture has a tray pulled out of the cubby opening, with scoops', () => {
   const m = parse(DECK);
   const tray = m.shapes.find((s) => s.id === 'tray');
