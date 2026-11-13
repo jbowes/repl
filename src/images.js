@@ -11,18 +11,39 @@ import { basename, dirname, extname, relative, resolve } from 'path';
 export const INLINE_LIMIT = 4096;
 
 // Emitted raster images also get smaller copies for a srcset: each of these
-// widths that is narrower than the image, plus the image itself. The browser
-// picks by the `sizes` below, which describes the post column in
-// src/css/style.css: 90% of the viewport, and from 48em two thirds of it less
-// 2rem of padding. A test checks the two agree. The copies are made when the
-// images are emitted (webpack/images-plugin.js).
+// widths that is narrower than the image, plus the image itself, each as an
+// AVIF and in the image's own format. The browser picks the format it supports
+// and the width by the `sizes` below. The copies are made when the images are
+// emitted (webpack/images-plugin.js).
 // 720 and 1080 fit common devices: about 700px for a phone at 2x, and about
 // 970-1050px for one at 2.6-3x or a tablet at 2x, which 800 and 1200 overshot.
-export const RESPONSIVE_WIDTHS = [480, 720, 1080];
-export const SIZES = '(min-width: 48em) calc(66.667vw - 2rem), 90vw';
-// The quality the smaller copies are re-encoded at (WebP and JPEG; PNG is
-// lossless). A copy is shown smaller than the committed original, where the
-// difference from 80 is not visible, and this saves about 20% of its bytes.
+// 880 fits a desktop window of about 1350px, whose column is 858-868px (the
+// size Lighthouse's desktop run uses), which 1080 overshot by 25%.
+export const RESPONSIVE_WIDTHS = [480, 720, 880, 1080];
+
+// The post column in src/css/style.css: 90% of the viewport, and from 48em two
+// thirds of it less 2rem of padding. A test checks the two agree.
+export const COLUMN = { narrow: 90, wideFrom: '48em', wide: 66.667, padding: '2rem' };
+
+// Phone screens run at 2.5-3.5x, and past 2x a photo looks no sharper but
+// costs half as much again or more. So below the wide column a screen of 2.5x
+// or 3x is told the slot is narrower, by 2/2.5 or 2/3, which the browser
+// multiplies back up to about 2x the real slot.
+export const DPR_CAP = 2;
+const CAPPED = [3, 2.5];
+export const SIZES = [
+  `(min-width: ${COLUMN.wideFrom}) calc(${COLUMN.wide}vw - ${COLUMN.padding})`,
+  ...CAPPED.map((d) => `(min-resolution: ${d}dppx) ${+(COLUMN.narrow * DPR_CAP / d).toFixed(3)}vw`),
+  `${COLUMN.narrow}vw`,
+].join(', ');
+
+// Re-encoding quality for the copies. AVIF, which every current browser shows
+// and so is what nearly every visitor gets, at 55: about what WebP is at 72,
+// for 30-50% fewer bytes, and under the 1.33 bits per pixel past which
+// Lighthouse suggests more compression even at 480px. The fallback copies in
+// the image's own format (WebP and JPEG; PNG is lossless) at 72, shown smaller
+// than the committed original, where the difference from 80 is not visible.
+export const AVIF_QUALITY = 55;
 export const COPY_QUALITY = 72;
 const RESIZABLE = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
@@ -161,16 +182,23 @@ export function processImage(url, alt, from, { file: asFile = false } = {}) {
   props.decoding = 'async';
 
   // Smaller copies, named for the same source hash so a changed image gets new
-  // names for all of them. Not for a social image, which is one fixed file.
-  const widths = asFile || !RESIZABLE.has(ext) ? [] : RESPONSIVE_WIDTHS.filter((w) => w < size.width);
-  if (widths.length) {
-    const copies = widths.map((w) => {
-      const copy = `${stem}-${w}w${ext}`;
-      emitted.set(copy, { file, width: w });
-      return `/${copy} ${w}w`;
-    });
-    props.srcSet = [...copies, `${props.src} ${size.width}w`].join(', ');
-    props.sizes = SIZES;
-  }
+  // names for all of them, and an AVIF of each size, the full one too. Not for
+  // a social image, which is one fixed file, or an SVG or GIF.
+  if (asFile || !RESIZABLE.has(ext)) return props;
+  const widths = RESPONSIVE_WIDTHS.filter((w) => w < size.width);
+  const copies = widths.map((w) => {
+    const copy = `${stem}-${w}w${ext}`;
+    emitted.set(copy, { file, width: w });
+    return `/${copy} ${w}w`;
+  });
+  const avif = [...widths, null].map((w) => {
+    const copy = w ? `${stem}-${w}w.avif` : `${stem}.avif`;
+    emitted.set(copy, { file, width: w || undefined, format: 'avif' });
+    return `/${copy} ${w || size.width}w`;
+  });
+  props.sizes = SIZES;
+  if (copies.length) props.srcSet = [...copies, `${props.src} ${size.width}w`].join(', ');
+  // For the image handler to wrap the <img> in a <picture> with these first.
+  props.sources = [{ type: 'image/avif', srcSet: avif.join(', '), sizes: SIZES }];
   return props;
 }
