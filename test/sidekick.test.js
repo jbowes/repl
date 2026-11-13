@@ -1,4 +1,4 @@
-// The Sidekick Pro XL sample (test/fixtures/sidekick-pro-xl.schematic.yaml) and
+// The Sidekick Pro XL drawing (content/schematics/sidekick-pro-xl.schematic.yaml) and
 // the numbers in it: the owner's measurements, and what is assumed or guessed.
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -8,7 +8,8 @@ const path = require('node:path');
 const { parse } = require('../src/schematic/schema');
 const { renderSchematic } = require('../src/schematic/render');
 
-const DECK = fs.readFileSync(path.join(__dirname, 'fixtures', 'sidekick-pro-xl.schematic.yaml'), 'utf8');
+// the drawing the post shows, kept beside it in content/
+const DECK = fs.readFileSync(path.join(__dirname, '..', 'content', 'schematics', 'sidekick-pro-xl.schematic.yaml'), 'utf8');
 const near = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} != ${b}`);
 
 test('the deck box fixture dimensions only the box outer sizes and the measured tray, scoops and cubby', () => {
