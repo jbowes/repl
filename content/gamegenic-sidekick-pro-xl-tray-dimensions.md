@@ -5,6 +5,8 @@ summary: |
   The tray in the Gamegenic Sidekick Pro XL deck box has no published dimensions, so here are mine...
 description: |
   Measured inside and outside dimensions of the Gamegenic Sidekick Pro XL token tray and its cubby, and the usable space for a WotC clickwheel life counter.
+image: images/sidekick-tray-with-life-counter.webp
+image_alt: My Sidekick Pro XL tray pulled part way out of its cubby, holding a clickwheel life counter and counter dice
 ---
 
 The [Gamegenic Sidekick Pro XL][sidekick] (the Sidekick Pro 100+ XL Convertible)
