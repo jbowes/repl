@@ -28,6 +28,15 @@ are `[w, d, h]` (x, y, z extents) in real units. Top level fields:
 - `view: plan|front|side|section|iso`, or `views: [plan, front, iso]` for several views
   of the same model, each in a framed cell with a caption. `columns: N` wraps
   them into a grid (default one row).
+- `grid`: the isometric grid an `iso` view is drawn on: `true` (the default),
+  `false` for none, or its spacing in units. By default the spacing is the
+  first round number (1, 2 or 5 times a power of ten) that puts the lines about
+  16 px apart, such as 10 mm at a scale of 2.2. The grid is iso graph paper:
+  lines along the floor's two axes, at 30 and 150 degrees, and verticals
+  through their crossings. It is aligned to the model's origin, so a box at a
+  multiple of the spacing sits on its lines. When every view is `iso` it fills
+  the whole drawing and replaces the panel's square grid; with other views it
+  fills the iso view's frame and they keep the square one.
 - `shapes`: the list of primitives below.
 
 Views: `plan` is top-down (x right, y down, z ignored); `front` looks from +y

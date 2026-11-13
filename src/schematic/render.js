@@ -10,13 +10,17 @@
 const { createHash } = require('crypto');
 
 const { parse, parseViewOption } = require('./schema');
-const { project, extent, paintOrder, isoCircle, points: shapePoints } = require('./project');
+const { project, extent, paintOrder, isoCircle, points: shapePoints, COS30 } = require('./project');
 const { SchematicCanvas, esc, num } = require('./canvas');
 const { SIDES, wallFrame, wallPoint, notch3, faceLoop, rimPieces, rimEdges, cutBand } = require('./hollow');
 const { STANDALONE, STANDALONE_CSS, svgOpen, backdrop } = require('../diagram/render');
+const { PANEL } = require('../diagram/palette');
 
 const FIT = 240; // px the largest dimension gets when `scale` is not given
 const FRAME_PAD = 16;
+// The isometric grid aims for about this many pixels between its lines, at a
+// round number of units (1, 2 or 5 times a power of ten).
+const GRID_PX = 16;
 const CELL_GAP = 28;
 const ARROW = 11;
 
@@ -538,6 +542,45 @@ const SCHEMATIC_CSS =
  *   gives the SVG the code-block panel colours, for use outside the site.
  * @returns {string} an <svg> element
  */
+// The spacing in model units of an iso view's grid: the first round number
+// whose lines land at least GRID_PX apart, unless the source gives one.
+function gridSpacing(model, scale) {
+  if (typeof model.grid === 'number') return model.grid;
+  const want = GRID_PX / (scale * COS30); // lines of one family are spacing * scale * cos30 apart
+  for (let p = 10 ** Math.floor(Math.log10(want)); ; p *= 10) {
+    for (const m of [1, 2, 5]) if (m * p >= want) return m * p;
+  }
+}
+
+// An isometric grid for the iso view's frame: the floor's two axes (lines of
+// constant x and of constant y on z = 0, at 30 and 150 degrees) and the
+// verticals through their crossings, which make the triangles of iso paper.
+// It is aligned to the model's origin, so a box on the grid sits on its lines
+// and the spacing is a scale reference. A panel-coloured rect hides the page's
+// square grid behind it, and the lines are clipped to the frame.
+function isoGrid(c, spacing, scale, [x0, y0, x1, y1]) {
+  const toModel = (u, v) => {
+    const a = u / (2 * COS30 * scale);
+    const b = v / scale;
+    return [b + a, b - a]; // [x, y] on z = 0
+  };
+  const corners = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]].map(([u, v]) => toModel(u, v));
+  const lo = (i) => Math.min(...corners.map((p) => p[i]));
+  const hi = (i) => Math.max(...corners.map((p) => p[i]));
+  const P = (p) => project(p, 'iso').map((n) => n * scale);
+  const seg = ([ax, ay], [bx, by]) => `M${num(ax)},${num(ay)}L${num(bx)},${num(by)}`;
+  let d = '';
+  for (let y = Math.ceil(lo(1) / spacing) * spacing; y <= hi(1); y += spacing) d += seg(P([lo(0), y, 0]), P([hi(0), y, 0]));
+  for (let x = Math.ceil(lo(0) / spacing) * spacing; x <= hi(0); x += spacing) d += seg(P([x, lo(1), 0]), P([x, hi(1), 0]));
+  const step = spacing * scale * COS30;
+  for (let u = Math.ceil(x0 / step) * step; u <= x1; u += step) d += seg([u, y0], [u, y1]);
+  const id = `${c.id}-${c.n++}`;
+  const box = `x="${num(x0)}" y="${num(y0)}" width="${num(x1 - x0)}" height="${num(y1 - y0)}"`;
+  return `<rect class="sc-grid-bg" ${box} fill="${PANEL.bg}"/>` +
+    `<clipPath id="${id}"><rect ${box}/></clipPath>` +
+    `<path class="sc-grid" clip-path="url(#${id})" d="${d}" stroke="currentColor" stroke-opacity=".07" stroke-width="1"/>`;
+}
+
 function renderSchematic(source, options = {}) {
   const model = parse(source);
   const views = options.view ? parseViewOption(options.view) : model.views;
@@ -563,7 +606,7 @@ function renderSchematic(source, options = {}) {
     // The cell spans the frame plus room for crop marks and the caption.
     const left = fx0 - 10;
     const top = fy0 - 20;
-    return { view, content: body + frame, left, top, w: fx1 - fx0 + 20, h: fy1 - fy0 + 30 };
+    return { view, body, frame, box: [fx0, fy0, fx1, fy1], left, top, w: fx1 - fx0 + 20, h: fy1 - fy0 + 30 };
   });
 
   const cols = Math.min(model.columns || cells.length, cells.length);
@@ -573,22 +616,31 @@ function renderSchematic(source, options = {}) {
   const colX = colW.map((_, i) => colW.slice(0, i).reduce((a, w) => a + w + CELL_GAP, 0));
   const rowY = rowH.map((_, i) => rowH.slice(0, i).reduce((a, h) => a + h + CELL_GAP, 0));
 
+  const m = c.margin;
+  const w = Math.ceil(colX[cols - 1] + colW[cols - 1] + 2 * m);
+  const h = Math.ceil(rowY[rows - 1] + rowH[rows - 1] + 2 * m);
+
+  // An iso view gets an isometric grid behind its drawing, unless turned off.
+  // When every view is iso the grid fills the whole drawing, and the page drops
+  // its square grid for it (data-grid); otherwise it fills the view's frame.
+  const gridOn = model.grid !== false;
+  const allIso = gridOn && views.every((v) => v === 'iso');
+  const spacing = gridSpacing(model, scale);
   const placed = cells.map((cell, k) => {
     const col = k % cols;
     const row = Math.floor(k / cols);
     const x = colX[col] + (colW[col] - cell.w) / 2 - cell.left;
     const y = rowY[row] + (rowH[row] - cell.h) / 2 - cell.top;
-    return `<g class="sc-view" data-view="${cell.view}" transform="translate(${num(x)} ${num(y)})">${cell.content}</g>`;
+    // the whole drawing, in this cell's coordinates
+    const whole = [-m - x, -m - y, -m - x + w, -m - y + h];
+    const grid = gridOn && cell.view === 'iso' ? isoGrid(c, spacing, scale, allIso ? whole : cell.box) : '';
+    return `<g class="sc-view" data-view="${cell.view}" transform="translate(${num(x)} ${num(y)})">${grid}${cell.body}${cell.frame}</g>`;
   });
-
-  const m = c.margin;
-  const w = Math.ceil(colX[cols - 1] + colW[cols - 1] + 2 * m);
-  const h = Math.ceil(rowY[rows - 1] + rowH[rows - 1] + 2 * m);
   const id = `schematic-${seed.toString(36)}`;
   const title = options.alt || 'Schematic';
 
   return (
-    svgOpen({ cls: 'diagram-svg diagram-technical schematic-svg', id, m, w, h, root: c.root, standalone: options.standalone }) +
+    svgOpen({ cls: 'diagram-svg diagram-technical schematic-svg', id, m, w, h, root: (allIso ? 'data-grid="iso" ' : '') + c.root, standalone: options.standalone }) +
     (options.standalone ? `<style>${STANDALONE_CSS}${SCHEMATIC_CSS}</style>` : '') +
     `<title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(describe(model, views))}</desc>` +
     backdrop(m, w, h) +

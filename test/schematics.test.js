@@ -505,3 +505,47 @@ test('a schematic stands on its own without the page CSS too', () => {
   assert.match(svg, /<rect class="dg-backdrop" /);
   assert.match(svg, /<g class="dg-node dg-blue" color="#92b0c2">/);
 });
+
+const isoGridOf = (svg) => /<path class="sc-grid" clip-path="url\(#[^)]+\)" d="([^"]*)"/.exec(svg);
+
+test('an iso view gets an isometric grid, aligned to the model and at a round spacing', () => {
+  const src = (extra) => `views: [iso]\n${extra}shapes:\n  - { type: box, at: [0, 0, 0], size: [40, 40, 20] }\n`;
+  const svg = renderSchematic(src('scale: 2.2\n'));
+  const grid = isoGridOf(svg);
+  assert.ok(grid, 'there is a grid');
+  // behind a panel-coloured rect that hides the page's square grid
+  assert.match(svg, /<rect class="sc-grid-bg" [^>]*fill="#0d1315"\/><clipPath/);
+  // three families: lines at +30 and -30 degrees on the floor, and verticals
+  const segs = [...grid[1].matchAll(/M([-\d.]+),([-\d.]+)L([-\d.]+),([-\d.]+)/g)].map((m) => m.slice(1).map(Number));
+  const angle = ([ax, ay, bx, by]) => Math.round((Math.atan2(by - ay, bx - ax) * 180) / Math.PI);
+  assert.deepEqual([...new Set(segs.map(angle))].sort((a, b) => a - b), [30, 90, 150]);
+  // at 2.2 px per mm the round spacing is 10 mm: verticals 10 * 2.2 * cos30 apart
+  const verticals = segs.filter((s) => angle(s) === 90).map(([x]) => x);
+  near(verticals[1] - verticals[0], 10 * 2.2 * Math.cos(Math.PI / 6), 0.11);
+  // aligned to the origin: a vertical runs through it
+  assert.ok(verticals.some((x) => Math.abs(x) < 0.05), `${verticals}`);
+  // a coarser scale gets a coarser round spacing, and the source can set one
+  const vs = (svg) => isoGridOf(svg)[1].match(/M[-\d.]+,[-\d.]+L/g).length;
+  assert.ok(vs(renderSchematic(src('scale: 1\n'))) < vs(svg));
+  const five = [...isoGridOf(renderSchematic(src('scale: 2.2\ngrid: 5\n')))[1].matchAll(/M([-\d.]+),([-\d.]+)L([-\d.]+),([-\d.]+)/g)]
+    .map((m) => m.slice(1).map(Number)).filter((s) => angle(s) === 90).map(([x]) => x);
+  near(five[1] - five[0], 5 * 2.2 * Math.cos(Math.PI / 6), 0.11);
+  // and turn it off
+  assert.equal(isoGridOf(renderSchematic(src('grid: false\n'))), null);
+  assert.throws(() => parse(src('grid: lots\n')), /grid: expected true, false or a spacing/);
+});
+
+test('an all-iso drawing is gridded edge to edge; mixed views keep the grid in the iso frame', () => {
+  const box = 'shapes:\n  - { type: box, at: [0, 0, 0], size: [40, 40, 20] }\n';
+  const iso = renderSchematic(`views: [iso]\n${box}`);
+  const mixed = renderSchematic(`views: [plan, iso]\n${box}`);
+  // the page drops its square grid for a drawing marked data-grid="iso"
+  assert.match(/<svg [^>]*>/.exec(iso)[0], /data-grid="iso"/);
+  assert.doesNotMatch(/<svg [^>]*>/.exec(mixed)[0], /data-grid/);
+  // one grid, in the iso cell only
+  assert.equal((mixed.match(/class="sc-grid"/g) || []).length, 1);
+  assert.match(mixed, /data-view="iso"[^>]*><rect class="sc-grid-bg"/);
+  assert.equal(isoGridOf(renderSchematic(`views: [plan]\n${box}`)), null);
+  const css = fs.readFileSync(path.join(__dirname, '..', 'src', 'css', 'style.css'), 'utf8');
+  assert.match(css, /\.diagram:has\(> \[data-grid="iso"\]\) \{ background-image: none; \}/);
+});

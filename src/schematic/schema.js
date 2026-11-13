@@ -27,7 +27,7 @@ const TYPES = {
 };
 const ALIASES = { plane: 'rect', wire: 'line' };
 const COMMON = ['type', 'id', 'label', 'style', 'views', 'hide'];
-const TOP = ['units', 'scale', 'view', 'views', 'columns', 'cut', 'shapes'];
+const TOP = ['units', 'scale', 'view', 'views', 'columns', 'cut', 'grid', 'shapes'];
 
 class SchematicError extends Error {
   constructor(path, msg) {
@@ -306,6 +306,13 @@ function parse(source) {
     model.units = doc.units;
   }
   if (doc.scale !== undefined) model.scale = positive(doc.scale, 'scale');
+  // The isometric grid: on by default (true), off (false), or its spacing in units.
+  if (doc.grid !== undefined) {
+    if (doc.grid !== true && doc.grid !== false && !(isNum(doc.grid) && doc.grid > 0)) {
+      throw new SchematicError('grid', `expected true, false or a spacing in units, got ${show(doc.grid)}`);
+    }
+    model.grid = doc.grid;
+  }
   if (doc.columns !== undefined) {
     if (!Number.isInteger(doc.columns) || doc.columns < 1) throw new SchematicError('columns', `expected a positive integer, got ${show(doc.columns)}`);
     model.columns = doc.columns;
