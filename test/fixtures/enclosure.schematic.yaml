@@ -1,0 +1,90 @@
+# An enclosure, as an example for the tests and the README: a hollow box with a
+# cubby cut into its floor, a thumb scoop in the top of two walls, and a
+# separate tray pulled out of the cubby. All sizes are invented; this is not a
+# real product.
+#
+# The box is one hollow open-top shell. Its floor is 40 mm thick: a 5 mm slab
+# under the cubby, the 30 mm cubby, and a 5 mm compartment floor above it. The
+# cubby is a slot into that floor from the front face (+y), which is the left
+# face in the isometric view, so the tray comes out to the left there.
+#
+# Axes: x is the 120 mm side (left to right), y is the 100 mm side (the front
+# faces +y), z is height.
+units: mm
+scale: 2.2
+views: [plan, front, section, iso]
+columns: 1
+cut: 50
+shapes:
+  - type: box
+    id: body
+    at: [0, 0, 0]
+    size: [120, 100, 90]
+    wall: 5
+    floor: 40
+    style: blue
+    scoops:
+      - { side: -y, at: 60, width: 40, shape: round }
+      - { side: +y, at: 60, width: 40, shape: round }
+    slots:
+      - { side: +y, at: 60, width: 80, height: 30, depth: 70, bottom: 5 }
+  # The tray, pulled out of its cubby toward the front, with a scoop on both sides.
+  - type: box
+    id: tray
+    views: [plan, iso]
+    at: [22, 150, 0]
+    size: [76, 64, 28]
+    wall: 4
+    style: yellow
+    scoops:
+      - { side: +y, at: 38, width: 24, depth: 12, shape: u }
+      - { side: -y, at: 38, width: 24, depth: 12, shape: u }
+  # The same tray for the section, beside the box where the cut crosses it.
+  - type: box
+    id: tray-section
+    views: [section]
+    at: [150, 18, 0]
+    size: [76, 64, 28]
+    wall: 4
+    style: yellow
+    scoops:
+      - { side: +y, at: 38, width: 24, depth: 12, shape: u }
+      - { side: -y, at: 38, width: 24, depth: 12, shape: u }
+
+  # The box's outer size.
+  - { type: dim, views: [plan], from: [0, 0, 0], to: [120, 0, 0], offset: [0, -40, 0] }
+  - { type: dim, views: [plan], from: [0, 0, 0], to: [0, 100, 0], offset: [-24, 0, 0] }
+  - { type: dim, views: [front], from: [0, 100, 0], to: [120, 100, 0], offset: [0, 0, -24] }
+  - { type: dim, views: [front], from: [0, 100, 0], to: [0, 100, 90], offset: [-24, 0, 0] }
+
+  # The tray's outer size, and its inside (the outer size less two 4 mm walls).
+  - { type: dim, views: [plan, iso], from: [22, 214, 0], to: [98, 214, 0], offset: [0, 24, 0] }
+  - { type: dim, views: [plan, iso], from: [98, 150, 0], to: [98, 214, 0], offset: [24, 0, 0] }
+  - { type: dim, views: [iso], from: [22, 214, 0], to: [22, 214, 28], offset: [-24, 0, 0] }
+  - { type: dim, views: [section], from: [150, 50, 0], to: [150, 50, 28], offset: [-20, 0, 0] }
+  - { type: dim, views: [plan], from: [26, 154, 0], to: [94, 154, 0], offset: [0, -14, 0] }
+  - { type: dim, views: [plan], from: [94, 154, 0], to: [94, 210, 0], offset: [-12, 0, 0] }
+  # The tray's scoops, recorded but hidden to keep the drawing clear: 26 mm in
+  # from each end of the wall, 24 mm wide.
+  - { type: dim, views: [plan], from: [22, 214, 0], to: [48, 214, 0], offset: [0, 14, 0], hide: true }
+  - { type: dim, views: [plan], from: [48, 214, 0], to: [72, 214, 0], offset: [0, 32, 0], hide: true }
+
+  # The cubby: the floor left on each side of its opening, the opening's width
+  # and height, and its depth along the tunnel's own bottom right edge, which
+  # shows through the box in iso as a hidden line.
+  - { type: dim, views: [plan], from: [0, 0, 5], to: [20, 0, 5], offset: [0, -20, 0] }
+  - { type: dim, views: [plan], from: [20, 0, 5], to: [100, 0, 5], offset: [0, -20, 0] }
+  - { type: dim, views: [plan], from: [100, 0, 5], to: [120, 0, 5], offset: [0, -20, 0] }
+  - { type: dim, views: [plan, iso], from: [100, 30, 5], to: [100, 100, 5], offset: [30, 0, 0] }
+  - { type: dim, views: [front], from: [20, 100, 5], to: [100, 100, 5], offset: [0, 0, -12] }
+  - { type: dim, views: [front, iso], from: [100, 100, 5], to: [100, 100, 35], offset: [20, 0, 0] }
+  - { type: dim, views: [section], from: [20, 50, 5], to: [100, 50, 5], offset: [0, 0, -22] }
+  - { type: dim, views: [section], from: [20, 50, 5], to: [20, 50, 35], offset: [-30, 0, 0] }
+  - { type: dim, views: [iso], from: [20, 100, 5], to: [100, 100, 5], offset: [0, 0, -12] }
+
+  # Callouts name the parts. Recorded but hidden: the drawing carries only the
+  # dimensions, and the callouts stay in the description.
+  - { type: label, views: [plan], at: [30, 30, 90], to: [135, 28, 90], text: compartment, hide: true }
+  - { type: label, views: [plan], at: [60, 60, 5], to: [135, 70, 5], text: cubby under, hide: true }
+  - { type: label, views: [section], at: [60, 50, 20], to: [-10, 50, -30], text: cubby, hide: true }
+  - { type: label, views: [iso], at: [60, 100, 20], to: [-60, 180, 60], text: cubby, hide: true }
