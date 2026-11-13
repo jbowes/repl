@@ -7,7 +7,8 @@ require("prismjs/components/prism-http");
 
 
 export const CodeBlock = ({ children, className }) => {
-  const language = className.replace(/language-/, "");
+  // A fence with no language (a plain table of numbers, say) is shown as text.
+  const language = (className || "").replace(/language-/, "") || "text";
   const code = String(Array.isArray(children) ? children.join('') : children).replace(/\n$/, '');
   // theme={{ plain: {}, styles: [] }} turns off the default inline styling
   return (

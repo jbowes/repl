@@ -481,3 +481,17 @@ test('the enclosure renders in every view: sizes, polygons and dimension texts',
   assert.deepEqual(text('section'), ['28 mm', '80 mm', '30 mm']);
   assert.deepEqual(text('iso'), ['76 mm', '64 mm', '28 mm', '70 mm', '30 mm', '80 mm']);
 });
+
+test('a schematic fence takes its source from the block, or from a file beside the post', () => {
+  const { schematicSource } = require('../src/schematic/source');
+  const post = path.join(__dirname, 'fixtures', 'post.md');
+  assert.equal(schematicSource('views: [plan]', 'alt="x"', post), 'views: [plan]');
+  assert.equal(schematicSource('', 'alt="x" src="enclosure.schematic.yaml" view="iso"', post), ENCL);
+  assert.equal(schematicSource('  \n', 'src="enclosure.schematic.yaml"', post), ENCL);
+  // the file renders like the same source given inline
+  assert.equal(renderSchematic(schematicSource('', 'src="enclosure.schematic.yaml"', post)), renderSchematic(ENCL));
+  assert.throws(() => schematicSource('shapes: []', 'src="enclosure.schematic.yaml"', post), /in the block or in src, not both/);
+  assert.throws(() => schematicSource('', 'src="nope.yaml"', post), /src "nope\.yaml" does not exist/);
+  assert.throws(() => schematicSource('', 'src="../images.test.js"', post), /must be inside/);
+  assert.throws(() => schematicSource('', `src="${__filename}"`, post), /must be inside/);
+});
