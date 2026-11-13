@@ -4,8 +4,9 @@ A fenced block tagged `schematic` draws plan, elevation and isometric views of
 physical objects from one small YAML description, in the same technical
 line-art style, panel and palette as diagrams (`src/schematic/`, no new
 dependencies). `alt` becomes the SVG `<title>`; a `<desc>` listing the named
-parts and dimensions is generated. Fence options: `alt="..."` and
-`view="iso"` (or `view="plan,front,iso"`) to override the views in the source.
+parts and dimensions is generated. Fence options: `alt="..."`,
+`view="iso"` (or `view="plan,front,iso"`) to override the views in the source,
+and `src="file.yaml"` to read the source from a file instead of the block.
 
 ````
 ```schematic alt="A crate with its width dimensioned"
@@ -111,6 +112,12 @@ wall) and no curved dimensions. Scoops are notches from the rim only (no notches
 or holes in the middle of a wall) and are not seen in an elevation through the
 opposite wall's notch. Hatch lines are screen-space 45 degrees in
 every view.
+
+A long source can live in its own file. Leave the block empty and give
+`src="path"`, relative to the post and inside its directory (for example
+`src="schematics/box.schematic.yaml"` for a post in `content/`). It is an error
+to give both a body and `src`, or a path that is missing or outside the post's
+directory. Edits to the file need a restart of the dev server to show.
 
 Output is deterministic. Preview one with
 `node scripts/render-schematic.js in.yaml out.svg --view iso`; examples live in
