@@ -41,7 +41,7 @@ test('built pages keep the quotes on attribute values', async () => {
   assert.match(html, /^<!doctype html><html/);
 });
 
-test('a photo in a post is built with smaller copies and a srcset', async () => {
+test('a photo in a post is built with smaller copies, a srcset, and AVIF', async () => {
   const out = await build();
   const html = fs.readFileSync(path.join(out, 'gamegenic-sidekick-pro-xl-tray-dimensions', 'index.html'), 'utf8');
   const img = /<img [^>]*class="post-image"[^>]*>/.exec(html)[0];
@@ -50,7 +50,8 @@ test('a photo in a post is built with smaller copies and a srcset', async () => 
   const widths = srcset.map(([, w]) => Number(w.replace('w', '')));
   assert.deepEqual(widths, [480, 720, 880, 1080, 1400]);
   // the spaces inside calc() must survive: it needs them around the minus
-  assert.match(img, /sizes="\(min-width: 48em\) calc\(66\.667vw - 2rem\),90vw"/);
+  const SIZES_HTML = 'sizes="(min-width: 48em) calc(66.667vw - 2rem),(min-resolution: 3dppx) 60vw,(min-resolution: 2.5dppx) 72vw,90vw"';
+  assert.ok(img.includes(SIZES_HTML), img);
   assert.match(img, /width="1400" height="695"/);
   // every file in the srcset was emitted, at the width it claims, with no metadata
   for (const [url, w] of srcset) {
@@ -71,4 +72,22 @@ test('a photo in a post is built with smaller copies and a srcset', async () => 
 
   // the src is the full-size file, and is one of the srcset entries
   assert.ok(srcset.some(([url]) => img.includes(`src="${url}"`)));
+
+  // the <img> is the fallback in a <picture> whose first source is AVIF
+  const picture = /<picture><source type="image\/avif" srcset="([^"]+)" ([^>]+)><img [^>]*class="post-image"[^>]*><\/picture>/.exec(html);
+  assert.ok(picture, 'a picture with an AVIF source, then the img');
+  assert.ok(picture[2].includes(SIZES_HTML));
+  const avif = picture[1].split(',').map((c) => c.split(' '));
+  assert.deepEqual(avif.map(([, w]) => w), ['480w', '720w', '880w', '1080w', '1400w']);
+  for (const [url, w] of avif) {
+    const file = fs.readFileSync(path.join(out, url));
+    const meta = await sharp(file).metadata();
+    const width = Number(w.replace('w', ''));
+    assert.deepEqual([meta.format, meta.compression, meta.width], ['heif', 'av1', width], url);
+    // under the 1.33 bits per pixel past which Lighthouse suggests more compression
+    assert.ok(file.length < (meta.width * meta.height) / 6, `${url}: ${file.length} bytes`);
+    // and smaller than the WebP of the same width
+    const webp = srcset.find(([, x]) => x === w)[0];
+    assert.ok(file.length < fs.statSync(path.join(out, webp)).size, url);
+  }
 });
