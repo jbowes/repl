@@ -89,7 +89,9 @@ test('dimensions follow the view: shown where they have length, text is the true
   assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '88.5 mm', '36 mm']);
   assert.deepEqual(text('front'), ['113 mm', '102 mm', '88.5 mm', '36 mm']);
   // the height is dimensioned in the front elevation only
-  assert.deepEqual(text('iso'), ['113 mm', '85.7 mm', '33.7 mm']);
+  // iso carries the tray's outer and inner width, depth and height, and the
+  // cubby's width, height and depth
+  assert.deepEqual(text('iso'), ['113 mm', '85.7 mm', '33.7 mm', '80 mm', '75.1 mm', '69.4 mm', '28.4 mm', '88.5 mm', '36 mm', '80 mm']);
 });
 
 test('iso faces are shaded differently: top, left and right', () => {
@@ -175,7 +177,7 @@ test('the deck box fixture dimensions only the box outer sizes and the measured 
   // cubby 88.5 x 36 x 80 with 12.25 of base on each side
   assert.deepEqual([...new Set(dims)].sort((a, b) => a - b), [12, 15, 19, 27, 28, 30, 34, 36, 69, 75, 80, 86, 89, 95, 102, 113]);
   // and nothing else: every dimension is one of those measurements
-  assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 5 + 4 + 3 + 4 + 8);
+  assert.equal(m.shapes.filter((s) => s.type === 'dim').length, 5 + 4 + 3 + 4 + 8 + 1 + 3 + 3);
 });
 
 const HOLLOW = 'views: [plan, section, iso]\nshapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], wall: 4, floor: 20, style: blue }\n';
@@ -450,4 +452,17 @@ test('iso draws a slot on a face toward the viewer, and not one turned away', ()
   assert.equal(outlines('[{ side: +y, at: 50, width: 60, height: 30, depth: 50, bottom: 4 }]') - none, 1 + 3);
   assert.equal(outlines('[{ side: -x, at: 40, width: 60, height: 30, depth: 70, bottom: 4 }]'), none);
   assert.match(renderSchematic(SLOT(DRAWER)), /crate: box [^.]*slot 60 wide, 30 high and 70 deep in the \+x face/);
+});
+
+test('the deck box drawing has no callout text, only dimensions; the callouts stay in the description', () => {
+  const m = parse(DECK);
+  const labels = m.shapes.filter((s) => s.type === 'label');
+  assert.ok(labels.length > 0 && labels.every((l) => l.hide));
+  assert.equal(m.shapes.filter((s) => s.label).length, 0); // no box captions either
+  for (const view of ['plan', 'front', 'section', 'iso']) {
+    const svg = renderSchematic(DECK, { view });
+    const texts = [...svg.matchAll(/<text [^>]*>([^<]*)<\/text>/g)].map((t) => t[1]).filter((t) => !/^(PLAN|FRONT|SECTION|ISO)$/.test(t));
+    assert.ok(texts.length > 0 && texts.every((t) => /^[\d.]+ mm$/.test(t)), `${view}: ${texts}`);
+  }
+  assert.match(renderSchematic(DECK), /Callouts: [^<]*tray cubby/);
 });
