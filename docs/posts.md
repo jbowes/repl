@@ -20,12 +20,12 @@ as a file under `/images/` with a content hash in its name, lazy loaded and
 with its width and height set so the page does not shift.
 
 A larger PNG, JPEG or WebP also gets a `srcset`, so a phone is not sent a
-desktop-sized photo. At build time the image is resized to each of 480, 800 and
-1200 px wide that is narrower than the image (so a 1400 px photo has four
+desktop-sized photo. At build time the image is resized to each of 480, 720 and
+1080 px wide that is narrower than the image (so a 1400 px photo has four
 candidates: those three and itself, a 400 px one has none), each in its own
 format (WebP and JPEG at quality 72, `COPY_QUALITY` in `src/images.js`; PNG stays
 lossless) and named for the same hash, for example
-`photo-ab12cd34-800w.webp`. `sizes` tells the browser how wide the post column
+`photo-ab12cd34-720w.webp`. `sizes` tells the browser how wide the post column
 is: 90% of the viewport below 48em, and from there two thirds of it less 2rem
 of padding. If the column changes in `src/css/style.css`, change `SIZES` in
 `src/images.js` to match; a test fails until they agree. SVG and GIF are left alone, since an SVG scales by

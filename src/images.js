@@ -16,7 +16,9 @@ export const INLINE_LIMIT = 4096;
 // src/css/style.css: 90% of the viewport, and from 48em two thirds of it less
 // 2rem of padding. A test checks the two agree. The copies are made when the
 // images are emitted (webpack/images-plugin.js).
-export const RESPONSIVE_WIDTHS = [480, 800, 1200];
+// 720 and 1080 fit common devices: about 700px for a phone at 2x, and about
+// 970-1050px for one at 2.6-3x or a tablet at 2x, which 800 and 1200 overshot.
+export const RESPONSIVE_WIDTHS = [480, 720, 1080];
 export const SIZES = '(min-width: 48em) calc(66.667vw - 2rem), 90vw';
 // The quality the smaller copies are re-encoded at (WebP and JPEG; PNG is
 // lossless). A copy is shown smaller than the committed original, where the

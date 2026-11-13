@@ -69,12 +69,12 @@ test('a wide image gets a srcset of the smaller widths and the original', async 
   const from = await tempImage('wide.webp', 1400, 300);
   const img = processImage('wide.webp', 'a wide one', from);
   const [, stem] = /^\/images\/(wide-[0-9a-f]{8})\.webp$/.exec(img.src);
-  assert.equal(img.srcSet, [480, 800, 1200].map((w) => `/images/${stem}-${w}w.webp ${w}w`).concat(`${img.src} 1400w`).join(', '));
+  assert.equal(img.srcSet, [480, 720, 1080].map((w) => `/images/${stem}-${w}w.webp ${w}w`).concat(`${img.src} 1400w`).join(', '));
   assert.equal(img.sizes, SIZES);
   // width and height stay those of the original, so the layout does not shift
   assert.deepEqual([img.width, img.height], [1400, 300]);
   // each copy is queued to be made, from the same file, at its width
-  for (const w of [480, 800, 1200]) {
+  for (const w of [480, 720, 1080]) {
     const queued = emittedImages().get(`images/${stem}-${w}w.webp`);
     assert.equal(queued.width, w);
     assert.equal(queued.file, path.join(path.dirname(from), 'wide.webp'));
@@ -85,7 +85,7 @@ test('a wide image gets a srcset of the smaller widths and the original', async 
 test('only the widths narrower than the image are used', async () => {
   const from = await tempImage('mid.webp', 900, 200);
   const img = processImage('mid.webp', 'a mid one', from);
-  assert.deepEqual([...img.srcSet.matchAll(/ (\d+)w/g)].map((m) => Number(m[1])), [480, 800, 900]);
+  assert.deepEqual([...img.srcSet.matchAll(/ (\d+)w/g)].map((m) => Number(m[1])), [480, 720, 900]);
   // an image no wider than the smallest width has nothing smaller to offer
   const narrow = processImage('narrow.webp', 'x', await tempImage('narrow.webp', 480, 480));
   assert.equal(narrow.srcSet, undefined);
@@ -94,7 +94,7 @@ test('only the widths narrower than the image are used', async () => {
 
 test('PNG and JPEG are resized too, in their own format; GIF and SVG are not', async () => {
   const png = processImage('p.png', 'a png', await tempImage('p.png', 1000, 100, 'png'));
-  assert.match(png.srcSet, /-480w\.png 480w, .*-800w\.png 800w, \/images\/p-[0-9a-f]{8}\.png 1000w$/);
+  assert.match(png.srcSet, /-480w\.png 480w, .*-720w\.png 720w, \/images\/p-[0-9a-f]{8}\.png 1000w$/);
   const jpg = processImage('j.jpg', 'a jpg', await tempImage('j.jpg', 1000, 100, 'jpeg'));
   assert.match(jpg.srcSet, /-480w\.jpg 480w/);
   assert.equal(processImage('large.png', 'x', post).srcSet, undefined); // 48 wide: nothing smaller
