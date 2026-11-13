@@ -11,8 +11,9 @@ A Gamegenic Sidekick Pro XL, the Commander-sized deck box, drawn from one
 YAML source: a plan with the token tray pulled out, a front elevation looking
 into the cubby opening, a section cut across the cubby with the tray beside it,
 and an isometric view that shows the empty compartment through the open top,
-the cubby opening on the left face and the tray pulled out to the left. The drawing carries
-dimensions only: the tray's outer and inner width, depth and height and the
+the cubby opening on the left face and the tray pulled out to the left. The isometric view sees
+through the box to the cubby, whose tunnel shows as faint dash-dot lines. The
+drawing carries dimensions only: the tray's outer and inner width, depth and height and the
 cubby's width, height and depth are all dimensioned in the isometric view. The
 part names are in the source with `hide: true`, so they are in the description
 but not drawn. The cover and the slide-in card case are
@@ -146,10 +147,10 @@ shapes:
       - { side: +y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
       - { side: -y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
 
-  # The box's base (measured) and its height (retailer listings).
+  # The box's base (measured) and its height (retailer listings). The isometric
+  # view leaves the box's outer size off; the plan and front carry it.
   - { type: dim, views: [plan], from: [0, 0, 0], to: [113, 0, 0], offset: [0, -48, 0] }
   - { type: dim, views: [plan], from: [0, 0, 0], to: [0, 94.5, 0], offset: [-24, 0, 0] }
-  - { type: dim, views: [iso], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [0, 94.5, 0], to: [0, 94.5, 102], offset: [-24, 0, 0] }
 
@@ -313,10 +314,10 @@ shapes:
       - { side: +y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
       - { side: -y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
 
-  # The box's base (measured) and its height (retailer listings).
+  # The box's base (measured) and its height (retailer listings). The isometric
+  # view leaves the box's outer size off; the plan and front carry it.
   - { type: dim, views: [plan], from: [0, 0, 0], to: [113, 0, 0], offset: [0, -48, 0] }
   - { type: dim, views: [plan], from: [0, 0, 0], to: [0, 94.5, 0], offset: [-24, 0, 0] }
-  - { type: dim, views: [iso], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
   - { type: dim, views: [front], from: [0, 94.5, 0], to: [0, 94.5, 102], offset: [-24, 0, 0] }
 
