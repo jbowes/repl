@@ -323,8 +323,19 @@ function drawView(model, view, scale, c) {
     // A slot opening on a face toward the viewer: the tunnel's back, its far
     // side and its floor, seen through the opening.
     for (const sl of hollow ? s.slots : []) {
-      if (sl.side[0] !== '+') continue; // opens on a face turned away
       const g = slotGeometry(e, s, sl);
+      // The box is see-through for its slots: the tunnel's edges that lie behind
+      // a solid face are drawn faint and dash-dot, as hidden lines. On a face
+      // turned away that is the whole tunnel, opening included.
+      const visible = sl.side[0] === '+';
+      const hiddenEdges = [];
+      for (let i = 0; i < 4; i++) {
+        hiddenEdges.push([g.opening[i], g.far[i]], [g.far[i], g.far[(i + 1) % 4]]);
+        if (!visible) hiddenEdges.push([g.opening[i], g.opening[(i + 1) % 4]]);
+      }
+      for (const edge of hiddenEdges) c.polyline(edge.map(P), { dashed: true, opacity: 0.55, width: 1 });
+      if (!visible) continue; // opens on a face turned away: nothing more to see
+
       const [sideFace, backFace] = sl.side === '+x' ? ['left', 'right'] : ['right', 'left'];
       const pt = (plane, u, z) => wallPoint(g.f, plane, u, z);
       const inner = [

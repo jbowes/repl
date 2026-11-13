@@ -139,9 +139,11 @@ cubby a drawer slides into.
 A section whose cut passes through a slot leaves it empty, as a notch in from
 the side it opens on (or a hole, where the cut crosses the tunnel end on). The
 elevation facing the slot shows its opening; other elevations and the plan show
-it as dash-dot hidden lines. Iso draws the opening, with the tunnel's floor,
-far side and back seen through it, when it is on a face toward the viewer (`+x`
-or `+y`); a slot on a face turned away is not drawn.
+it as dash-dot hidden lines. Iso sees through the box to the slot: the tunnel's
+edges behind a solid face are faint dash-dot, and when it opens on a face toward
+the viewer (`+x` or `+y`) the opening is drawn with the tunnel's floor, far side
+and back seen through it. A slot on a face turned away is drawn as hidden lines
+only.
 
 Errors fail the build with the field path, e.g.
 `schematic: shapes[2].size: expected [w, d, h] of positive numbers, got [1,2]`;
