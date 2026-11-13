@@ -1,0 +1,22 @@
+# A small tank on a pad with a pipe run, to exercise cylinder, rect, line,
+# group and the dashed hidden-line style. Invented example, not a real part.
+units: mm
+scale: 1.6
+views: [plan, iso]
+shapes:
+  - { type: rect, id: pad, at: [0, 0, 0], size: [160, 120], style: yellow, dashed: true }
+  - type: group
+    at: [40, 40, 0]
+    style: green
+    shapes:
+      - { type: cylinder, id: tank, at: [0, 0, 0], r: 28, h: 80 }
+  - { type: box, id: pump, at: [100, 20, 0], size: [40, 30, 30], style: orange }
+  - type: line
+    id: pipe
+    style: blue
+    points: [[40, 35, 80], [40, 35, 100], [120, 35, 100], [120, 35, 30]]
+  - { type: line, id: buried-return, dashed: true, points: [[120, 60, 0], [120, 100, 0], [40, 100, 0], [40, 68, 0]] }
+  - { type: dim, views: [iso], from: [140, 50, 0], to: [140, 50, 30], offset: [30, 0, 0] }
+  - { type: dim, views: [plan], from: [0, 120, 0], to: [160, 120, 0], offset: [0, 24, 0] }
+  - { type: label, views: [plan, iso], at: [40, 12, 80], to: [-20, -30, 80], text: tank }
+  - { type: label, views: [plan], at: [130, 50, 30], to: [165, 80, 30], text: pump }

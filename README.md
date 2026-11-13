@@ -44,3 +44,10 @@ fence for the hand-drawn rough.js look (`--style sketch` in the CLI).
 Output is deterministic: rough.js is seeded from a hash of the source. Preview
 one with `node scripts/render-diagram.js in.diagram out.svg`; examples live in
 `test/fixtures/`.
+
+## Schematics
+
+A fenced block tagged `schematic` draws plan, elevation, section and isometric
+views of a physical object from one small YAML description, in the same
+technical line-art style as diagrams. See [docs/schematics.md](docs/schematics.md)
+for the format and its limits.

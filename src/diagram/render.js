@@ -210,4 +210,4 @@ function renderDiagram(source, options = {}) {
   );
 }
 
-module.exports = { renderDiagram };
+module.exports = { renderDiagram, STANDALONE, STANDALONE_CSS };
