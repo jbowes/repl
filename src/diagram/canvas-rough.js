@@ -1,5 +1,6 @@
 // The hand-drawn canvas: every shape goes through rough.js, seeded so output
 // is a pure function of the diagram source.
+const { groupColour } = require('./palette');
 const roughModule = require('roughjs');
 // The CJS build exports `generator` directly; webpack picks the ESM build,
 // which hangs it off the default export.
@@ -39,7 +40,9 @@ class RoughCanvas {
   // the attributes are the fallback for an SVG viewed on its own.
   begin(cls, style) {
     const colour = style ? ` dg-${style.color}` : '';
-    this.out.push(`<g class="${cls}${colour}">`);
+    // Without the page's CSS, `color` is what currentColor falls back to.
+    const fallback = groupColour(cls, style);
+    this.out.push(`<g class="${cls}${colour}"${fallback ? ` color="${fallback}"` : ''}>`);
   }
 
   end() {

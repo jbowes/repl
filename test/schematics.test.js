@@ -82,7 +82,7 @@ test('styles, units, scale and a generated description', () => {
   );
   assert.match(svg, /<title id="[^"]+">A crate<\/title>/);
   assert.match(svg, /<desc [^>]*>[^<]*crate: box 10 by 20 by 30 cm/);
-  assert.match(svg, /<g class="dg-node dg-red">/);
+  assert.match(svg, /<g class="dg-node dg-red" color="#f88a87">/);
   assert.match(svg, />10 cm<\/text>/);
 });
 
@@ -494,4 +494,14 @@ test('a schematic fence takes its source from the block, or from a file beside t
   assert.throws(() => schematicSource('', 'src="nope.yaml"', post), /src "nope\.yaml" does not exist/);
   assert.throws(() => schematicSource('', 'src="../images.test.js"', post), /must be inside/);
   assert.throws(() => schematicSource('', `src="${__filename}"`, post), /must be inside/);
+});
+
+test('a schematic stands on its own without the page CSS too', () => {
+  const svg = renderSchematic(ENCL, { view: 'iso' });
+  const root = /<svg [^>]*>/.exec(svg)[0];
+  assert.match(root, / width="100%"/);
+  assert.doesNotMatch(root, / height="/);
+  assert.match(root, / color="#d8d4bd"/);
+  assert.match(svg, /<rect class="dg-backdrop" /);
+  assert.match(svg, /<g class="dg-node dg-blue" color="#92b0c2">/);
 });
