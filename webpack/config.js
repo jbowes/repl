@@ -11,6 +11,13 @@ const { emittedImages } = require('../src/images');
 export default {
   mode: 'production',
   target: 'node', // everything only runs during build
+  optimization: {
+    // Webpack minifies the emitted HTML in production, and by default drops the
+    // quotes around any attribute value that is legal without them. That is
+    // valid HTML, but some link-preview parsers (WhatsApp's) skip an unquoted
+    // og:image, so keep the quotes.
+    minimize: { html: { normalizeAttributeQuotes: false } },
+  },
   entry: './src',
   output: {
     path: path.resolve(__dirname, '../public'),
