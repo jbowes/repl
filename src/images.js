@@ -18,6 +18,10 @@ export const INLINE_LIMIT = 4096;
 // the images are emitted (webpack/images-plugin.js).
 export const RESPONSIVE_WIDTHS = [480, 800, 1200];
 export const SIZES = '(min-width: 30em) calc(66.667vw - 2rem), 90vw';
+// The quality the smaller copies are re-encoded at (WebP and JPEG; PNG is
+// lossless). A copy is shown smaller than the committed original, where the
+// difference from 80 is not visible, and this saves about 20% of its bytes.
+export const COPY_QUALITY = 72;
 const RESIZABLE = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
 // Directory (under public/) that file images are emitted to.

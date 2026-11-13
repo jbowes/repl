@@ -12,6 +12,7 @@ register({ only: [/\/src\//, /\/webpack\/config\.js$/] });
 const webpack = require('webpack');
 const sharp = require('sharp');
 const config = require('../webpack/config').default;
+const { COPY_QUALITY } = require('../src/images');
 
 let built;
 function build() {
@@ -57,6 +58,17 @@ test('a photo in a post is built with smaller copies and a srcset', async () => 
     assert.equal(meta.width, Number(w.replace('w', '')), url);
     assert.equal(meta.exif, undefined, url);
   }
+  // the smaller copies are re-encoded at the copy quality, and so are smaller than at the default
+  const original = path.join(__dirname, '..', 'content', 'images', 'sidekick-tray-with-life-counter.webp');
+  const small = srcset.find(([, w]) => w === '800w')[0];
+  const emitted = fs.readFileSync(path.join(out, small));
+  const at = (quality) => sharp(original).resize({ width: 800, withoutEnlargement: true }).webp({ quality }).toBuffer();
+  assert.ok(emitted.equals(await at(COPY_QUALITY)), 'the 800w copy is the original resized at COPY_QUALITY');
+  assert.ok(emitted.length < (await at(80)).length * 0.9, 'and at least 10% smaller than a quality 80 copy');
+  // the original itself is copied byte for byte, never re-encoded
+  const full = srcset.find(([, w]) => w === '1400w')[0];
+  assert.ok(fs.readFileSync(path.join(out, full)).equals(fs.readFileSync(original)));
+
   // the src is the full-size file, and is one of the srcset entries
   assert.ok(srcset.some(([url]) => img.includes(`src="${url}"`)));
 });

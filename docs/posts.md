@@ -23,7 +23,8 @@ A larger PNG, JPEG or WebP also gets a `srcset`, so a phone is not sent a
 desktop-sized photo. At build time the image is resized to each of 480, 800 and
 1200 px wide that is narrower than the image (so a 1400 px photo has four
 candidates: those three and itself, a 400 px one has none), each in its own
-format and named for the same hash, for example
+format (WebP and JPEG at quality 72, `COPY_QUALITY` in `src/images.js`; PNG stays
+lossless) and named for the same hash, for example
 `photo-ab12cd34-800w.webp`. `sizes` tells the browser how wide the post column
 is: 90% of the viewport below 30em, and from there two thirds of it less 2rem
 of padding. If the column changes in `src/css/style.css`, change `SIZES` in

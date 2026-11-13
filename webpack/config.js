@@ -6,7 +6,7 @@ import SitemapPlugin from 'sitemap-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 
 const site = require('../src/');
-const { emittedImages } = require('../src/images');
+const { emittedImages, COPY_QUALITY } = require('../src/images');
 
 export default {
   mode: 'production',
@@ -52,7 +52,7 @@ export default {
   },
   plugins: [
     new StaticSitePlugin({ entry: 'main', paths: site.staticRoutes() }),
-    new ImagesPlugin({ images: emittedImages }),
+    new ImagesPlugin({ images: emittedImages, quality: COPY_QUALITY }),
     new SitemapPlugin({ base: 'https://repl.ca', options: {
         skipgzip: true,
         lastmod: true, // default to "now",
