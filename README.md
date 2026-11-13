@@ -94,7 +94,7 @@ colour alone is hachure).
 
 | `type` | fields | notes |
 | --- | --- | --- |
-| `box` | `at`, `size: [w, d, h]`, `hidden`, `wall`, `floor`, `scoops` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. `wall: t` makes it a hollow, open-top shell with walls `t` thick and a floor `floor` thick (default `t`): plan hatches the rim around an empty cavity, the section view hatches only the cut walls and floor, the front and side elevations show the cavity as dash-dot hidden lines, and iso shows the inside through the opening. `scoops` notch its walls (below). |
+| `box` | `at`, `size: [w, d, h]`, `hidden`, `wall`, `floor`, `scoops`, `slots` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. `wall: t` makes it a hollow, open-top shell with walls `t` thick and a floor `floor` thick (default `t`): plan hatches the rim around an empty cavity, the section view hatches only the cut walls and floor, the front and side elevations show the cavity as dash-dot hidden lines, and iso shows the inside through the opening. `scoops` notch its walls and `slots` tunnel into its floor (below). |
 | `cylinder` | `at` (centre of the base), `r`, `h` | Vertical. A circle in plan, a rectangle with a centre line in elevations, an ellipse-topped can in iso. |
 | `rect` (or `plane`) | `at`, `size: [w, d]`, `dashed` | A flat horizontal outline at height `at[2]`: a footprint, a cutout. A line in elevations. |
 | `line` (or `wire`) | `points: [[x, y, z], ...]`, `dashed`, `closed` | A 3D polyline; `dashed` is dash-dot, for hidden lines. |
@@ -124,6 +124,25 @@ the rest of the wall, past the cut, darker above it; iso shows the
 notch in the outer or inner face, the cut surface through the wall, and the
 gap in the rim. Scoops need `wall` (a solid box rejects them).
 
+Slots: a hollow box takes `slots: [{ side, at, width, height, depth, bottom }]`,
+each a rectangular tunnel into its solid floor from one side face, such as the
+cubby a drawer slides into.
+
+- `side`: the face it opens on, `+x`, `-x`, `+y` or `-y`.
+- `at`, `width`: the centre of the opening along that face (measured as for
+  scoops) and its width.
+- `bottom`, `height`: how far above the box's base the opening starts (default
+  0) and how tall it is. The slot must stay inside the floor, so
+  `bottom + height` cannot exceed `floor`.
+- `depth`: how far it runs into the box.
+
+A section whose cut passes through a slot leaves it empty, as a notch in from
+the side it opens on (or a hole, where the cut crosses the tunnel end on). The
+elevation facing the slot shows its opening; other elevations and the plan show
+it as dash-dot hidden lines. Iso draws the opening, with the tunnel's floor,
+far side and back seen through it, when it is on a face toward the viewer (`+x`
+or `+y`); a slot on a face turned away is not drawn.
+
 Errors fail the build with the field path, e.g.
 `schematic: shapes[2].size: expected [w, d, h] of positive numbers, got [1,2]`;
 unknown fields are errors too, so typos do not pass silently.
@@ -133,7 +152,7 @@ which is exact for axis-aligned solids that do not intersect (touching is
 fine); intersecting solids are drawn in source order. Lines, dimensions and
 labels are drawn over all solids and are never hidden by them. There are no
 rotated shapes, no cylinders on their side, no vertical `rect` (a window in a
-wall) and no curved dimensions. Scoops are notches from the rim only (no slots
+wall) and no curved dimensions. Scoops are notches from the rim only (no notches
 or holes in the middle of a wall) and are not seen in an elevation through the
 opposite wall's notch. Hatch lines are screen-space 45 degrees in
 every view.

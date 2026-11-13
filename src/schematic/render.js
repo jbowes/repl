@@ -94,6 +94,8 @@ function drawView(model, view, scale, c) {
   const piecesShape = (polys) => (a) =>
     `<path d="${polys.map((q) => `M${q.map(([x, y]) => `${num(x)},${num(y)}`).join('L')}Z`).join('')}" ${a}/>`;
 
+  const piecesEvenOdd = (polys) => (a) => piecesShape(polys)(`fill-rule="evenodd" clip-rule="evenodd" ${a}`);
+
   const scoopsOn = (s, side) => s.scoops.filter((sc) => sc.side === side);
   // How far the scoops on `side` cut down the wall at distance v along it from its start.
   const dropAt = (s, side, v) => {
@@ -105,6 +107,17 @@ function drawView(model, view, scale, c) {
       if (off < rx) drop = Math.max(drop, sc.depth - ry + ry * Math.sqrt(1 - (off / rx) ** 2));
     }
     return drop;
+  };
+
+  // A slot as 3D corners: the opening on the outer face, and the same
+  // rectangle at the back of the tunnel.
+  const slotGeometry = (e, s, sl) => {
+    const f = wallFrame(e, s.wall, sl.side);
+    const back = f.outer + (sl.side[0] === '+' ? -sl.depth : sl.depth);
+    const [u0, u1] = [f.start + sl.at - sl.width / 2, f.start + sl.at + sl.width / 2];
+    const [zb, zt] = [e.min[2] + sl.bottom, e.min[2] + sl.bottom + sl.height];
+    const rect = (plane) => [wallPoint(f, plane, u0, zb), wallPoint(f, plane, u1, zb), wallPoint(f, plane, u1, zt), wallPoint(f, plane, u0, zt)];
+    return { f, back, u0, u1, zb, zt, opening: rect(f.outer), far: rect(back) };
   };
 
   const drawBox = (s) => {
@@ -131,6 +144,24 @@ function drawView(model, view, scale, c) {
         poly = faceLoop(f, f.outer, f.start, f.start + f.len, z0, scoopsOn(s, facing)).map(P);
       }
       c.backing(polyShape(poly));
+      // Slots: an opening where the view faces it, hidden lines otherwise. A
+      // section draws its own (see below).
+      const facingSlot = view === 'front' ? '+y' : view === 'side' ? '+x' : null;
+      const openings = [];
+      for (const sl of hollow && view !== 'section' ? s.slots : []) {
+        const g = slotGeometry(e, s, sl);
+        if (sl.side === facingSlot) openings.push(g.opening.map(P));
+        else {
+          const r = boxOf([...g.opening, ...g.far].map(P));
+          overlay.push([[r.x, r.y], [r.x + r.w, r.y], [r.x + r.w, r.y + r.h], [r.x, r.y + r.h], [r.x, r.y]]);
+        }
+      }
+      const drawOpenings = () => {
+        for (const q of openings) {
+          c.backing(polyShape(q));
+          c.polygon2(q);
+        }
+      };
       if (hollow && view === 'plan' && s.scoops.length) {
         // The rim in pieces. A scoop only lowers the wall, so from above the
         // wall is still there under it: drawn darker, without the rim's hatch.
@@ -167,19 +198,36 @@ function drawView(model, view, scale, c) {
         // A scoop the cut passes through lowers the top of that wall.
         const zl = z1 - dropAt(s, '-x', cut - y0);
         const zr = z1 - dropAt(s, '+x', cut - y0);
-        const u = [[x0, zl], [x0, z0], [x1, z0], [x1, zr], [ix1, zr], [ix1, fz], [ix0, fz], [ix0, zl]].map(([x, z]) => P([x, y0, z]));
+        // A slot the cut passes through is empty too: a notch in from the side
+        // it opens on, or a hole where the cut crosses a tunnel end on.
+        const notch = { '-x': [], '+x': [] };
+        const holes = [];
+        for (const sl of s.slots) {
+          const g = slotGeometry(e, s, sl);
+          if (sl.side[1] === 'x') {
+            if (cut < g.u0 || cut > g.u1) continue;
+            notch[sl.side] = sl.side === '-x'
+              ? [[x0, g.zt], [g.back, g.zt], [g.back, g.zb], [x0, g.zb]]
+              : [[x1, g.zb], [g.back, g.zb], [g.back, g.zt], [x1, g.zt]];
+          } else if (cut >= Math.min(g.f.outer, g.back) && cut <= Math.max(g.f.outer, g.back)) {
+            holes.push([[g.u0, g.zb], [g.u1, g.zb], [g.u1, g.zt], [g.u0, g.zt]].map(([x, z]) => P([x, y0, z])));
+          }
+        }
+        const u = [[x0, zl], ...notch['-x'], [x0, z0], [x1, z0], ...notch['+x'], [x1, zr], [ix1, zr], [ix1, fz], [ix0, fz], [ix0, zl]].map(([x, z]) => P([x, y0, z]));
         // Past the cut the wall carries on at full height: not cut material,
         // so it is drawn darker and unhatched above the lowered top.
         for (const [xa, xb, zt] of [[x0, ix0, zl], [ix1, x1, zr]]) {
           if (zt < z1) lowered([[xa, z1], [xb, z1], [xb, zt], [xa, zt]].map(([x, z]) => P([x, y0, z])));
         }
-        c.shade(polyShape(u), rect, s.style, 'flat');
+        c.shade(holes.length ? piecesEvenOdd([u, ...holes]) : polyShape(u), rect, s.style, 'flat');
         c.polygon2(u);
+        for (const q of holes) c.polygon2(q);
         drawLabel(s, centroid(poly));
         return;
       }
       c.shade(polyShape(poly), rect, s.style, 'flat');
       c.polygon2(poly);
+      drawOpenings();
       if (hollow) {
         // Seen from the side the cavity is hidden: dash-dot, open at the top.
         const [a0, a1] = view === 'front' ? [ix0, ix1] : [iy0, iy1];
@@ -271,6 +319,31 @@ function drawView(model, view, scale, c) {
       c.backing(polyShape(poly));
       c.shade(polyShape(poly), boxOf(poly), s.style, face);
       c.polygon2(poly);
+    }
+    // A slot opening on a face toward the viewer: the tunnel's back, its far
+    // side and its floor, seen through the opening.
+    for (const sl of hollow ? s.slots : []) {
+      if (sl.side[0] !== '+') continue; // opens on a face turned away
+      const g = slotGeometry(e, s, sl);
+      const [sideFace, backFace] = sl.side === '+x' ? ['left', 'right'] : ['right', 'left'];
+      const pt = (plane, u, z) => wallPoint(g.f, plane, u, z);
+      const inner = [
+        [backFace, g.far],
+        [sideFace, [pt(g.f.outer, g.u0, g.zb), pt(g.back, g.u0, g.zb), pt(g.back, g.u0, g.zt), pt(g.f.outer, g.u0, g.zt)]],
+        ['top', [pt(g.f.outer, g.u0, g.zb), pt(g.f.outer, g.u1, g.zb), pt(g.back, g.u1, g.zb), pt(g.back, g.u0, g.zb)]],
+      ];
+      const opening = g.opening.map(P);
+      const id = `${c.id}-${c.n++}`;
+      c.backing(polyShape(opening));
+      c.raw(`<clipPath id="${id}">${polyShape(opening)('')}</clipPath><g clip-path="url(#${id})">`);
+      for (const [face, corners] of inner) {
+        const q = corners.map(P);
+        c.backing(polyShape(q));
+        c.shade(polyShape(q), boxOf(q), s.style, face);
+        c.polygon2(q);
+      }
+      c.raw('</g>');
+      c.polygon2(opening);
     }
     if (s.hidden && !hollow) {
       // The three edges meeting at the far, bottom corner.
@@ -429,8 +502,9 @@ function describe(model, views) {
     const name = s.label || s.id;
     if (s.type === 'box') {
       const hollow = s.wall !== undefined ? `, hollow with ${fmt(s.wall)} ${model.units} walls` : '';
+      const slots = (s.slots || []).map((sl) => `slot ${fmt(sl.width)} wide, ${fmt(sl.height)} high and ${fmt(sl.depth)} deep in the ${sl.side} face`);
       const scoops = (s.scoops || []).map((sc) => `${sc.shape === 'round' ? 'round' : 'U-shaped'} scoop ${fmt(sc.width)} wide and ${fmt(sc.depth)} deep in the ${sc.side} wall`);
-      parts.push(`${name}: box ${s.size.map(fmt).join(' by ')} ${model.units} ${at(s)}${hollow}${scoops.length ? `, with a ${scoops.join(' and a ')}` : ''}.`);
+      parts.push(`${name}: box ${s.size.map(fmt).join(' by ')} ${model.units} ${at(s)}${hollow}${[...scoops, ...slots].length ? `, with a ${[...scoops, ...slots].join(' and a ')}` : ''}.`);
     }
     else if (s.type === 'cylinder') parts.push(`${name}: cylinder of radius ${fmt(s.r)} and height ${fmt(s.h)} ${model.units} ${at(s)}.`);
     else parts.push(`${name}: flat rectangle ${s.size.map(fmt).join(' by ')} ${model.units} ${at(s)}.`);

@@ -17,7 +17,7 @@ const { SIDES, wallLength } = require('./hollow');
 
 const VIEWS = ['plan', 'front', 'side', 'section', 'iso'];
 const TYPES = {
-  box: ['at', 'size', 'hidden', 'wall', 'floor', 'scoops'],
+  box: ['at', 'size', 'hidden', 'wall', 'floor', 'scoops', 'slots'],
   cylinder: ['at', 'r', 'h'],
   rect: ['at', 'size', 'dashed'],
   line: ['points', 'dashed', 'closed'],
@@ -129,6 +129,7 @@ function shape(raw, path, ids, parentStyle) {
         throw new SchematicError(`${path}.floor`, 'needs wall (a hollow box has both)');
       }
       scoopsOf(raw, s, path);
+      slotsOf(raw, s, path);
       break;
     case 'cylinder':
       s.at = point(required(raw, 'at', path), `${path}.at`);
@@ -226,6 +227,45 @@ function scoopsOf(raw, s, path) {
         throw new SchematicError(`${path}.scoops[${i}]`, `overlaps scoops[${j}] on the ${a.side} wall`);
       }
     });
+  });
+}
+
+// `slots` are rectangular tunnels into the solid floor of a hollow box, opening
+// on one side face: a drawer cubby under the cavity.
+function slotsOf(raw, s, path) {
+  if (raw.slots !== undefined && raw.wall === undefined) {
+    throw new SchematicError(`${path}.slots`, 'needs `wall`: only a hollow box (with a wall thickness and a floor) can have slots');
+  }
+  if (raw.wall === undefined) return;
+  s.slots = [];
+  if (raw.slots === undefined) return;
+  if (!Array.isArray(raw.slots)) throw new SchematicError(`${path}.slots`, `expected a list, got ${show(raw.slots)}`);
+  const FIELDS = ['side', 'at', 'width', 'height', 'depth', 'bottom'];
+  raw.slots.forEach((r, i) => {
+    const p = `${path}.slots[${i}]`;
+    if (!r || typeof r !== 'object' || Array.isArray(r)) throw new SchematicError(p, `expected a mapping with ${FIELDS.join(', ')}`);
+    for (const key of Object.keys(r)) {
+      if (!FIELDS.includes(key)) throw new SchematicError(`${p}.${key}`, `unknown field for a slot (allowed: ${FIELDS.join(', ')})`);
+    }
+    const side = required(r, 'side', p);
+    if (!SIDES.includes(side)) throw new SchematicError(`${p}.side`, `unknown side ${show(side)} (${SIDES.join(', ')})`);
+    const at = required(r, 'at', p);
+    if (!isNum(at)) throw new SchematicError(`${p}.at`, `expected a number, got ${show(at)}`);
+    const width = positive(required(r, 'width', p), `${p}.width`);
+    const height = positive(required(r, 'height', p), `${p}.height`);
+    const depth = positive(required(r, 'depth', p), `${p}.depth`);
+    const bottom = r.bottom === undefined ? 0 : r.bottom;
+    if (!isNum(bottom) || bottom < 0) throw new SchematicError(`${p}.bottom`, `expected a number of at least 0, got ${show(bottom)}`);
+    const len = wallLength(s.size, side);
+    if (at - width / 2 < -1e-9 || at + width / 2 > len + 1e-9) {
+      throw new SchematicError(p, `slot does not fit in the ${side} face: at +- width/2 must lie between 0 and ${len}`);
+    }
+    if (bottom + height > s.floor + 1e-9) {
+      throw new SchematicError(`${p}.height`, `the slot must stay inside the floor: bottom + height (${bottom + height}) is more than the floor (${s.floor})`);
+    }
+    const through = side[1] === 'x' ? s.size[0] : s.size[1];
+    if (depth > through + 1e-9) throw new SchematicError(`${p}.depth`, `${depth} is deeper than the box (${through})`);
+    s.slots.push({ side, at, width, height, depth, bottom });
   });
 }
 

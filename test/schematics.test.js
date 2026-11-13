@@ -75,13 +75,12 @@ test('a source renders as plan, front or iso, and views can be overridden', () =
   assert.deepEqual(view('plan, side'), ['plan', 'side']);
 
   // plan has the hollow body and the tray (their rims are stroked as edges,
-  // not polygons, so only the lowered wall under each scoop counts: 2 each)
-  // and the drawer tier under the body, a plain block from outside. iso has
-  // the body and the tray (3 inside faces, 2 outer faces, a cut band per
-  // scoop) and the tier's three faces. The cover and card case are not drawn.
+  // not polygons, so only the lowered wall under each scoop counts: 2 each).
+  // iso has the body and the tray (3 inside faces, 2 outer faces, a cut band
+  // per scoop), and the cubby: its opening and the three faces seen through it.
   const polys = (v) => (renderSchematic(DECK, { view: v }).match(/<polygon class="ln"/g) || []).length;
-  assert.equal(polys('plan'), 2 + 2 + 1);
-  assert.equal(polys('iso'), 2 * (3 + 2 + 2) + 3);
+  assert.equal(polys('plan'), 2 + 2);
+  assert.equal(polys('iso'), 2 * (3 + 2 + 2) + (1 + 3));
 });
 
 test('dimensions follow the view: shown where they have length, text is the true length', () => {
@@ -90,7 +89,7 @@ test('dimensions follow the view: shown where they have length, text is the true
   assert.deepEqual(text('section'), ['33.7 mm', '28.4 mm', '80 mm', '36 mm']);
   assert.deepEqual(text('front'), ['94.5 mm', '102 mm']);
   // the height is dimensioned in the front elevation only
-  assert.deepEqual(text('iso'), ['94.5 mm', '113 mm', '80 mm', '33.7 mm']);
+  assert.deepEqual(text('iso'), ['94.5 mm', '80 mm', '33.7 mm']);
 });
 
 test('iso faces are shaded differently: top, left and right', () => {
@@ -226,20 +225,17 @@ test('iso draws the inside of a hollow box: floor and two inner walls, then a ri
   assert.match(hollow, /fill-rule="evenodd"/);
 });
 
-test('the deck box models a hollow body, not stacked slabs', () => {
+test('the deck box is one hollow body with the tray cubby as a slot in its floor', () => {
   const shapes = parse(DECK).shapes;
   const body = shapes.find((s) => s.id === 'body');
-  assert.ok(body.wall > 0);
   assert.deepEqual(parse(DECK).views, ['plan', 'front', 'section', 'iso']);
-  // the section leaves the tray cubby empty: 80 deep and 36 high, above the
-  // base slab and beside the side block
-  const base = shapes.find((s) => s.id === 'tier-base');
-  const side = shapes.find((s) => s.id === 'tier-side');
-  assert.deepEqual([base.views, side.views], [['section'], ['section']]);
-  assert.equal(side.at[0], 80);
-  assert.equal(side.size[2], 36);
-  assert.equal(side.at[2], base.size[2]);
-  assert.equal(body.at[2], base.size[2] + side.size[2]);
+  // one box from the base to the top: no seam between a tier and a compartment
+  assert.deepEqual(shapes.filter((s) => s.type === 'box').map((s) => s.id), ['body', 'tray']);
+  assert.deepEqual([body.at[2], body.size[2]], [0, 102]);
+  // the floor holds the slab under the cubby, the cubby and the compartment floor
+  const [slot] = body.slots;
+  near(body.floor, 5.3 + 36 + 5.3);
+  assert.deepEqual(slot, { side: '+x', at: 56.5, width: 88.5, height: 36, depth: 80, bottom: 5.3 });
 });
 
 const TRAY = (scoops, extra = '') =>
@@ -353,19 +349,16 @@ test('scoops are described', () => {
   assert.match(renderSchematic(TRAY(U)), /tray: box 70 by 60 by 30 mm at \(0, 0, 0\), hollow with 3 mm walls, with a U-shaped scoop 20 wide and 12 deep in the \+x wall/);
 });
 
-test('the deck box fixture has a tray pulled out to the left, with scoops', () => {
+test('the deck box fixture has a tray pulled out beside the cubby opening, with scoops', () => {
   const m = parse(DECK);
   const tray = m.shapes.find((s) => s.id === 'tray');
   const body = m.shapes.find((s) => s.id === 'body');
-  assert.ok(tray.at[0] + tray.size[0] < body.at[0]); // clear of the body, to its left
-  assert.equal(tray.scoops[0].side, '+x'); // the wall facing the box
-  assert.equal(body.scoops[0].side, '-x');
-  assert.equal(body.scoops[0].shape, 'round');
-  // a thumb scoop in the top of both side walls
-  assert.deepEqual(body.scoops.map((sc) => sc.side), ['-x', '+x']);
+  // clear of the body, on the side the cubby opens on, which iso can see
+  assert.ok(tray.at[0] > body.at[0] + body.size[0]);
+  assert.equal(body.slots[0].side, '+x');
+  // a thumb scoop in the top of both side walls of the box, and of the tray
+  assert.deepEqual(body.scoops.map((sc) => [sc.side, sc.shape]), [['-x', 'round'], ['+x', 'round']]);
   assert.deepEqual(tray.scoops.map((sc) => sc.side), ['+x', '-x']);
-  // one plain box: no lid or card case
-  assert.deepEqual(m.shapes.filter((s) => s.type === 'box').map((s) => s.id), ['tier', 'tier-base', 'tier-side', 'body', 'tray']);
 });
 
 test('iso clips each scoop cut surface to its notch, and fills the rim as one shape', () => {
@@ -393,4 +386,62 @@ test('hide keeps a shape in the model and the description, but does not draw it'
   const deck = renderSchematic(DECK);
   assert.doesNotMatch(deck, />(29\.5|26\.7|14\.7|19) mm<\/text>/);
   assert.match(deck, /<desc[^>]*>[^<]*29\.5 mm/);
+});
+
+const SLOT = (slots, extra = '') =>
+  `views: [plan, front, side, section, iso]\nshapes:\n  - { type: box, id: crate, at: [0, 0, 0], size: [100, 80, 90], wall: 4, floor: 40, style: blue, ${extra}slots: ${slots} }\n`;
+const DRAWER = '[{ side: +x, at: 40, width: 60, height: 30, depth: 70, bottom: 4 }]';
+
+test('slots are parsed, with bottom defaulting to the base', () => {
+  assert.deepEqual(parse(SLOT(DRAWER)).shapes[0].slots, [{ side: '+x', at: 40, width: 60, height: 30, depth: 70, bottom: 4 }]);
+  assert.equal(parse(SLOT('[{ side: -y, at: 50, width: 20, height: 10, depth: 30 }]')).shapes[0].slots[0].bottom, 0);
+  assert.deepEqual(parse(SLOT('[]')).shapes[0].slots, []);
+});
+
+test('slot validation names the field', () => {
+  const bad = (slots, re) => assert.throws(() => parse(SLOT(slots)), re);
+  bad('[{ side: up, at: 40, width: 60, height: 30, depth: 70 }]', /shapes\[0\]\.slots\[0\]\.side: unknown side/);
+  bad('[{ side: +x, at: 40, width: 60, height: 30 }]', /slots\[0\]/);
+  bad('[{ side: +x, at: 40, width: 60, height: 30, depth: 70, tall: 1 }]', /slots\[0\]\.tall: unknown field for a slot/);
+  bad('[{ side: +x, at: 70, width: 60, height: 30, depth: 70 }]', /slot does not fit in the \+x face/);
+  bad('[{ side: +x, at: 40, width: 60, height: 38, depth: 70, bottom: 4 }]', /slots\[0\]\.height: the slot must stay inside the floor/);
+  bad('[{ side: +x, at: 40, width: 60, height: 30, depth: 120 }]', /slots\[0\]\.depth: 120 is deeper than the box \(100\)/);
+  assert.throws(() => parse('shapes:\n  - { type: box, at: [0, 0, 0], size: [10, 10, 10], slots: [] }'), /shapes\[0\]\.slots: needs `wall`/);
+});
+
+test('a section through a slot leaves it empty, as a notch in from its side', () => {
+  const outline = (slots) => firstOutline(renderSchematic(SLOT(slots), { view: 'section' }));
+  assert.equal(outline('[]').length, 8);
+  const cut = outline(DRAWER);
+  assert.equal(cut.length, 12); // four more corners: in, across, back
+  // the notch runs 70 of the 100 units in from the right, 30 of the 90 high
+  const xs = [...new Set(cut.map((p) => p[0]))].sort((a, b) => a - b);
+  const width = xs[xs.length - 1] - xs[0];
+  assert.ok(xs.some((x) => Math.abs((xs[xs.length - 1] - x) / width - 0.7) < 0.01), `${xs}`);
+  // a cut that misses the slot (it spans y 10 to 70) leaves the floor solid
+  assert.equal(firstOutline(renderSchematic(`cut: 75\n${SLOT(DRAWER)}`, { view: 'section' })).length, 8);
+});
+
+test('a slot shows as an opening where the view faces it, hidden lines elsewhere', () => {
+  const count = (view, re) => (renderSchematic(SLOT(DRAWER), { view }).match(re) || []).length;
+  const without = (view, re) => (renderSchematic(SLOT('[]'), { view }).match(re) || []).length;
+  const outlines = /<polygon class="ln"/g;
+  const dashed = /stroke-dasharray="12 4 2 4"/g;
+  // the side view looks at the +x face: one more outline, the opening
+  assert.equal(count('side', outlines) - without('side', outlines), 1);
+  assert.equal(count('side', dashed), without('side', dashed));
+  // plan and front see it through the solid: one more hidden outline each
+  for (const view of ['plan', 'front']) {
+    assert.equal(count(view, outlines), without(view, outlines));
+    assert.equal(count(view, dashed) - without(view, dashed), 1);
+  }
+});
+
+test('iso draws a slot on a face toward the viewer, and not one turned away', () => {
+  const outlines = (slots) => (renderSchematic(SLOT(slots), { view: 'iso' }).match(/<polygon class="ln"/g) || []).length;
+  const none = outlines('[]');
+  assert.equal(outlines(DRAWER) - none, 1 + 3); // the opening, and the back, far side and floor through it
+  assert.equal(outlines('[{ side: +y, at: 50, width: 60, height: 30, depth: 50, bottom: 4 }]') - none, 1 + 3);
+  assert.equal(outlines('[{ side: -x, at: 40, width: 60, height: 30, depth: 70, bottom: 4 }]'), none);
+  assert.match(renderSchematic(SLOT(DRAWER)), /crate: box [^.]*slot 60 wide, 30 high and 70 deep in the \+x face/);
 });
