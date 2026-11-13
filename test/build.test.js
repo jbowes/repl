@@ -48,7 +48,7 @@ test('a photo in a post is built with smaller copies and a srcset', async () => 
   // the HTML minifier drops the space after each comma in a list attribute
   const srcset = /srcset="([^"]+)"/.exec(img)[1].split(',').map((c) => c.split(' '));
   const widths = srcset.map(([, w]) => Number(w.replace('w', '')));
-  assert.deepEqual(widths, [480, 720, 1080, 1400]);
+  assert.deepEqual(widths, [480, 720, 880, 1080, 1400]);
   // the spaces inside calc() must survive: it needs them around the minus
   assert.match(img, /sizes="\(min-width: 48em\) calc\(66\.667vw - 2rem\),90vw"/);
   assert.match(img, /width="1400" height="695"/);

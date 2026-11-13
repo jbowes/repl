@@ -18,12 +18,16 @@ export const INLINE_LIMIT = 4096;
 // images are emitted (webpack/images-plugin.js).
 // 720 and 1080 fit common devices: about 700px for a phone at 2x, and about
 // 970-1050px for one at 2.6-3x or a tablet at 2x, which 800 and 1200 overshot.
-export const RESPONSIVE_WIDTHS = [480, 720, 1080];
+// 880 fits a desktop window of about 1350px, whose column is 858-868px (the
+// size Lighthouse's desktop run uses), which 1080 overshot by 25%.
+export const RESPONSIVE_WIDTHS = [480, 720, 880, 1080];
 export const SIZES = '(min-width: 48em) calc(66.667vw - 2rem), 90vw';
 // The quality the smaller copies are re-encoded at (WebP and JPEG; PNG is
 // lossless). A copy is shown smaller than the committed original, where the
-// difference from 80 is not visible, and this saves about 20% of its bytes.
-export const COPY_QUALITY = 72;
+// difference from 80 is not visible. At 65 a copy of a photo comes in under
+// about 1.33 bits per pixel, below which Lighthouse stops suggesting more
+// compression for the sizes phones and desktops are sent.
+export const COPY_QUALITY = 65;
 const RESIZABLE = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
 // Directory (under public/) that file images are emitted to.
