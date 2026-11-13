@@ -23,7 +23,7 @@ Dimensions are approximate (my calipers aren't the best):
 - Tray cubby: `88.5 × 80 × 36 mm`
 
 The cubby is 2.3 mm taller than the tray, and that headroom is usable, so the
-usable space is about `75.1 × 69.4 × 30.7 mm`: enough for a WotC clickwheel life counter.
+usable space is about `75.1 × 69.4 × 30.7 mm`: enough for a [WotC clickwheel life counter][clickwheel].
 
 ![My Sidekick Pro XL tray pulled part way out of its cubby, holding a clickwheel life counter and counter dice](images/sidekick-tray-with-life-counter.webp)
 
@@ -32,3 +32,4 @@ dice, tokens, and pre-sleeved lands. And enough leftover space for a sleeved up
 40 card deck.
 
 [sidekick]: https://www.gamegenic.com/product/sidekick-pro-100xl/?attribute_pa_color=black
+[clickwheel]: https://www.tcgplayer.com/product/607998/life-counters-wizards-of-the-coast-life-counters-magic-the-gathering-foundations-starter-collection-life-counter?Language=English&page=1
