@@ -48,9 +48,9 @@ test('a photo in a post is built with smaller copies and a srcset', async () => 
   // the HTML minifier drops the space after each comma in a list attribute
   const srcset = /srcset="([^"]+)"/.exec(img)[1].split(',').map((c) => c.split(' '));
   const widths = srcset.map(([, w]) => Number(w.replace('w', '')));
-  assert.deepEqual(widths, [480, 800, 1200, 1400]);
+  assert.deepEqual(widths, [480, 720, 1080, 1400]);
   // the spaces inside calc() must survive: it needs them around the minus
-  assert.match(img, /sizes="\(min-width: 30em\) calc\(66\.667vw - 2rem\),90vw"/);
+  assert.match(img, /sizes="\(min-width: 48em\) calc\(66\.667vw - 2rem\),90vw"/);
   assert.match(img, /width="1400" height="695"/);
   // every file in the srcset was emitted, at the width it claims, with no metadata
   for (const [url, w] of srcset) {
@@ -60,10 +60,10 @@ test('a photo in a post is built with smaller copies and a srcset', async () => 
   }
   // the smaller copies are re-encoded at the copy quality, and so are smaller than at the default
   const original = path.join(__dirname, '..', 'content', 'images', 'sidekick-tray-with-life-counter.webp');
-  const small = srcset.find(([, w]) => w === '800w')[0];
+  const small = srcset.find(([, w]) => w === '720w')[0];
   const emitted = fs.readFileSync(path.join(out, small));
-  const at = (quality) => sharp(original).resize({ width: 800, withoutEnlargement: true }).webp({ quality }).toBuffer();
-  assert.ok(emitted.equals(await at(COPY_QUALITY)), 'the 800w copy is the original resized at COPY_QUALITY');
+  const at = (quality) => sharp(original).resize({ width: 720, withoutEnlargement: true }).webp({ quality }).toBuffer();
+  assert.ok(emitted.equals(await at(COPY_QUALITY)), 'the 720w copy is the original resized at COPY_QUALITY');
   assert.ok(emitted.length < (await at(80)).length * 0.9, 'and at least 10% smaller than a quality 80 copy');
   // the original itself is copied byte for byte, never re-encoded
   const full = srcset.find(([, w]) => w === '1400w')[0];

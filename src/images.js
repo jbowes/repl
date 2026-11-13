@@ -13,11 +13,13 @@ export const INLINE_LIMIT = 4096;
 // Emitted raster images also get smaller copies for a srcset: each of these
 // widths that is narrower than the image, plus the image itself. The browser
 // picks by the `sizes` below, which describes the post column in
-// src/css/style.css (90% of the viewport, and below 30em that is all of it;
-// from 30em it is two thirds less 2rem of padding). The copies are made when
-// the images are emitted (webpack/images-plugin.js).
-export const RESPONSIVE_WIDTHS = [480, 800, 1200];
-export const SIZES = '(min-width: 30em) calc(66.667vw - 2rem), 90vw';
+// src/css/style.css: 90% of the viewport, and from 48em two thirds of it less
+// 2rem of padding. A test checks the two agree. The copies are made when the
+// images are emitted (webpack/images-plugin.js).
+// 720 and 1080 fit common devices: about 700px for a phone at 2x, and about
+// 970-1050px for one at 2.6-3x or a tablet at 2x, which 800 and 1200 overshot.
+export const RESPONSIVE_WIDTHS = [480, 720, 1080];
+export const SIZES = '(min-width: 48em) calc(66.667vw - 2rem), 90vw';
 // The quality the smaller copies are re-encoded at (WebP and JPEG; PNG is
 // lossless). A copy is shown smaller than the committed original, where the
 // difference from 80 is not visible, and this saves about 20% of its bytes.
