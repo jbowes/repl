@@ -9,15 +9,25 @@
 const SIDES = ['+x', '-x', '+y', '-y'];
 const SEGMENTS = 16;
 
-/** Frame of the wall on `side` of a hollow box with extent `e` and thickness t. */
-function wallFrame(e, t, side) {
+/** A box's `wall` as [tx, ty]: the thickness of its -x/+x walls and of its -y/+y walls. */
+function wallXY(wall) {
+  return Array.isArray(wall) ? wall : [wall, wall];
+}
+
+/**
+ * Frame of the wall on `side` of a hollow box with extent `e` and wall
+ * thickness `wall` (one number, or [tx, ty]). `inset` is how far the cavity
+ * starts from each end of the wall: the thickness of the walls it meets.
+ */
+function wallFrame(e, wall, side) {
   const [x0, y0] = e.min;
   const [x1, y1] = e.max;
+  const [tx, ty] = wallXY(wall);
   switch (side) {
-    case '+y': return { side, normal: 1, along: 0, outer: y1, inner: y1 - t, start: x0, len: x1 - x0, top: e.max[2] };
-    case '-y': return { side, normal: 1, along: 0, outer: y0, inner: y0 + t, start: x0, len: x1 - x0, top: e.max[2] };
-    case '+x': return { side, normal: 0, along: 1, outer: x1, inner: x1 - t, start: y0, len: y1 - y0, top: e.max[2] };
-    case '-x': return { side, normal: 0, along: 1, outer: x0, inner: x0 + t, start: y0, len: y1 - y0, top: e.max[2] };
+    case '+y': return { side, normal: 1, along: 0, outer: y1, inner: y1 - ty, inset: tx, start: x0, len: x1 - x0, top: e.max[2] };
+    case '-y': return { side, normal: 1, along: 0, outer: y0, inner: y0 + ty, inset: tx, start: x0, len: x1 - x0, top: e.max[2] };
+    case '+x': return { side, normal: 0, along: 1, outer: x1, inner: x1 - tx, inset: ty, start: y0, len: y1 - y0, top: e.max[2] };
+    case '-x': return { side, normal: 0, along: 1, outer: x0, inner: x0 + tx, inset: ty, start: y0, len: y1 - y0, top: e.max[2] };
     default: throw new Error(`schematic: unknown side "${side}"`);
   }
 }
@@ -75,9 +85,9 @@ function faceLoop(f, plane, uStart, uEnd, z0, scoops) {
 
 // The stretches [from, to] of a wall's rim left between its scoops, with the
 // ends [lo, hi] of the stretch of rim this wall owns.
-function rimRanges(f, t, scoops) {
-  const lo = f.normal === 1 ? f.start : f.start + t; // +-y walls own the corners
-  const hi = f.normal === 1 ? f.start + f.len : f.start + f.len - t;
+function rimRanges(f, scoops) {
+  const lo = f.normal === 1 ? f.start : f.start + f.inset; // +-y walls own the corners
+  const hi = f.normal === 1 ? f.start + f.len : f.start + f.len - f.inset;
   const gaps = scoops
     .map((sc) => [f.start + sc.at - sc.width / 2, f.start + sc.at + sc.width / 2])
     .sort((a, b) => a[0] - b[0]);
@@ -91,8 +101,8 @@ function rimRanges(f, t, scoops) {
 }
 
 /** The pieces of a wall's top surface left between its scoops, as 3D quads at rim height. */
-function rimPieces(f, t, scoops) {
-  return rimRanges(f, t, scoops).ranges.map(([from, to]) => [
+function rimPieces(f, scoops) {
+  return rimRanges(f, scoops).ranges.map(([from, to]) => [
     wallPoint(f, f.outer, from, f.top), wallPoint(f, f.outer, to, f.top),
     wallPoint(f, f.inner, to, f.top), wallPoint(f, f.inner, from, f.top),
   ]);
@@ -104,9 +114,9 @@ function rimPieces(f, t, scoops) {
  * outer face at each corner. Where two walls' pieces meet at a corner there
  * is no edge, the rim is one surface.
  */
-function rimEdges(f, t, scoops) {
-  const { ranges, lo, hi } = rimRanges(f, t, scoops);
-  const [iLo, iHi] = [f.start + t, f.start + f.len - t]; // the cavity's extent along the wall
+function rimEdges(f, scoops) {
+  const { ranges, lo, hi } = rimRanges(f, scoops);
+  const [iLo, iHi] = [f.start + f.inset, f.start + f.len - f.inset]; // the cavity's extent along the wall
   const edges = [];
   for (const [from, to] of ranges) {
     edges.push([wallPoint(f, f.outer, from, f.top), wallPoint(f, f.outer, to, f.top)]);
@@ -131,4 +141,4 @@ function cutBand(f, scoop) {
   return [...notch3(f, f.outer, scoop), ...notch3(f, f.inner, scoop).reverse()];
 }
 
-module.exports = { SIDES, wallFrame, wallPoint, wallLength, notchOutline, notch3, faceLoop, rimPieces, rimEdges, cutBand };
+module.exports = { SIDES, wallXY, wallFrame, wallPoint, wallLength, notchOutline, notch3, faceLoop, rimPieces, rimEdges, cutBand };

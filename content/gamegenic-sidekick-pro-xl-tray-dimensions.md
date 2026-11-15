@@ -21,6 +21,7 @@ Dimensions are approximate (my calipers aren't the best):
 - Tray (outside): `85.7 × 80 × 33.7 mm`
 - Tray (inside): `75.1 × 69.4 × 28.4 mm`
 - Tray cubby: `88.5 × 80 × 36 mm`
+- Card compartment (inside): `80 × 94.5 × 70 mm`
 
 The cubby is 2.3 mm taller than the tray, and that headroom is usable, so the
 usable space is about `75.1 × 69.4 × 30.7 mm`: enough for a [WotC clickwheel life counter][clickwheel].
