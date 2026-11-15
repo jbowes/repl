@@ -108,7 +108,19 @@ function image(file) {
     props.className = ['post-image'];
     if (node.title) props.title = node.title;
 
-    const result = { type: 'element', tagName: 'img', properties: props, children: [] };
+    // An image with other formats becomes a <picture>: its <source>s, then the
+    // <img>, which is the fallback and keeps the size and alt text.
+    const { sources, ...imgProps } = props;
+    const img = { type: 'element', tagName: 'img', properties: imgProps, children: [] };
+    const result = !sources ? img : {
+      type: 'element',
+      tagName: 'picture',
+      properties: {},
+      children: [
+        ...sources.map((s) => ({ type: 'element', tagName: 'source', properties: { type: s.type, srcSet: s.srcSet, sizes: s.sizes }, children: [] })),
+        img,
+      ],
+    };
     state.patch(node, result);
     return state.applyData(node, result);
   };
