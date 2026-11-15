@@ -13,15 +13,22 @@
 #     about 29.5 mm from each end of the wall with about 19 mm of wall left
 #     under them (so 26.7 mm wide and 14.7 mm deep, assuming they are in the
 #     85.7 mm walls). These are recorded with `hide: true` and not drawn.
+#     the card compartment's inside, 79.8 x 94.5 x 70 mm (the 94.5 mm must
+#     run along the 113 mm side, as the other side is only 94.5 mm outside).
 #   The tray's inside width and depth are the outer size less two walls; its
 #   inside height also takes off a floor ASSUMED to be 5.3 mm.
-# - UNVERIFIED: the closed height, 102 mm, is from retailer listings, which
-#   give 110 x 104 x 102 mm (one gives 85 x 100 x 102). The measured base does
-#   not match either footprint, so the height may be off too. The manufacturer
-#   does not publish dimensions.
-# - ASSUMED from the 5.3 mm material: the body's walls, the slab under the
-#   cubby and the compartment floor above it are all drawn 5.3 mm thick.
-#   Nobody measured those.
+# - DERIVED from those: the body's walls, 9.25 mm on the 94.5 mm sides and
+#   7.35 mm on the 113 mm sides, which is the base less the compartment,
+#   ASSUMING the compartment is centred in the base.
+# - ASSUMED from the 5.3 mm material: the slab under the cubby and the
+#   compartment floor above it are both drawn 5.3 mm thick. Nobody measured
+#   those.
+# - NOT MEASURED: the box's height. It is drawn 116.6 mm, which is the slab,
+#   the 36 mm cubby, the compartment floor and the 70 mm compartment, and it
+#   is not dimensioned. Retailer listings give 110 x 104 x 102 mm (one gives
+#   85 x 100 x 102), which matches neither the measured base nor a 36 mm
+#   cubby under a 70 mm compartment. The manufacturer does not publish
+#   dimensions.
 # - GUESSED, estimated from a product photo, with no dimension lines: how high
 #   the cubby sits (5.3 mm up from the base), the tray's floor thickness, the
 #   size and round shape of the thumb scoops in the top of the compartment
@@ -29,10 +36,7 @@
 #   the tray's scoops.
 # - NOT DRAWN: the cover, a flap hinged at the bottom front, and the slide-in
 #   card case on the front. The whole footprint is treated as one plain deck
-#   box, drawn up to the full 102 mm as if the height did not include the cover.
-# - DOES NOT ADD UP: with a 36 mm cubby under it, the compartment drawn here is about 55 mm
-#   deep, which is less than a sleeved card is wide, so the 102 mm height
-#   probably does not match the measured parts.
+#   box.
 # - Features per the manufacturer: a removable cover that clips onto the
 #   bottom, a front slide-in card case (UV protective, shows the commander
 #   card), an integrated drawer for tokens and dice, magnets closing the lid,
@@ -57,12 +61,13 @@ shapes:
   # is the 5.3 mm slab under the cubby, the 36 mm cubby and the 5.3 mm
   # compartment floor above it. The cubby is a slot into that floor from the
   # front face, centred in the 113 mm side. Thumb scoops in the top of both
-  # 113 mm walls (size estimated from a photo).
+  # 113 mm walls (size estimated from a photo). The walls leave the measured
+  # 94.5 x 79.8 mm compartment, 70 mm deep above the floor.
   - type: box
     id: body
     at: [0, 0, 0]
-    size: [113, 94.5, 102]
-    wall: 5.3
+    size: [113, 94.5, 116.6]
+    wall: [9.25, 7.35]
     floor: 46.6
     style: blue
     scoops:
@@ -96,12 +101,22 @@ shapes:
       - { side: +y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
       - { side: -y, at: 42.85, width: 26.7, depth: 14.7, shape: u }
 
-  # The box's base (measured) and its height (retailer listings). The isometric
-  # view leaves the box's outer size off; the plan and front carry it.
+  # The box's base (measured). Its height is not measured, so not dimensioned.
+  # The isometric view leaves the box's outer size off; the plan and front
+  # carry it.
   - { type: dim, views: [plan], from: [0, 0, 0], to: [113, 0, 0], offset: [0, -48, 0] }
   - { type: dim, views: [plan], from: [0, 0, 0], to: [0, 94.5, 0], offset: [-24, 0, 0] }
   - { type: dim, views: [front], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
-  - { type: dim, views: [front], from: [0, 94.5, 0], to: [0, 94.5, 102], offset: [-24, 0, 0] }
+
+  # The card compartment's inside (measured): 94.5 along the 113 mm side, 79.8
+  # across and 70 deep, along its rim in plan and iso and down its far corner.
+  - { type: dim, views: [plan], from: [9.25, 7.35, 116.6], to: [103.75, 7.35, 116.6], offset: [0, 16, 0] }
+  - { type: dim, views: [plan], from: [103.75, 7.35, 116.6], to: [103.75, 87.15, 116.6], offset: [-14, 0, 0] }
+  - { type: dim, views: [section], from: [9.25, 47.25, 46.6], to: [103.75, 47.25, 46.6], offset: [0, 0, 16] }
+  - { type: dim, views: [section], from: [9.25, 47.25, 46.6], to: [9.25, 47.25, 116.6], offset: [14, 0, 0] }
+  - { type: dim, views: [iso], from: [9.25, 7.35, 116.6], to: [103.75, 7.35, 116.6], offset: [0, -20, 0] }
+  - { type: dim, views: [iso], from: [9.25, 7.35, 116.6], to: [9.25, 87.15, 116.6], offset: [-20, 0, 0] }
+  - { type: dim, views: [iso], from: [9.25, 7.35, 46.6], to: [9.25, 7.35, 116.6], offset: [8, 0, 0] }
 
   # The tray's three outer measurements (measured).
   - { type: dim, views: [plan, iso], from: [13.65, 234.5, 0], to: [99.35, 234.5, 0], offset: [0, 24, 0] }
@@ -151,13 +166,13 @@ shapes:
 
   # Callouts name the parts. Recorded but hidden: the drawing carries only the
   # dimensions, and the callouts stay in the description.
-  - { type: label, views: [plan], at: [30, 30, 102], to: [125, 28, 102], text: deck compartment (hollow), hide: true }
-  - { type: label, views: [plan], at: [56.5, 2.6, 102], to: [-30, -78, 102], text: thumb scoops (approx.), hide: true }
+  - { type: label, views: [plan], at: [30, 30, 116.6], to: [125, 28, 116.6], text: deck compartment (hollow), hide: true }
+  - { type: label, views: [plan], at: [56.5, 2.6, 116.6], to: [-30, -78, 116.6], text: thumb scoops (approx.), hide: true }
   - { type: label, views: [plan], at: [56.5, 154.5, 33.7], to: [-40, 150, 33.7], text: thumb scoops, hide: true }
   - { type: label, views: [plan], at: [60, 60, 5.3], to: [125, 70, 5.3], text: tray cubby under (hidden), hide: true }
   - { type: label, views: [section], at: [56.5, 47.25, 20], to: [56.5, 47.25, -40], text: tray cubby, hide: true }
-  - { type: label, views: [section], at: [2.6, 47.25, 80], to: [-40, 47.25, 105], text: wall (approx.), hide: true }
-  - { type: label, views: [section], at: [56.5, 47.25, 75], to: [20, 47.25, 120], text: hollow deck compartment, hide: true }
+  - { type: label, views: [section], at: [4.6, 47.25, 80], to: [-40, 47.25, 105], text: wall (approx.), hide: true }
+  - { type: label, views: [section], at: [56.5, 47.25, 80], to: [20, 47.25, 130], text: hollow deck compartment, hide: true }
   - { type: label, views: [front], at: [56.5, 94.5, 23], to: [125, 94.5, 60], text: tray cubby, hide: true }
   - { type: label, views: [iso], at: [56.5, 94.5, 23], to: [-60, 180, 60], text: tray cubby, hide: true }
-  - { type: label, views: [iso], at: [56.5, 2.6, 90], to: [-60, -20, 140], text: thumb scoops (approx.), hide: true }
+  - { type: label, views: [iso], at: [56.5, 3.6, 105], to: [-60, -20, 150], text: thumb scoops (approx.), hide: true }
