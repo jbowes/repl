@@ -13,12 +13,12 @@
 #     about 29.5 mm from each end of the wall with about 19 mm of wall left
 #     under them (so 26.7 mm wide and 14.7 mm deep, assuming they are in the
 #     85.7 mm walls). These are recorded with `hide: true` and not drawn.
-#     the card compartment's inside, 79.8 x 94.5 x 70 mm (the 94.5 mm must
+#     the card compartment's inside, 80 x 94.5 x 70 mm (the 94.5 mm must
 #     run along the 113 mm side, as the other side is only 94.5 mm outside).
 #   The tray's inside width and depth are the outer size less two walls; its
 #   inside height also takes off a floor ASSUMED to be 5.3 mm.
 # - DERIVED from those: the body's walls, 9.25 mm on the 94.5 mm sides and
-#   7.35 mm on the 113 mm sides, which is the base less the compartment,
+#   7.25 mm on the 113 mm sides, which is the base less the compartment,
 #   ASSUMING the compartment is centred in the base.
 # - ASSUMED from the 5.3 mm material: the slab under the cubby and the
 #   compartment floor above it are both drawn 5.3 mm thick. Nobody measured
@@ -62,12 +62,12 @@ shapes:
   # compartment floor above it. The cubby is a slot into that floor from the
   # front face, centred in the 113 mm side. Thumb scoops in the top of both
   # 113 mm walls (size estimated from a photo). The walls leave the measured
-  # 94.5 x 79.8 mm compartment, 70 mm deep above the floor.
+  # 94.5 x 80 mm compartment, 70 mm deep above the floor.
   - type: box
     id: body
     at: [0, 0, 0]
     size: [113, 94.5, 116.6]
-    wall: [9.25, 7.35]
+    wall: [9.25, 7.25]
     floor: 46.6
     style: blue
     scoops:
@@ -108,15 +108,15 @@ shapes:
   - { type: dim, views: [plan], from: [0, 0, 0], to: [0, 94.5, 0], offset: [-24, 0, 0] }
   - { type: dim, views: [front], from: [0, 94.5, 0], to: [113, 94.5, 0], offset: [0, 0, -24] }
 
-  # The card compartment's inside (measured): 94.5 along the 113 mm side, 79.8
+  # The card compartment's inside (measured): 94.5 along the 113 mm side, 80
   # across and 70 deep, along its rim in plan and iso and down its far corner.
-  - { type: dim, views: [plan], from: [9.25, 7.35, 116.6], to: [103.75, 7.35, 116.6], offset: [0, 16, 0] }
-  - { type: dim, views: [plan], from: [103.75, 7.35, 116.6], to: [103.75, 87.15, 116.6], offset: [-14, 0, 0] }
+  - { type: dim, views: [plan], from: [9.25, 7.25, 116.6], to: [103.75, 7.25, 116.6], offset: [0, 16, 0] }
+  - { type: dim, views: [plan], from: [103.75, 7.25, 116.6], to: [103.75, 87.25, 116.6], offset: [-14, 0, 0] }
   - { type: dim, views: [section], from: [9.25, 47.25, 46.6], to: [103.75, 47.25, 46.6], offset: [0, 0, 16] }
   - { type: dim, views: [section], from: [9.25, 47.25, 46.6], to: [9.25, 47.25, 116.6], offset: [14, 0, 0] }
-  - { type: dim, views: [iso], from: [9.25, 7.35, 116.6], to: [103.75, 7.35, 116.6], offset: [0, -20, 0] }
-  - { type: dim, views: [iso], from: [9.25, 7.35, 116.6], to: [9.25, 87.15, 116.6], offset: [-20, 0, 0] }
-  - { type: dim, views: [iso], from: [9.25, 7.35, 46.6], to: [9.25, 7.35, 116.6], offset: [8, 0, 0] }
+  - { type: dim, views: [iso], from: [9.25, 7.25, 116.6], to: [103.75, 7.25, 116.6], offset: [0, -20, 0] }
+  - { type: dim, views: [iso], from: [9.25, 7.25, 116.6], to: [9.25, 87.25, 116.6], offset: [-20, 0, 0] }
+  - { type: dim, views: [iso], from: [9.25, 7.25, 46.6], to: [9.25, 7.25, 116.6], offset: [8, 0, 0] }
 
   # The tray's three outer measurements (measured).
   - { type: dim, views: [plan, iso], from: [13.65, 234.5, 0], to: [99.35, 234.5, 0], offset: [0, 24, 0] }
