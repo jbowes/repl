@@ -12,7 +12,7 @@ const { createHash } = require('crypto');
 const { parse, parseViewOption } = require('./schema');
 const { project, extent, paintOrder, isoCircle, points: shapePoints } = require('./project');
 const { SchematicCanvas, esc, num } = require('./canvas');
-const { SIDES, wallFrame, wallPoint, notch3, faceLoop, rimPieces, rimEdges, cutBand } = require('./hollow');
+const { SIDES, wallXY, wallFrame, wallPoint, notch3, faceLoop, rimPieces, rimEdges, cutBand } = require('./hollow');
 const { STANDALONE, STANDALONE_CSS, svgOpen, backdrop } = require('../diagram/render');
 
 const FIT = 240; // px the largest dimension gets when `scale` is not given
@@ -132,7 +132,8 @@ function drawView(model, view, scale, c) {
     const [x1, y1, z1] = e.max;
     const hollow = s.wall !== undefined;
     // Inner cavity: open at the top, `wall` in from the sides, `floor` up.
-    const [ix0, ix1, iy0, iy1, fz] = hollow ? [x0 + s.wall, x1 - s.wall, y0 + s.wall, y1 - s.wall, z0 + s.floor] : [];
+    const [tx, ty] = hollow ? wallXY(s.wall) : [];
+    const [ix0, ix1, iy0, iy1, fz] = hollow ? [x0 + tx, x1 - tx, y0 + ty, y1 - ty, z0 + s.floor] : [];
     if (view !== 'iso') {
       const rect = boxOf([x0, x1].flatMap((x) => [y0, y1].flatMap((y) => [z0, z1].map((z) => P([x, y, z])))));
       let poly = [[rect.x, rect.y], [rect.x + rect.w, rect.y], [rect.x + rect.w, rect.y + rect.h], [rect.x, rect.y + rect.h]];
@@ -175,10 +176,10 @@ function drawView(model, view, scale, c) {
         }
         // The rim is filled as one shape and outlined only on its real edges,
         // so the walls' pieces read as one surface with no seam between them.
-        const rim = SIDES.flatMap((side) => rimPieces(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))).map((q) => q.map(P));
+        const rim = SIDES.flatMap((side) => rimPieces(wallFrame(e, s.wall, side), scoopsOn(s, side))).map((q) => q.map(P));
         c.shade(piecesShape(rim), boxOf(rim.flat()), s.style, 'flat');
         for (const side of SIDES) {
-          for (const edge of rimEdges(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) c.polyline(edge.map(P));
+          for (const edge of rimEdges(wallFrame(e, s.wall, side), scoopsOn(s, side))) c.polyline(edge.map(P));
         }
         drawLabel(s, centroid(poly));
         return;
@@ -250,7 +251,7 @@ function drawView(model, view, scale, c) {
         // The inner faces of the far walls carry the scoops too.
         for (const [k, side, face] of [[1, '-x', 'right'], [2, '-y', 'left']]) {
           const f = wallFrame(e, s.wall, side);
-          inside[k] = [face, faceLoop(f, f.inner, f.start + s.wall, f.start + f.len - s.wall, fz, scoopsOn(s, side))];
+          inside[k] = [face, faceLoop(f, f.inner, f.start + f.inset, f.start + f.len - f.inset, fz, scoopsOn(s, side))];
         }
       }
       for (const [face, corners] of inside) {
@@ -299,11 +300,11 @@ function drawView(model, view, scale, c) {
         }
         // The rim is filled as one shape and outlined only on its real edges:
         // no seam where walls meet.
-        const rim = SIDES.flatMap((side) => rimPieces(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))).map((q) => q.map(P));
+        const rim = SIDES.flatMap((side) => rimPieces(wallFrame(e, s.wall, side), scoopsOn(s, side))).map((q) => q.map(P));
         c.backing(piecesShape(rim));
         c.shade(piecesShape(rim), boxOf(rim.flat()), s.style, 'top');
         for (const side of SIDES) {
-          for (const edge of rimEdges(wallFrame(e, s.wall, side), s.wall, scoopsOn(s, side))) c.polyline(edge.map(P));
+          for (const edge of rimEdges(wallFrame(e, s.wall, side), scoopsOn(s, side))) c.polyline(edge.map(P));
         }
         continue;
       }
@@ -512,7 +513,7 @@ function describe(model, views) {
   for (const s of named) {
     const name = s.label || s.id;
     if (s.type === 'box') {
-      const hollow = s.wall !== undefined ? `, hollow with ${fmt(s.wall)} ${model.units} walls` : '';
+      const hollow = s.wall !== undefined ? `, hollow with ${[...new Set(wallXY(s.wall))].map(fmt).join(' and ')} ${model.units} walls` : '';
       const slots = (s.slots || []).map((sl) => `slot ${fmt(sl.width)} wide, ${fmt(sl.height)} high and ${fmt(sl.depth)} deep in the ${sl.side} face`);
       const scoops = (s.scoops || []).map((sc) => `${sc.shape === 'round' ? 'round' : 'U-shaped'} scoop ${fmt(sc.width)} wide and ${fmt(sc.depth)} deep in the ${sc.side} wall`);
       parts.push(`${name}: box ${s.size.map(fmt).join(' by ')} ${model.units} ${at(s)}${hollow}${[...scoops, ...slots].length ? `, with a ${[...scoops, ...slots].join(' and a ')}` : ''}.`);

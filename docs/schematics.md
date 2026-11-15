@@ -48,7 +48,7 @@ colour alone is hachure).
 
 | `type` | fields | notes |
 | --- | --- | --- |
-| `box` | `at`, `size: [w, d, h]`, `hidden`, `wall`, `floor`, `scoops`, `slots` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. `wall: t` makes it a hollow, open-top shell with walls `t` thick and a floor `floor` thick (default `t`): plan hatches the rim around an empty cavity, the section view hatches only the cut walls and floor, the front and side elevations show the cavity as dash-dot hidden lines, and iso shows the inside through the opening. `scoops` notch its walls and `slots` tunnel into its floor (below). |
+| `box` | `at`, `size: [w, d, h]`, `hidden`, `wall`, `floor`, `scoops`, `slots` | Axis-aligned cuboid. Iso draws top, left and right faces, shaded top lightest to right darkest; `hidden: true` adds the three back edges as faint dash-dot. `label` is written on it. `wall: t` makes it a hollow, open-top shell with walls `t` thick and a floor `floor` thick (default `t`); `wall: [tx, ty]` gives the `-x`/`+x` walls and the `-y`/`+y` walls their own thickness, and then `floor` is required: plan hatches the rim around an empty cavity, the section view hatches only the cut walls and floor, the front and side elevations show the cavity as dash-dot hidden lines, and iso shows the inside through the opening. `scoops` notch its walls and `slots` tunnel into its floor (below). |
 | `cylinder` | `at` (centre of the base), `r`, `h` | Vertical. A circle in plan, a rectangle with a centre line in elevations, an ellipse-topped can in iso. |
 | `rect` (or `plane`) | `at`, `size: [w, d]`, `dashed` | A flat horizontal outline at height `at[2]`: a footprint, a cutout. A line in elevations. |
 | `line` (or `wire`) | `points: [[x, y, z], ...]`, `dashed`, `closed` | A 3D polyline; `dashed` is dash-dot, for hidden lines. |
@@ -64,7 +64,8 @@ scoop, a tray's pour notch).
 - `at`: where along that wall its centre is, measured from the wall's start
   (x min for the `+y`/`-y` walls, y min for `+x`/`-x`). The scoop must fit
   inside the wall, clear of the corners (`wall <= at - width/2` and
-  `at + width/2 <= length - wall`).
+  `at + width/2 <= length - wall`, with `wall` the thickness of the walls it
+  meets at each end).
 - `width`, `depth`: size of the notch; the depth is measured down from the rim
   and must not exceed the wall's height above the floor.
 - `shape`: `u` (default; straight sides, round bottom, `depth` required) or

@@ -152,6 +152,28 @@ test('a hollow box takes wall and an optional floor, defaulting to the wall', ()
   assert.equal(d.floor, 4);
 });
 
+test('wall: [tx, ty] gives the x walls and the y walls their own thickness', () => {
+  const box = (rest) => `views: [plan, front, side, section, iso]\nshapes:\n  - { type: box, id: b, at: [0, 0, 0], size: [100, 80, 60], ${rest} }\n`;
+  const src = box('wall: [10, 4], floor: 20, scoops: [{ side: +y, at: 50, width: 20, depth: 8 }]');
+  const [s] = parse(src).shapes;
+  assert.deepEqual([s.wall, s.floor], [[10, 4], 20]);
+  // plan: the cavity is 80 x 72, 10 in from the x sides and 4 from the y sides
+  const cavity = [...renderSchematic(box('wall: [10, 4], floor: 20'), { view: 'plan' }).matchAll(/<polygon class="ln" points="([^"]+)"/g)][1][1]
+    .split(' ').map((p) => p.split(',').map(Number));
+  const span = (i) => Math.max(...cavity.map((p) => p[i])) - Math.min(...cavity.map((p) => p[i]));
+  const outer = renderSchematic(box('wall: [10, 4], floor: 20'), { view: 'plan' });
+  const scale = (() => { const o = /<polygon class="ln" points="([^"]+)"/.exec(outer)[1].split(' ').map((p) => Number(p.split(',')[0])); return (Math.max(...o) - Math.min(...o)) / 100; })();
+  assert.ok(Math.abs(span(0) / scale - 80) < 0.05 && Math.abs(span(1) / scale - 72) < 0.05, `${span(0) / scale} x ${span(1) / scale}`);
+  // every view draws it, and the description names both thicknesses
+  assert.match(renderSchematic(src), /hollow with 10 and 4 mm walls/);
+  // a scoop must clear the walls its own wall meets: 10 at each end of a y wall, 4 of an x wall
+  assert.throws(() => parse(box('wall: [10, 4], floor: 20, scoops: [{ side: +y, at: 15, width: 20, depth: 8 }]')), /between 10 and 90/);
+  assert.throws(() => parse(box('wall: [10, 4], floor: 20, scoops: [{ side: +x, at: 12, width: 20, depth: 8 }]')), /between 4 and 76/);
+  assert.throws(() => parse(box('wall: [10, 40], floor: 20')), /shapes\[0\]\.wall: must be less than half/);
+  assert.throws(() => parse(box('wall: [10, 4]')), /shapes\[0\]\.floor: is required when wall is \[tx, ty\]/);
+  assert.throws(() => parse(box('wall: [10], floor: 20')), /shapes\[0\]\.wall: expected a positive number or \[tx, ty\]/);
+});
+
 test('hollow box validation names the field', () => {
   const bad = (box) => parse(`shapes:\n  - { type: box, at: [0, 0, 0], size: [100, 80, 60], ${box} }\n`);
   assert.throws(() => bad('wall: 40'), /shapes\[0\]\.wall: must be less than half/);
@@ -274,7 +296,7 @@ test('the rim has no seam where walls meet: only outer, inner and scoop edges', 
   const e = { min: [0, 0, 0], max: [70, 60, 30] };
   const t = 3;
   const scoop = { side: '+x', at: 30, width: 20, depth: 12 };
-  const edges = ['+x', '-x', '+y', '-y'].flatMap((side) => rimEdges(wallFrame(e, t, side), t, side === '+x' ? [scoop] : []));
+  const edges = ['+x', '-x', '+y', '-y'].flatMap((side) => rimEdges(wallFrame(e, t, side), side === '+x' ? [scoop] : []));
   // +y, -y and -x: an outer and an inner edge each. +x, in two pieces: two of
   // each, and an end at each side of the scoop. The +y and -y walls own the
   // corners, so each also closes the outer face at its two ends.

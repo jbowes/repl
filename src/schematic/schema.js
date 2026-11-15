@@ -13,7 +13,7 @@
 // children and inheriting the group's style.
 const yaml = require('js-yaml');
 const { COLORS, FILLS } = require('../diagram/parse');
-const { SIDES, wallLength } = require('./hollow');
+const { SIDES, wallXY, wallLength } = require('./hollow');
 
 const VIEWS = ['plan', 'front', 'side', 'section', 'iso'];
 const TYPES = {
@@ -119,10 +119,17 @@ function shape(raw, path, ids, parentStyle) {
       s.hidden = flag('hidden');
       if (raw.wall !== undefined) {
         // A hollow, open-top shell: walls `wall` thick, floor `floor` thick.
-        s.wall = positive(raw.wall, `${path}.wall`);
-        if (s.wall * 2 >= Math.min(s.size[0], s.size[1])) {
+        // [tx, ty] gives the -x/+x walls and the -y/+y walls their own thickness.
+        if (Array.isArray(raw.wall)) {
+          if (raw.wall.length !== 2) throw new SchematicError(`${path}.wall`, `expected a positive number or [tx, ty], got ${show(raw.wall)}`);
+          s.wall = raw.wall.map((t) => positive(t, `${path}.wall`));
+        } else {
+          s.wall = positive(raw.wall, `${path}.wall`);
+        }
+        if (wallXY(s.wall).some((t, i) => t * 2 >= s.size[i])) {
           throw new SchematicError(`${path}.wall`, `must be less than half of w and d ${show(s.size.slice(0, 2))}, got ${show(raw.wall)}`);
         }
+        if (raw.floor === undefined && Array.isArray(s.wall)) throw new SchematicError(`${path}.floor`, 'is required when wall is [tx, ty]');
         s.floor = raw.floor === undefined ? s.wall : positive(raw.floor, `${path}.floor`);
         if (s.floor >= s.size[2]) throw new SchematicError(`${path}.floor`, `must be less than h (${s.size[2]}), got ${show(raw.floor)}`);
       } else if (raw.floor !== undefined) {
@@ -183,7 +190,6 @@ function scoopsOf(raw, s, path) {
   }
   if (raw.wall === undefined) return;
   const [, , h] = s.size;
-  const t = s.wall;
   const floor = s.floor;
   s.scoops = [];
   if (raw.scoops === undefined) return;
@@ -204,6 +210,8 @@ function scoopsOf(raw, s, path) {
     if (!isNum(at)) throw new SchematicError(`${p}.at`, `expected a number, got ${show(at)}`);
     const width = positive(required(r, 'width', p), `${p}.width`);
     const len = wallLength(s.size, side);
+    // clear of the corners: the walls this one meets
+    const t = wallXY(s.wall)[side[1] === 'y' ? 0 : 1];
     if (at - width / 2 < t - 1e-9 || at + width / 2 > len - t + 1e-9) {
       throw new SchematicError(p, `scoop does not fit in the ${side} wall: at +- width/2 must lie between ${t} and ${len - t}`);
     }
