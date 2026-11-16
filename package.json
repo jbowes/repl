@@ -7,7 +7,7 @@
   "author": "James Bowes <jbowes@repl.ca>",
   "license": "MIT",
   "engines": {
-    "node": ">=22.12"
+    "node": ">=26.13"
   },
   "scripts": {
     "dev": "webpack serve --hot --port 5000",
