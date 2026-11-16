@@ -1,6 +1,6 @@
 import React from 'react';
 
-import moment from 'moment';
+import { isoDate, displayDate } from './date';
 
 export default (props) => {
   const slug = props.post.slug + '/';
@@ -9,8 +9,8 @@ export default (props) => {
       <article className="extract">
         <header>
           <h2 className="extract-title"><Title>{ props.post.header.title }</Title></h2>
-          <time className="post-date" dateTime={ moment(props.post.header.date).format('YYYY-MM-DD') }>
-            { moment(props.post.header.date).format('DD MMM YYYY') }
+          <time className="post-date" dateTime={ isoDate(props.post.header.date) }>
+            { displayDate(props.post.header.date) }
           </time>
         </header>
         <p>{ props.post.header.summary }</p>
