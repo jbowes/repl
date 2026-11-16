@@ -245,11 +245,12 @@ pre:focus-visible {
   opacity: 1;
 }
 
-/* Images in posts. The width/height attributes reserve the space before the
-   file loads; height:auto keeps the ratio when max-width shrinks it. */
+/* Images, code blocks and diagrams sit 1rem in from the text on each side.
+   The width/height attributes on an image reserve the space before the file
+   loads; height:auto keeps the ratio when max-width shrinks it. */
 .post-image {
   display: block;
-  max-width: 100%;
+  max-width: calc(100% - 2rem);
   height: auto;
   margin: 1rem auto;
 }
@@ -258,6 +259,7 @@ pre:focus-visible {
 .inline-code { color: var(--green); }
 .code-block {
   overflow: scroll;
+  margin: 1rem;
   padding: 1rem;
   border-radius: .25rem;
   white-space: pre;
@@ -280,7 +282,7 @@ pre:focus-visible {
   display: flex;
   justify-content: center;
   overflow-x: auto;
-  margin: 1rem 0;
+  margin: 1rem;
   padding: 1rem;
   border-radius: .25rem;
   background-color: var(--code-bg);
