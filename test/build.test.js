@@ -10,7 +10,7 @@ require('../scripts/register');
 
 const sharp = require('sharp');
 const { build: buildSite } = require('../scripts/build');
-const { COPY_QUALITY, SIZES } = require('../src/images');
+const { COPY_QUALITY } = require('../src/images');
 
 let built;
 function build() {
@@ -32,7 +32,7 @@ test('built pages keep the quotes on attribute values', async () => {
   // WhatsApp ignores an og:image whose attributes are unquoted
   assert.match(html, /<meta property="og:image" content="https:\/\/repl\.ca\/[^"]+">/);
   assert.match(html, /<html lang="en">/);
-  // and the doctype is the short, lower case one
+  // and the rest is still minified
   assert.match(html, /^<!doctype html><html/);
 });
 
@@ -40,11 +40,12 @@ test('a photo in a post is built with smaller copies, a srcset, and AVIF', async
   const out = await build();
   const html = fs.readFileSync(path.join(out, 'gamegenic-sidekick-pro-xl-tray-dimensions', 'index.html'), 'utf8');
   const img = /<img [^>]*class="post-image"[^>]*>/.exec(html)[0];
-  const srcset = /srcset="([^"]+)"/i.exec(img)[1].split(', ').map((c) => c.split(' '));
+  // the HTML minifier drops the space after each comma in a list attribute
+  const srcset = /srcset="([^"]+)"/.exec(img)[1].split(',').map((c) => c.split(' '));
   const widths = srcset.map(([, w]) => Number(w.replace('w', '')));
   assert.deepEqual(widths, [480, 720, 880, 1080, 1400]);
   // the spaces inside calc() must survive: it needs them around the minus
-  const SIZES_HTML = `sizes="${SIZES}"`;
+  const SIZES_HTML = 'sizes="(min-width: 48em) calc(66.667vw - 2rem),(min-resolution: 3dppx) 60vw,(min-resolution: 2.5dppx) 72vw,90vw"';
   assert.ok(img.includes(SIZES_HTML), img);
   assert.match(img, /width="1400" height="695"/);
   // every file in the srcset was emitted, at the width it claims, with no metadata
@@ -71,7 +72,7 @@ test('a photo in a post is built with smaller copies, a srcset, and AVIF', async
   const picture = /<picture><source type="image\/avif" srcset="([^"]+)" ([^>]+)><img [^>]*class="post-image"[^>]*><\/picture>/.exec(html);
   assert.ok(picture, 'a picture with an AVIF source, then the img');
   assert.ok(picture[2].includes(SIZES_HTML));
-  const avif = picture[1].split(', ').map((c) => c.split(' '));
+  const avif = picture[1].split(',').map((c) => c.split(' '));
   assert.deepEqual(avif.map(([, w]) => w), ['480w', '720w', '880w', '1080w', '1400w']);
   for (const [url, w] of avif) {
     const file = fs.readFileSync(path.join(out, url));

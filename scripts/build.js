@@ -6,6 +6,8 @@ require('./register');
 const fs = require('fs');
 const path = require('path');
 
+const { minifyHtml } = require('./minify-html');
+
 const ROOT = path.join(__dirname, '..');
 const BASE = 'https://repl.ca';
 
@@ -13,17 +15,6 @@ const BASE = 'https://repl.ca';
 function renderPage(render, route) {
   return new Promise((resolve, reject) =>
     render({ path: route }, (err, html) => (err ? reject(err) : resolve(html)))
-  );
-}
-
-// React writes void elements as `<meta ... />` and keeps the camel case of a
-// few attribute names; HTML wants neither. Only these tags are touched: inline
-// SVG needs its `/>`. Attribute values are escaped by React, so a tag has no
-// stray `>` in it.
-const VOID_TAG = /<(?:meta|link|img|source|br|hr|input)\b[^>]*>/g;
-function tidyHtml(html) {
-  return html.replace(VOID_TAG, (tag) =>
-    tag.replace(/\s*\/>$/, '>').replace(/ (charSet|srcSet|dateTime)=/g, (_, name) => ` ${name.toLowerCase()}=`)
   );
 }
 
@@ -94,7 +85,7 @@ async function build({ out = path.join(ROOT, 'public') } = {}) {
   fs.mkdirSync(out, { recursive: true });
 
   for (const route of routes) {
-    write(out, pageName(route), tidyHtml(await renderPage(render, route)));
+    write(out, pageName(route), minifyHtml(await renderPage(render, route)));
   }
   // after the pages: rendering the posts is what fills in the image list
   await emitImages(out, emittedImages(), { quality: COPY_QUALITY, avifQuality: AVIF_QUALITY });
