@@ -5,23 +5,18 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { default: register } = require('@babel/register');
 
-register({ only: [/\/src\//, /\/webpack\/config\.js$/] });
+require('../scripts/register');
 
-const webpack = require('webpack');
 const sharp = require('sharp');
-const config = require('../webpack/config').default;
-const { COPY_QUALITY } = require('../src/images');
+const { build: buildSite } = require('../scripts/build');
+const { COPY_QUALITY, SIZES } = require('../src/images');
 
 let built;
 function build() {
   built = built || (async () => {
     const out = fs.mkdtempSync(path.join(os.tmpdir(), 'repl-build-'));
-    const compiler = webpack({ ...config, output: { ...config.output, path: out } });
-    const stats = await new Promise((resolve, reject) => compiler.run((err, s) => (err ? reject(err) : resolve(s))));
-    await new Promise((resolve) => compiler.close(resolve));
-    assert.ok(!stats.hasErrors(), stats.toString({ all: false, errors: true }));
+    await buildSite({ out });
     return out;
   })();
   return built;
@@ -37,7 +32,7 @@ test('built pages keep the quotes on attribute values', async () => {
   // WhatsApp ignores an og:image whose attributes are unquoted
   assert.match(html, /<meta property="og:image" content="https:\/\/repl\.ca\/[^"]+">/);
   assert.match(html, /<html lang="en">/);
-  // and the rest is still minified
+  // and the doctype is the short, lower case one
   assert.match(html, /^<!doctype html><html/);
 });
 
@@ -45,12 +40,11 @@ test('a photo in a post is built with smaller copies, a srcset, and AVIF', async
   const out = await build();
   const html = fs.readFileSync(path.join(out, 'gamegenic-sidekick-pro-xl-tray-dimensions', 'index.html'), 'utf8');
   const img = /<img [^>]*class="post-image"[^>]*>/.exec(html)[0];
-  // the HTML minifier drops the space after each comma in a list attribute
-  const srcset = /srcset="([^"]+)"/.exec(img)[1].split(',').map((c) => c.split(' '));
+  const srcset = /srcset="([^"]+)"/i.exec(img)[1].split(', ').map((c) => c.split(' '));
   const widths = srcset.map(([, w]) => Number(w.replace('w', '')));
   assert.deepEqual(widths, [480, 720, 880, 1080, 1400]);
   // the spaces inside calc() must survive: it needs them around the minus
-  const SIZES_HTML = 'sizes="(min-width: 48em) calc(66.667vw - 2rem),(min-resolution: 3dppx) 60vw,(min-resolution: 2.5dppx) 72vw,90vw"';
+  const SIZES_HTML = `sizes="${SIZES}"`;
   assert.ok(img.includes(SIZES_HTML), img);
   assert.match(img, /width="1400" height="695"/);
   // every file in the srcset was emitted, at the width it claims, with no metadata
@@ -77,7 +71,7 @@ test('a photo in a post is built with smaller copies, a srcset, and AVIF', async
   const picture = /<picture><source type="image\/avif" srcset="([^"]+)" ([^>]+)><img [^>]*class="post-image"[^>]*><\/picture>/.exec(html);
   assert.ok(picture, 'a picture with an AVIF source, then the img');
   assert.ok(picture[2].includes(SIZES_HTML));
-  const avif = picture[1].split(',').map((c) => c.split(' '));
+  const avif = picture[1].split(', ').map((c) => c.split(' '));
   assert.deepEqual(avif.map(([, w]) => w), ['480w', '720w', '880w', '1080w', '1400w']);
   for (const [url, w] of avif) {
     const file = fs.readFileSync(path.join(out, url));

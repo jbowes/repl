@@ -22,8 +22,8 @@ export default (locals, callback) => {
       </Post>
     );
 
-    // Set our XML doctype, too. We can't do this with JSX
-    return callback(null, '<!DOCTYPE html>'+html);
+    // The doctype can't be written in JSX
+    return callback(null, '<!doctype html>'+html);
   }
 
   // else its an index page.
@@ -31,8 +31,8 @@ export default (locals, callback) => {
     <Index posts={getFiles()}/>
   );
 
-  // Set our XML doctype, too. We can't do this with JSX
-  return callback(null, '<!DOCTYPE html>'+html);
+  // The doctype can't be written in JSX
+  return callback(null, '<!doctype html>'+html);
 };
 
 export function staticRoutes() {

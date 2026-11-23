@@ -14,7 +14,7 @@ export const INLINE_LIMIT = 4096;
 // widths that is narrower than the image, plus the image itself, each as an
 // AVIF and in the image's own format. The browser picks the format it supports
 // and the width by the `sizes` below. The copies are made when the images are
-// emitted (webpack/images-plugin.js).
+// emitted (scripts/build.js).
 // 720 and 1080 fit common devices: about 700px for a phone at 2x, and about
 // 970-1050px for one at 2.6-3x or a tablet at 2x, which 800 and 1200 overshot.
 // 880 fits a desktop window of about 1350px, whose column is 858-868px (the
@@ -61,7 +61,7 @@ const MIME = {
 
 // Files that need emitting to public/ (output path -> { file, width }). `width`
 // is set for a smaller copy, which is the source file resized to that width.
-// Filled while the markdown is processed; the webpack plugin reads it afterwards.
+// Filled while the markdown is processed; the build reads it afterwards.
 const emitted = new Map();
 
 export function emittedImages() {
