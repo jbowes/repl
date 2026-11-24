@@ -5,23 +5,18 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { default: register } = require('@babel/register');
 
-register({ only: [/\/src\//, /\/webpack\/config\.js$/] });
+require('../scripts/register');
 
-const webpack = require('webpack');
 const sharp = require('sharp');
-const config = require('../webpack/config').default;
+const { build: buildSite } = require('../scripts/build');
 const { COPY_QUALITY } = require('../src/images');
 
 let built;
 function build() {
   built = built || (async () => {
     const out = fs.mkdtempSync(path.join(os.tmpdir(), 'repl-build-'));
-    const compiler = webpack({ ...config, output: { ...config.output, path: out } });
-    const stats = await new Promise((resolve, reject) => compiler.run((err, s) => (err ? reject(err) : resolve(s))));
-    await new Promise((resolve) => compiler.close(resolve));
-    assert.ok(!stats.hasErrors(), stats.toString({ all: false, errors: true }));
+    await buildSite({ out });
     return out;
   })();
   return built;

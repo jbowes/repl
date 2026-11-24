@@ -3,9 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('path');
-const { default: register } = require('@babel/register');
-
-register({ only: [/\/src\//] });
+require('../scripts/register');
 
 const { INLINE_LIMIT, SIZES, processImage, emittedImages } = require('../src/images');
 

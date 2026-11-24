@@ -1,9 +1,7 @@
 // The page head: social preview image and structured data (src/components).
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { default: register } = require('@babel/register');
-
-register({ only: [/\/src\//] });
+require('../scripts/register');
 
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');

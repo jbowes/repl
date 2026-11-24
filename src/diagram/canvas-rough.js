@@ -2,8 +2,8 @@
 // is a pure function of the diagram source.
 const { groupColour } = require('./palette');
 const roughModule = require('roughjs');
-// The CJS build exports `generator` directly; webpack picks the ESM build,
-// which hangs it off the default export.
+// The CJS build exports `generator` directly; the ESM build hangs it off the
+// default export.
 const rough = roughModule.default || roughModule;
 
 const FONT = "'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Neue', 'Comic Sans MS', cursive, sans-serif";
